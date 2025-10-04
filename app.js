@@ -46,6 +46,80 @@ function injectManualMods(){
 function readManual(id){ var el=$(id); var v = el?parseFloat(el.value):NaN; return isFinite(v)?v:NaN; }
 /* === end patch === */
 
+
+/* === v13: actual stat badges & updater === */
+function v13EnsureBadges(){
+  // make small badge creator
+  function ensureAfter(inputId, badgeId, label){
+    var input = $(inputId); if(!input) return null;
+    if($(badgeId)) return $(badgeId);
+    var sp = document.createElement('span');
+    sp.id = badgeId; sp.className='badge stat';
+    sp.textContent = label + ' —';
+    // place after the input
+    input.parentNode.appendChild(sp);
+    return sp;
+  }
+  // attacker badges
+  ensureAfter('v13_atk_ev_攻撃','v13_atk_stat_攻撃','実数値');
+  ensureAfter('v13_atk_ev_特攻','v13_atk_stat_特攻','実数値');
+  ensureAfter('v13_a_iv_素早','v13_atk_stat_素早','実数値');
+  // targets badges
+  ['1','2','3'].forEach(function(i){
+    ensureAfter('v13_def'+i+'_ev_HP','v13_def'+i+'_stat_HP','実数値');
+    ensureAfter('v13_def'+i+'_ev_防御','v13_def'+i+'_stat_防御','実数値');
+    ensureAfter('v13_def'+i+'_ev_特防','v13_def'+i+'_stat_特防','実数値');
+  });
+}
+function v13UpdateBadges(){
+  var lv = (typeof getLV==='function')?getLV():50;
+  function pokeByName(nm){
+    if(!nm) return null;
+    for(var i=0;i<POKE.length;i++){ if(POKE[i]['名前']===nm) return POKE[i]; }
+    // fallback inline
+    if(typeof POKE_INLINE!=='undefined'){ for(var j=0;j<POKE_INLINE.length;j++){ if(POKE_INLINE[j]['名前']===nm) return POKE_INLINE[j]; } }
+    return null;
+  }
+  function val(id, def){ var el=$(id); var v = el?parseInt(el.value||'0',10):def; if(!isFinite(v)) v=def; return v; }
+  function setText(id, v){ var el=$(id); if(el) el.textContent = '実数値 ' + v; }
+  // attacker
+  var aName = $('v13_atk_name')?$('v13_atk_name').value:'';
+  var a = pokeByName(aName) || {};
+  var ivAtk=31, ivSpA=31, ivSpe=val('v13_a_iv_素早',31);
+  var evAtk=val('v13_atk_ev_攻撃',0), evSpA=val('v13_atk_ev_特攻',0), evSpe=0;
+  var atk = a['攻撃']? calcST(a['攻撃'], ivAtk, evAtk, lv, 1):0;
+  var spa = a['特攻']? calcST(a['特攻'], ivSpA, evSpA, lv, 1):0;
+  var spe = a['素早']? calcST(a['素早'], ivSpe, evSpe, lv, 1):0;
+  setText('v13_atk_stat_攻撃', atk||'—');
+  setText('v13_atk_stat_特攻', spa||'—');
+  setText('v13_atk_stat_素早', spe||'—');
+  // defenders
+  ['1','2','3'].forEach(function(i){
+    var dName = $('v13_def'+i+'_name')?$('v13_def'+i+'_name').value:'';
+    var d = pokeByName(dName) || {};
+    var evHP = val('v13_def'+i+'_ev_HP',0);
+    var evDF = val('v13_def'+i+'_ev_防御',0);
+    var evSD = val('v13_def'+i+'_ev_特防',0);
+    var hp = d['HP']? calcHP(d['HP'],31,evHP,lv):0;
+    var df = d['防御']? calcST(d['防御'],31,evDF,lv,1):0;
+    var sd = d['特防']? calcST(d['特防'],31,evSD,lv,1):0;
+    setText('v13_def'+i+'_stat_HP', hp||'—');
+    setText('v13_def'+i+'_stat_防御', df||'—');
+    setText('v13_def'+i+'_stat_特防', sd||'—');
+  });
+}
+function bindV13Actuals(){
+  v13EnsureBadges();
+  ['v13_atk_name','v13_atk_ev_攻撃','v13_atk_ev_特攻','v13_a_iv_素早',
+   'v13_def1_name','v13_def1_ev_HP','v13_def1_ev_防御','v13_def1_ev_特防',
+   'v13_def2_name','v13_def2_ev_HP','v13_def2_ev_防御','v13_def2_ev_特防',
+   'v13_def3_name','v13_def3_ev_HP','v13_def3_ev_防御','v13_def3_ev_特防'
+  ].forEach(function(id){ var el=$(id); if(el) el.addEventListener('input', v13UpdateBadges); });
+  // also when pokemon list ensured
+  if(typeof ensurePoke==='function'){ ensurePoke().then(function(){ v13UpdateBadges(); }); } else { v13UpdateBadges(); }
+}
+/* === end v13 stat badges === */
+
 function bindTabs(){
   var tabs = qa('.tabs .tab');
   function show(id){
@@ -353,7 +427,7 @@ function bindTypeBadgesRealtime(){
 }
 
 /* boot */
-ready(function(){ injectManualMods(); 
+ready(function(){ bindV13Actuals();  injectManualMods(); 
   bindTabs(); bindTimer(); bindEV252(); bindMovesAutofill(); bindCalc(); bindV13(); bindV13TypeFill(); bindBuilds(); bindReflect(); bindTypeBadgesRealtime(); bindClearAll(); bindIVToggle(); quickSpeedIV();
   Promise.all([ensurePoke(), ensureMoves()]).then(function(){ buildLists(); reflect('atk'); reflect('def'); }).catch(function(){ buildLists(); reflect('atk'); reflect('def'); });
 });
