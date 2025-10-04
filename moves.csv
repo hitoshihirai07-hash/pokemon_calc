@@ -1,4 +1,4 @@
-name,tyoe,category,power,hits,alwaysCrit,teraAdative,notes
+name,type,category,power,hits,alwaysCrit,teraAdative,notes
 3ぼんのや,格闘,物理,90,1,,,
 アーマーキャノン,炎,特殊,120,1,,,
 アームハンマー,格闘,物理,100,1,,,
@@ -518,4 +518,5 @@ Vジェネレート,炎,物理,180,1,,,
 ワイドブレイカー,ドラゴン,物理,60,1,,,
 ワイルドボルト,電気,物理,90,1,,,
 わるあがき,ノーマル,物理,50,1,,,
+
 ワンダースチーム,フェアリー,特殊,90,1,,,
