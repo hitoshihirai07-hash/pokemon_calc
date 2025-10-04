@@ -27,7 +27,9 @@
 </header>
 
 <main>
-  <div class="grid grid-2">
+  <section id="calc" role="tabpanel" class="panel active">
+    <h2>ダメージ計算</h2>
+    <div class="grid grid-2">
       <fieldset>
         <legend>攻撃側</legend>
         <label>ポケモン<input id="atk_name" list="dl_poke" placeholder="例: ピカチュウ"></label><span class="type-badges" id="atk_types"></span>
@@ -37,35 +39,37 @@
         <div class="stats">
           <div><span>HP</span><span id="atk_base_HP">-</span><input id="a_iv_HP" type="number" min="0" max="31" value="31"><input id="atk_ev_HP" type="number" min="0" max="252" value="0"><span id="atk_fin_HP">-</span></div>
           <div><span>攻撃</span><span id="atk_base_攻撃">-</span><input id="a_iv_攻撃" type="number" min="0" max="31" value="31"><input id="atk_ev_攻撃" type="number" min="0" max="252" value="0"><select id="atk_mul_攻撃"><option value="1">等倍</option><option value="1.1">↑</option><option value="0.9">↓</option></select><span id="atk_fin_攻撃">-</span></div>
-    <div class="grid calc-ops">
-      <fieldset>
-        <legend>技入力欄</legend>
-          <label>技<input id="atk_move_name" list="dl_move" placeholder="例: 10まんボルト"></label>
-          <label>威力<input id="atk_move_power" type="number" min="0" max="300"></label>
-          <label>分類<select id="atk_move_cat"><option>物理</option><option>特殊</option></select></label>
-          <label>攻ランク<input id="atk_rank" type="number" min="-6" max="6" value="0"></label>
-          <label>防ランク<input id="def_rank" type="number" min="-6" max="6" value="0"></label>
-          <label>その他補正<input id="other_mod" type="number" step="0.01" value="1.0"></label>
-      </fieldset>
-      <fieldset id="calc_opts_container">
-        <legend>その他</legend>
-        <label>STAB<select id="atk_stab_sel"><option value="">自動</option><option>1</option><option>1.5</option><option>2</option></select></label>
-        <label>相性<select id="atk_eff_sel"><option value="">自動</option><option>0.25</option><option>0.5</option><option>1</option><option>2</option><option>4</option></select></label>
-        <label>攻ランク<input id="atk_rank" type="number" min="-6" max="6" value="0"></label>
-        <label>防ランク<input id="def_rank" type="number" min="-6" max="6" value="0"></label>
-        <label>その他補正<input id="other_mod" type="number" step="0.01" value="1.0"></label>
-      </fieldset>
-    </div>
-<div class="result">
-          <button id="btn_calc">ダメージ計算</button>
-          <output id="out_damage">—</output>
-        </div>
+
+<div class="grid calc-ops">
+  <fieldset>
+    <legend>技入力欄</legend>
+    
+        
+  </fieldset>
+  <fieldset id="calc_opts_container">
+    <legend>その他</legend>
+    <label>STAB<select id="atk_stab_sel"><option value="">自動</option><option>1</option><option>1.5</option><option>2</option></select></label>
+    <label>相性<select id="atk_eff_sel"><option value="">自動</option><option>0.25</option><option>0.5</option><option>1</option><option>2</option><option>4</option></select></label>
+    <label>攻ランク<input id="atk_rank" type="number" min="-6" max="6" value="0"></label>
+    <label>防ランク<input id="def_rank" type="number" min="-6" max="6" value="0"></label>
+    <label>その他補正<input id="other_mod" type="number" step="0.01" value="1.0"></label>
+  </fieldset>
+</div>
+
           <div><span>防御</span><span id="atk_base_防御">-</span><input id="a_iv_防御" type="number" min="0" max="31" value="31"><input id="atk_ev_防御" type="number" min="0" max="252" value="0"><select id="atk_mul_防御"><option value="1">等倍</option><option value="1.1">↑</option><option value="0.9">↓</option></select><span id="atk_fin_防御">-</span></div>
           <div><span>特攻</span><span id="atk_base_特攻">-</span><input id="a_iv_特攻" type="number" min="0" max="31" value="31"><input id="atk_ev_特攻" type="number" min="0" max="252" value="0"><select id="atk_mul_特攻"><option value="1">等倍</option><option value="1.1">↑</option><option value="0.9">↓</option></select><span id="atk_fin_特攻">-</span></div>
           <div><span>特防</span><span id="atk_base_特防">-</span><input id="a_iv_特防" type="number" min="0" max="31" value="31"><input id="atk_ev_特防" type="number" min="0" max="252" value="0"><select id="atk_mul_特防"><option value="1">等倍</option><option value="1.1">↑</option><option value="0.9">↓</option></select><span id="atk_fin_特防">-</span></div>
           <div><span>素早</span><span id="atk_base_素早">-</span><input id="a_iv_素早" type="number" min="0" max="31" value="31"><input id="atk_ev_素早" type="number" min="0" max="252" value="0"><select id="atk_mul_素早"><option value="1">等倍</option><option value="1.1">↑</option><option value="0.9">↓</option></select><span id="atk_fin_素早">-</span></div>
         </div>
-        
+        <div class="move">
+          <label>技<input id="atk_move_name" list="dl_move" placeholder="例: 10まんボルト"></label>
+          <label>威力<input id="atk_move_power" type="number" min="0" max="300"></label>
+          <label>分類<select id="atk_move_cat"><option>物理</option><option>特殊</option></select></label>
+          <label>タイプ<input id="atk_move_type" placeholder="" list="dl_type"></label>
+          <label>攻ランク<input id="atk_rank" type="number" min="-6" max="6" value="0"></label>
+          <label>防ランク<input id="def_rank" type="number" min="-6" max="6" value="0"></label>
+          <label>その他補正<input id="other_mod" type="number" step="0.01" value="1.0"></label>
+        </div>
       </fieldset>
       <fieldset>
         <legend>防御側</legend>
@@ -81,7 +85,10 @@
           <div><span>特防</span><span id="def_base_特防">-</span><input id="d_iv_特防" type="number" min="0" max="31" value="31"><input id="def_ev_特防" type="number" min="0" max="252" value="0"><select id="def_mul_特防"><option value="1">等倍</option><option value="1.1">↑</option><option value="0.9">↓</option></select><span id="def_fin_特防">-</span></div>
           <div><span>素早</span><span id="def_base_素早">-</span><input id="d_iv_素早" type="number" min="0" max="31" value="31"><input id="def_ev_素早" type="number" min="0" max="252" value="0"><select id="def_mul_素早"><option value="1">等倍</option><option value="1.1">↑</option><option value="0.9">↓</option></select><span id="def_fin_素早">-</span></div>
         </div>
-        
+        <div class="result">
+          <button id="btn_calc">ダメージ計算</button>
+          <output id="out_damage">—</output>
+        </div>
       </fieldset>
     </div>
   </section>
