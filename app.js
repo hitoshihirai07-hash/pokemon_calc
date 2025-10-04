@@ -14,6 +14,38 @@ function qa(sel,root){return Array.prototype.slice.call((root||document).querySe
 function toN(v,d){var n=parseFloat(v);return isFinite(n)?n:(d||0);}
 function ready(fn){if(document.readyState!=='loading'){fn();}else{document.addEventListener('DOMContentLoaded',fn,false);}}
 
+
+/* === v36+ manual STAB/相性 controls (non-overlapping) === */
+function injectManualMods(){
+  function mkSel(id, opts, label){
+    var wrap = document.createElement('label');
+    wrap.textContent = label;
+    var sel = document.createElement('select'); sel.id = id;
+    var opt0 = document.createElement('option'); opt0.value=''; opt0.textContent='自動';
+    sel.appendChild(opt0);
+    opts.forEach(function(v){
+      var o=document.createElement('option');o.value=String(v);o.textContent=String(v); sel.appendChild(o);
+    });
+    wrap.appendChild(sel);
+    return wrap;
+  }
+  function attachRow(container, rowId){
+    if(!container || document.getElementById(rowId)) return;
+    var row = document.createElement('div'); row.className='line opts-row'; row.id = rowId;
+    row.appendChild(mkSel(container.id==='atk_fieldset'?'atk_stab_sel':'v13_stab_sel', [1,1.5,2], 'STAB'));
+    row.appendChild(mkSel(container.id==='atk_fieldset'?'atk_eff_sel':'v13_eff_sel', [0.25,0.5,1,2,4], '相性'));
+    // place below .move if exists, else append
+    var mv = container.querySelector('.move');
+    if(mv && mv.parentNode) mv.parentNode.insertBefore(row, mv.nextSibling); else container.appendChild(row);
+  }
+  // ダメージ計算（通常タブ）
+  var atkFs = document.querySelector('#calc fieldset'); if (atkFs) { atkFs.id='atk_fieldset'; attachRow(atkFs, 'atk_opts_row'); }
+  // 1対3（攻撃側）
+  var v13Fs = document.querySelector('#v13 fieldset'); if (v13Fs) { attachRow(v13Fs, 'v13_opts_row'); }
+}
+function readManual(id){ var el=$(id); var v = el?parseFloat(el.value):NaN; return isFinite(v)?v:NaN; }
+/* === end patch === */
+
 function bindTabs(){
   var tabs = qa('.tabs .tab');
   function show(id){
@@ -187,13 +219,7 @@ function simpleDamage(){
   A=Math.floor(A*stageMult(rkA)); D=Math.floor(D*stageMult(-rkD));
   if(!pwr||!A||!D){ if($('out_damage')) $('out_damage').value='—'; return; }
   var base = Math.floor(Math.floor((2*lvl)/5+2)*pwr*A/D/50)+2;
-  var stab = (normType(mt)===normType(atk_t1) || normType(mt)===normType(atk_t2))?1.5:1.0;
-  var eff = typeEff(mt, def_t1, def_t2);
-  
-  /* manual overrides */
-  var ssel=$('atk_stab_select'); if(ssel && ssel.value){ var sv=toN(ssel.value, stab); if(sv>0) stab=sv; }
-  var esel=$('atk_eff_select'); if(esel && esel.value){ var ev=toN(esel.value, eff); if(ev>0) eff=ev; }
-  var mod = stab * eff * other;
+  var stab = (isFinite(readManual('atk_stab_sel'))?readManual('atk_stab_sel'):((normType(mt)===normType(atk_t1) || normType(mt)===normType(atk_t2))?1.5:1.0)); var eff = (isFinite(readManual('atk_eff_sel'))?readManual('atk_eff_sel'):(typeEff(mt, def_t1, def_t2))); var mod = stab * eff * other;
   var min = Math.floor(base*0.85*mod), max = Math.floor(base*mod);
   $('out_damage').value = min+' 〜 '+max+' （STAB:'+stab.toFixed(2)+' 相性:'+eff.toFixed(2)+'）';
 }
@@ -217,17 +243,7 @@ function simpleDamageOne(i){
   var atk_t1=(atk&&(atk.type1||atk.タイプ1))||''; var atk_t2=(atk&&(atk.type2||atk.タイプ2))||'';
   var t1=(deff&&(deff.type1||deff.タイプ1))||''; var t2=(deff&&(deff.type2||deff.タイプ2))||'';
   var base = (pwr && A && D) ? (Math.floor(Math.floor((2*lvl)/5+2)*pwr*A/D/50)+2) : 0;
-  var stab = (normType(mt)===normType(atk_t1) || normType(mt)===normType(atk_t2))?1.5:1.0;
-  var eff = typeEff(mt, t1, t2);
-  
-  /* manual overrides */
-  var ssel=$('atk_stab_select'); if(ssel && ssel.value){ var sv=toN(ssel.value, stab); if(sv>0) stab=sv; }
-  var esel=$('atk_eff_select'); if(esel && esel.value){ var ev=toN(esel.value, eff); if(ev>0) eff=ev; }
-  
-  /* manual overrides (1対3) */
-  var ssel=$('v13_stab_select'); if(ssel && ssel.value){ var sv=toN(ssel.value, stab); if(sv>0) stab=sv; }
-  var esel=$('v13_eff_select'); if(esel && esel.value){ var ev=toN(esel.value, eff); if(ev>0) eff=ev; }
-  var mod = stab * eff * other;
+  var stab = (isFinite(readManual('v13_stab_sel'))?readManual('v13_stab_sel'):((normType(mt)===normType(atk_t1) || normType(mt)===normType(atk_t2))?1.5:1.0)); var eff = (isFinite(readManual('v13_eff_sel'))?readManual('v13_eff_sel'):(typeEff(mt, t1, t2))); var mod = stab * eff * other;
   var min=Math.floor(base*0.85*mod), max=Math.floor(base*mod);
   var out=$('v13_out'+i); if(out) out.value=(base?(min+' 〜 '+max+'（STAB:'+stab.toFixed(2)+' 相性:'+eff.toFixed(2)+'）'):'—');
 }
@@ -337,7 +353,7 @@ function bindTypeBadgesRealtime(){
 }
 
 /* boot */
-ready(function(){
+ready(function(){ injectManualMods(); 
   bindTabs(); bindTimer(); bindEV252(); bindMovesAutofill(); bindCalc(); bindV13(); bindV13TypeFill(); bindBuilds(); bindReflect(); bindTypeBadgesRealtime(); bindClearAll(); bindIVToggle(); quickSpeedIV();
   Promise.all([ensurePoke(), ensureMoves()]).then(function(){ buildLists(); reflect('atk'); reflect('def'); }).catch(function(){ buildLists(); reflect('atk'); reflect('def'); });
 });
