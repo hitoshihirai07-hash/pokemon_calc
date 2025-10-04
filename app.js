@@ -15,9 +15,10 @@ function toN(v,d){var n=parseFloat(v);return isFinite(n)?n:(d||0);}
 function ready(fn){if(document.readyState!=='loading'){fn();}else{document.addEventListener('DOMContentLoaded',fn,false);}}
 
 
-/* === v36+ manual STAB/相性 controls (non-overlapping) === */
+/* === v36+ manual STAB/相性 controls (non-overlapping, calc: separate section) === */
 function injectManualMods(){
   function mkSel(id, opts, label){
+    if($(id)) return null;
     var wrap = document.createElement('label');
     wrap.textContent = label;
     var sel = document.createElement('select'); sel.id = id;
@@ -29,19 +30,21 @@ function injectManualMods(){
     wrap.appendChild(sel);
     return wrap;
   }
-  function attachRow(container, rowId){
+  function attachTo(container, rowId){
     if(!container || document.getElementById(rowId)) return;
     var row = document.createElement('div'); row.className='line opts-row'; row.id = rowId;
-    row.appendChild(mkSel(container.id==='atk_fieldset'?'atk_stab_sel':'v13_stab_sel', [1,1.5,2], 'STAB'));
-    row.appendChild(mkSel(container.id==='atk_fieldset'?'atk_eff_sel':'v13_eff_sel', [0.25,0.5,1,2,4], '相性'));
-    // place below .move if exists, else append
-    var mv = container.querySelector('.move');
-    if(mv && mv.parentNode) mv.parentNode.insertBefore(row, mv.nextSibling); else container.appendChild(row);
+    var s1=mkSel('atk_stab_sel',[1,1.5,2],'STAB'); if(s1) row.appendChild(s1);
+    var s2=mkSel('atk_eff_sel',[0.25,0.5,1,2,4],'相性'); if(s2) row.appendChild(s2);
+    container.appendChild(row);
   }
-  // ダメージ計算（通常タブ）
-  var atkFs = document.querySelector('#calc fieldset'); if (atkFs) { atkFs.id='atk_fieldset'; attachRow(atkFs, 'atk_opts_row'); }
+  // ダメージ計算（calc）: 可能なら専用コンテナに入れる
+  var calcOpts = $('calc_opts_container');
+  if(calcOpts){ attachTo(calcOpts, 'atk_opts_row'); }
+  else{
+    var atkFs = document.querySelector('#calc fieldset'); if (atkFs) { attachTo(atkFs, 'atk_opts_row'); }
+  }
   // 1対3（攻撃側）
-  var v13Fs = document.querySelector('#v13 fieldset'); if (v13Fs) { attachRow(v13Fs, 'v13_opts_row'); }
+  var v13Fs = document.querySelector('#v13 fieldset'); if (v13Fs) { attachTo(v13Fs, 'v13_opts_row'); }
 }
 function readManual(id){ var el=$(id); var v = el?parseFloat(el.value):NaN; return isFinite(v)?v:NaN; }
 /* === end patch === */
@@ -279,10 +282,12 @@ function quickSpeedIV(){
 
 /* damage calc with STAB/type/rank/other */
 function simpleDamage(){
-  var cat=$('atk_move_cat')?$('atk_move_cat').value:'物理';
-  var pwr=toN($('atk_move_power')?$('atk_move_power').value:0,0);
+  var nm=$('atk_move_name')?$('atk_move_name').value:'';
+  var mv=(typeof IDX_MOVE!=='undefined' && nm)?IDX_MOVE[String(nm).trim().toLowerCase()]:null;
+  var cat=$('atk_move_cat')?$('atk_move_cat').value:(mv&&mv.category?mv.category:'物理');
+  var pwr=toN($('atk_move_power')?$('atk_move_power').value:(mv&&mv.power?mv.power:0),0);
   var lvl=toN($('atk_lv')?$('atk_lv').value:50,50);
-  var mt=$('atk_move_type')?$('atk_move_type').value:'';
+  var mt = (mv&&mv.type)?mv.type:($('atk_move_type')?$('atk_move_type').value:'');
   var atk_t1=$('atk_t1')?$('atk_t1').value:''; var atk_t2=$('atk_t2')?$('atk_t2').value:'';
   var def_t1=$('def_t1')?$('def_t1').value:''; var def_t2=$('def_t2')?$('def_t2').value:'';
   var rkA=parseInt($('atk_rank')?$('atk_rank').value:0,10);

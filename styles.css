@@ -115,3 +115,11 @@ fieldset select, fieldset input{min-width:88px}
   #v13 .grid-2-1{ grid-template-columns:1fr }
 }
 
+
+/* layout for calc tab: move & others */
+#calc .calc-ops{ display:grid; grid-template-columns:repeat(2,minmax(320px,1fr)); gap:14px; margin-top:10px }
+#calc .calc-ops fieldset label{ display:flex; flex-wrap:wrap; gap:6px; align-items:center }
+#calc .calc-ops select,#calc .calc-ops input{ min-width:90px }
+@media (max-width: 1200px){
+  #calc .calc-ops{ grid-template-columns:1fr }
+}
