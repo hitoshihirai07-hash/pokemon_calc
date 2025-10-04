@@ -1,0 +1,64 @@
+
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial;line-height:1.5;margin:0;color:#e8eeff;background:#0b1630}
+.topbar{position:sticky;top:0;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:8px 12px;background:#0f1e3d;border-bottom:1px solid #1f3162;z-index:10;color:#e8eeff}
+.brand{font-weight:600}
+.badge{display:inline-block;margin-left:6px;padding:2px 6px;border-radius:6px;border:1px solid #3b57aa;background:#1a3270;font-size:.85em;color:#e8eeff}
+.tabs{display:flex;gap:8px}
+.tabs .tab{border:1px solid #2a3e76;background:#142657;color:#e8eeff;border-radius:8px;padding:6px 12px;cursor:pointer}
+.tabs .tab.active{background:#1a3270;border-color:#3f5bb4}
+.actions button{border:1px solid #2a3e76;background:#142657;color:#e8eeff;border-radius:8px;padding:6px 12px;cursor:pointer}
+main{padding:12px}
+.panel{display:none}.panel.active{display:block}
+.grid{display:grid;gap:14px}
+.grid-2{grid-template-columns:repeat(2,minmax(320px,1fr))}
+.grid-2-1{grid-template-columns:minmax(320px,1fr) 2fr}
+@media(max-width:900px){.grid-2,.grid-2-1{grid-template-columns:1fr}}
+fieldset{border:1px solid #2b3b6b;border-radius:12px;padding:12px;background:#0f1e3d;color:#e8eeff}
+legend{padding:0 6px;color:#e8eeff}
+label{display:flex;align-items:center;gap:8px;margin:6px 0;min-width:0}
+label>input,label>select{flex:1;min-width:0;background:#0d1f44;color:#e8eeff;border:1px solid #2a3e76;border-radius:8px;padding:6px}
+.stats>div{display:grid;grid-template-columns:40px 1fr 60px 1fr 80px 1fr;gap:6px;align-items:center;margin:4px 0}
+.stats-compact{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.move{display:grid;grid-template-columns:minmax(220px,2.5fr) repeat(5,minmax(90px,1fr));gap:10px}
+.result{display:flex;gap:12px;align-items:center;margin-top:10px}
+.ev252btn{margin-left:6px;padding:2px 6px;border:1px solid #35509d;border-radius:999px;background:#1a3270;color:#e8eeff;font-size:.85em;line-height:1}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.card{border:1px solid #2b3b6b;border-radius:12px;padding:10px;background:#132750;color:#e8eeff}
+.row{margin-top:8px}
+.targets fieldset{min-width:0}
+.targets .line{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.targets .types{grid-template-columns:repeat(2,1fr)}
+.type-badges{display:inline-flex;gap:6px;margin-left:6px;vertical-align:middle}
+.type-badges .tb{display:inline-block;padding:2px 8px;border:1px solid #3b57aa;border-radius:999px;background:#1a3270;color:#e8eeff;font-size:.85em;white-space:nowrap}
+.timer{display:flex;gap:6px;align-items:center}
+.timer #tm_disp{min-width:64px;text-align:center;border:1px solid #2a3e76;border-radius:6px;padding:2px 6px;background:#0d1f44;color:#e8eeff}
+
+/* v29 builds card: 6 mons grid */
+.card .team{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:6px}
+.card .mon{border:1px solid #2a3e76;border-radius:10px;padding:6px;background:#0d1f44}
+.card .mon .head{display:flex;justify-content:space-between;gap:6px}
+.card .mon .sub{font-size:.85em;opacity:.9}
+.card .mon .type-badges{margin:0;margin-top:4px}
+
+/* v30 layout fixes */
+.grid-2-1{grid-template-columns:minmax(360px,1fr) minmax(520px,1.4fr)}
+@media(max-width:1200px){.grid-2-1{grid-template-columns:1fr}}
+.targets{display:grid;grid-template-columns:repeat(3,minmax(260px,1fr));gap:12px;align-content:start}
+@media(max-width:1400px){.targets{grid-template-columns:repeat(2,minmax(260px,1fr))}}
+@media(max-width:900px){.targets{grid-template-columns:1fr}}
+.targets fieldset{width:auto;min-width:0}
+
+/* v32 layout tuning */
+.grid{gap:20px}
+.grid-2-1{grid-template-columns:minmax(420px,1fr) minmax(660px,1.6fr)}
+@media(max-width:1500px){.grid-2-1{grid-template-columns:1fr}}
+.targets{display:grid;grid-template-columns:repeat(2,minmax(320px,1fr));gap:16px;align-items:start;align-content:start}
+@media(max-width:1100px){.targets{grid-template-columns:1fr}}
+.targets fieldset{min-width:0}
+/* builds: 2 columns default */
+.cards{grid-template-columns:repeat(2,minmax(320px,1fr))}
+@media(max-width:1100px){.cards{grid-template-columns:1fr}}
+
+/* v33: spacing for v13 badges after removing type inputs */
+.targets .type-badges{margin:6px 0}

@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ポケモン ダメージ計算 v36</title>
+<link rel="stylesheet" href="styles.css?v=36">
+<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMjgiIGZpbGw9IiMxYTMyNzAiLz48dGV4dCB4PSIzMiIgeT0iNDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMzYiIGZpbGw9IiNlOGVlZmYiPlA8L3RleHQ+PC9zdmc+"></head>
+<body>
+<header class="topbar">
+  <div class="brand">計算機 <span class="badge">v36</span></div>
+  <nav class="tabs" role="tablist">
+    <button class="tab active" role="tab" aria-controls="calc" data-tab-target="#calc">ダメージ計算</button>
+    <button class="tab" role="tab" aria-controls="v13" data-tab-target="#v13">1対3</button>
+    <button class="tab" role="tab" aria-controls="builds" data-tab-target="#builds">構築記事</button>
+  </nav>
+  <div class="actions">
+    <div class="timer" id="timer">
+      <span id="tm_disp">20:00</span>
+      <button id="tm_start" title="開始">▶</button>
+      <button id="tm_pause" title="一時停止">⏸</button>
+      <button id="tm_reset" title="リセット">⟲</button>
+    </div>
+    <button id="btn_iv_toggle" title="IV詳細の表示/非表示">IV詳細</button>
+    <button id="btn_clear_all" title="全入力クリア">全クリア</button>
+  </div>
+</header>
+
+<main>
+  <section id="calc" role="tabpanel" class="panel active">
+    <h2>ダメージ計算</h2>
+    <div class="grid grid-2">
+      <fieldset>
+        <legend>攻撃側</legend>
+        <label>ポケモン<input id="atk_name" list="dl_poke" placeholder="例: ピカチュウ"></label><span class="type-badges" id="atk_types"></span>
+        <label>レベル<input id="atk_lv" type="number" min="1" max="100" value="50"></label>
+        <label>タイプ1<input id="atk_t1" placeholder=""></label>
+        <label>タイプ2<input id="atk_t2" placeholder=""></label>
+        <div class="stats">
+          <div><span>HP</span><span id="atk_base_HP">-</span><input id="a_iv_HP" type="number" min="0" max="31" value="31"><input id="atk_ev_HP" type="number" min="0" max="252" value="0"><span id="atk_fin_HP">-</span></div>
+          <div><span>攻撃</span><span id="atk_base_攻撃">-</span><input id="a_iv_攻撃" type="number" min="0" max="31" value="31"><input id="atk_ev_攻撃" type="number" min="0" max="252" value="0"><select id="atk_mul_攻撃"><option value="1">等倍</option><option value="1.1">↑</option><option value="0.9">↓</option></select><span id="atk_fin_攻撃">-</span></div>
+          <div><span>防御</span><span id="atk_base_防御">-</span><input id="a_iv_防御" type="number" min="0" max="31" value="31"><input id="atk_ev_防御" type="number" min="0" max="252" value="0"><select id="atk_mul_防御"><option value="1">等倍</option><option value="1.1">↑</option><option value="0.9">↓</option></select><span id="atk_fin_防御">-</span></div>
+          <div><span>特攻</span><span id="atk_base_特攻">-</span><input id="a_iv_特攻" type="number" min="0" max="31" value="31"><input id="atk_ev_特攻" type="number" min="0" max="252" value="0"><select id="atk_mul_特攻"><option value="1">等倍</option><option value="1.1">↑</option><option value="0.9">↓</option></select><span id="atk_fin_特攻">-</span></div>
+          <div><span>特防</span><span id="atk_base_特防">-</span><input id="a_iv_特防" type="number" min="0" max="31" value="31"><input id="atk_ev_特防" type="number" min="0" max="252" value="0"><select id="atk_mul_特防"><option value="1">等倍</option><option value="1.1">↑</option><option value="0.9">↓</option></select><span id="atk_fin_特防">-</span></div>
+          <div><span>素早</span><span id="atk_base_素早">-</span><input id="a_iv_素早" type="number" min="0" max="31" value="31"><input id="atk_ev_素早" type="number" min="0" max="252" value="0"><select id="atk_mul_素早"><option value="1">等倍</option><option value="1.1">↑</option><option value="0.9">↓</option></select><span id="atk_fin_素早">-</span></div>
+        </div>
+        <div class="move">
+          <label>技<input id="atk_move_name" list="dl_move" placeholder="例: 10まんボルト"></label>
+          <label>威力<input id="atk_move_power" type="number" min="0" max="300"></label>
+          <label>分類<select id="atk_move_cat"><option>物理</option><option>特殊</option></select></label>
+          <label>タイプ<input id="atk_move_type" placeholder="" list="dl_type"></label>
+          <label>攻ランク<input id="atk_rank" type="number" min="-6" max="6" value="0"></label>
+          <label>防ランク<input id="def_rank" type="number" min="-6" max="6" value="0"></label>
+          <label>その他補正<input id="other_mod" type="number" step="0.01" value="1.0"></label>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>防御側</legend>
+        <label>ポケモン<input id="def_name" list="dl_poke"></label><span class="type-badges" id="def_types"></span>
+        <label>レベル<input id="def_lv" type="number" min="1" max="100" value="50"></label>
+        <label>タイプ1<input id="def_t1" placeholder=""></label>
+        <label>タイプ2<input id="def_t2" placeholder=""></label>
+        <div class="stats">
+          <div><span>HP</span><span id="def_base_HP">-</span><input id="d_iv_HP" type="number" min="0" max="31" value="31"><input id="def_ev_HP" type="number" min="0" max="252" value="0"><span id="def_fin_HP">-</span></div>
+          <div><span>攻撃</span><span id="def_base_攻撃">-</span><input id="d_iv_攻撃" type="number" min="0" max="31" value="31"><input id="def_ev_攻撃" type="number" min="0" max="252" value="0"><select id="def_mul_攻撃"><option value="1">等倍</option><option value="1.1">↑</option><option value="0.9">↓</option></select><span id="def_fin_攻撃">-</span></div>
+          <div><span>防御</span><span id="def_base_防御">-</span><input id="d_iv_防御" type="number" min="0" max="31" value="31"><input id="def_ev_防御" type="number" min="0" max="252" value="0"><select id="def_mul_防御"><option value="1">等倍</option><option value="1.1">↑</option><option value="0.9">↓</option></select><span id="def_fin_防御">-</span></div>
+          <div><span>特攻</span><span id="def_base_特攻">-</span><input id="d_iv_特攻" type="number" min="0" max="31" value="31"><input id="def_ev_特攻" type="number" min="0" max="252" value="0"><select id="def_mul_特攻"><option value="1">等倍</option><option value="1.1">↑</option><option value="0.9">↓</option></select><span id="def_fin_特攻">-</span></div>
+          <div><span>特防</span><span id="def_base_特防">-</span><input id="d_iv_特防" type="number" min="0" max="31" value="31"><input id="def_ev_特防" type="number" min="0" max="252" value="0"><select id="def_mul_特防"><option value="1">等倍</option><option value="1.1">↑</option><option value="0.9">↓</option></select><span id="def_fin_特防">-</span></div>
+          <div><span>素早</span><span id="def_base_素早">-</span><input id="d_iv_素早" type="number" min="0" max="31" value="31"><input id="def_ev_素早" type="number" min="0" max="252" value="0"><select id="def_mul_素早"><option value="1">等倍</option><option value="1.1">↑</option><option value="0.9">↓</option></select><span id="def_fin_素早">-</span></div>
+        </div>
+        <div class="result">
+          <button id="btn_calc">ダメージ計算</button>
+          <output id="out_damage">—</output>
+        </div>
+      </fieldset>
+    </div>
+  </section>
+
+  <section id="v13" role="tabpanel" class="panel">
+    <h2>1対3</h2>
+    <div class="grid grid-2-1">
+      <fieldset>
+        <legend>攻撃側</legend>
+        <label>ポケモン<input id="v13_atk_name" list="dl_poke"></label><span class="type-badges" id="v13_atk_types"></span>
+<div class="stats-compact">
+          <label>攻撃EV<input id="v13_atk_ev_攻撃" type="number" min="0" max="252"></label>
+          <label>特攻EV<input id="v13_atk_ev_特攻" type="number" min="0" max="252"></label>
+          <label>素早IV<input id="v13_a_iv_素早" type="number" min="0" max="31" value="31"></label>
+        </div>
+        <div class="move">
+          <label>技<input id="v13_move_name" list="dl_move"></label>
+          <label>威力<input id="v13_move_power" type="number" min="0" max="300"></label>
+          <label>分類<select id="v13_move_cat"><option>物理</option><option>特殊</option></select></label>
+          <label>タイプ<input id="v13_move_type" list="dl_type"></label>
+        </div>
+    <div class="stats-compact">
+      <label>攻ランク<input id="v13_atk_rank" type="number" min="-6" max="6" value="0"></label>
+      <label>防ランク<input id="v13_def_rank" type="number" min="-6" max="6" value="0"></label>
+      <label>その他補正<input id="v13_other_mod" type="number" step="0.01" value="1.0"></label>
+    </div>
+    
+      </fieldset>
+      <div class="targets">
+        <fieldset>
+          <legend>対象1</legend>
+          <label>ポケモン<input id="v13_def1_name" list="dl_poke"></label><span class="type-badges" id="v13_def1_types"></span>
+          <div class="type-badges" id="v13_def1_types"></div>
+          <div class="line">
+            <label>HP EV<input id="v13_def1_ev_HP" type="number" min="0" max="252"></label>
+            <label>防御EV<input id="v13_def1_ev_防御" type="number" min="0" max="252"></label>
+            <label>特防EV<input id="v13_def1_ev_特防" type="number" min="0" max="252"></label>
+          </div>
+          <output id="v13_out1">—</output>
+        </fieldset>
+        <fieldset>
+          <legend>対象2</legend>
+          <label>ポケモン<input id="v13_def2_name" list="dl_poke"></label><span class="type-badges" id="v13_def2_types"></span>
+          <div class="type-badges" id="v13_def2_types"></div>
+          <div class="line">
+            <label>HP EV<input id="v13_def2_ev_HP" type="number" min="0" max="252"></label>
+            <label>防御EV<input id="v13_def2_ev_防御" type="number" min="0" max="252"></label>
+            <label>特防EV<input id="v13_def2_ev_特防" type="number" min="0" max="252"></label>
+          </div>
+          <output id="v13_out2">—</output>
+        </fieldset>
+        <fieldset>
+          <legend>対象3</legend>
+          <label>ポケモン<input id="v13_def3_name" list="dl_poke"></label><span class="type-badges" id="v13_def3_types"></span>
+          <div class="type-badges" id="v13_def3_types"></div>
+          <div class="line">
+            <label>HP EV<input id="v13_def3_ev_HP" type="number" min="0" max="252"></label>
+            <label>防御EV<input id="v13_def3_ev_防御" type="number" min="0" max="252"></label>
+            <label>特防EV<input id="v13_def3_ev_特防" type="number" min="0" max="252"></label>
+          </div>
+          <output id="v13_out3">—</output>
+        </fieldset>
+        <div class="row"><button id="v13_calc">一括計算</button></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="builds" role="tabpanel" class="panel">
+    <h2>構築記事</h2>
+    <div class="row">
+      <input id="builds_file" type="file" accept=".json">
+      <input id="builds_query" type="search" placeholder="ポケモン名・持ち物・テラ で検索" list="dl_build_names">
+    </div>
+    <div id="builds_list" class="cards"></div>
+  </section>
+</main>
+
+<datalist id="dl_poke"></datalist>
+<datalist id="dl_move"></datalist>
+<datalist id="dl_build_names"></datalist>
+<datalist id="dl_type"><option value="ノーマル"></option><option value="ほのお"></option><option value="みず"></option><option value="でんき"></option><option value="くさ"></option><option value="こおり"></option><option value="かくとう"></option><option value="どく"></option><option value="じめん"></option><option value="ひこう"></option><option value="エスパー"></option><option value="むし"></option><option value="いわ"></option><option value="ゴースト"></option><option value="ドラゴン"></option><option value="あく"></option><option value="はがね"></option><option value="フェアリー"></option></datalist>
+
+<script src="app.js?v=36"></script>
+</body>
+</html>
