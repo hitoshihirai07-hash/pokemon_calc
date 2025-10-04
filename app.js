@@ -189,10 +189,6 @@ function simpleDamage(){
   var base = Math.floor(Math.floor((2*lvl)/5+2)*pwr*A/D/50)+2;
   var stab = (normType(mt)===normType(atk_t1) || normType(mt)===normType(atk_t2))?1.5:1.0;
   var eff = typeEff(mt, def_t1, def_t2);
-  
-  /* manual overrides */
-  var ssel=$('atk_stab_select'); if(ssel && ssel.value){ var sv=toN(ssel.value, stab); if(sv>0) stab=sv; }
-  var esel=$('atk_eff_select'); if(esel && esel.value){ var ev=toN(esel.value, eff); if(ev>0) eff=ev; }
   var mod = stab * eff * other;
   var min = Math.floor(base*0.85*mod), max = Math.floor(base*mod);
   $('out_damage').value = min+' 〜 '+max+' （STAB:'+stab.toFixed(2)+' 相性:'+eff.toFixed(2)+'）';
@@ -219,14 +215,6 @@ function simpleDamageOne(i){
   var base = (pwr && A && D) ? (Math.floor(Math.floor((2*lvl)/5+2)*pwr*A/D/50)+2) : 0;
   var stab = (normType(mt)===normType(atk_t1) || normType(mt)===normType(atk_t2))?1.5:1.0;
   var eff = typeEff(mt, t1, t2);
-  
-  /* manual overrides */
-  var ssel=$('atk_stab_select'); if(ssel && ssel.value){ var sv=toN(ssel.value, stab); if(sv>0) stab=sv; }
-  var esel=$('atk_eff_select'); if(esel && esel.value){ var ev=toN(esel.value, eff); if(ev>0) eff=ev; }
-  
-  /* manual overrides (1対3) */
-  var ssel=$('v13_stab_select'); if(ssel && ssel.value){ var sv=toN(ssel.value, stab); if(sv>0) stab=sv; }
-  var esel=$('v13_eff_select'); if(esel && esel.value){ var ev=toN(esel.value, eff); if(ev>0) eff=ev; }
   var mod = stab * eff * other;
   var min=Math.floor(base*0.85*mod), max=Math.floor(base*mod);
   var out=$('v13_out'+i); if(out) out.value=(base?(min+' 〜 '+max+'（STAB:'+stab.toFixed(2)+' 相性:'+eff.toFixed(2)+'）'):'—');
