@@ -92,3 +92,15 @@ label>input,label>select{flex:1;min-width:0;background:#0d1f44;color:#e8eeff;bor
 fieldset label{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 fieldset label > *{flex:0 0 auto}
 fieldset select, fieldset input{min-width:88px}
+
+
+/* === responsive & overflow fixes for 1対3 === */
+.panel fieldset{min-width:0} /* allow grid columns to shrink without overflow */
+#v13 .grid-2-1{grid-template-columns:minmax(380px,1fr) minmax(480px,2fr); align-items:start; gap:16px}
+#v13 .targets{display:grid; grid-template-columns:1fr; gap:12px; align-content:start}
+@media (max-width: 1200px){
+  #v13 .grid-2-1{grid-template-columns:1fr}
+  #v13 .targets{grid-template-columns:1fr}
+}
+/* === end === */
+
