@@ -62,20 +62,3 @@ label>input,label>select{flex:1;min-width:0;background:#0d1f44;color:#e8eeff;bor
 
 /* v33: spacing for v13 badges after removing type inputs */
 .targets .type-badges{margin:6px 0}
-
-
-/* ==== fix: prevent overlap of STAB/相性 controls (1対3 & damage tabs) ==== */
-.line label{
-  flex-wrap: wrap;
-  gap: 6px;
-  align-items: center;
-}
-.line label > *{
-  flex: 0 0 auto;
-}
-.line label input,
-.line label select{
-  min-width: 72px;
-}
-/* ==== end fix ==== */
-
