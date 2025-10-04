@@ -12,8 +12,8 @@ main{padding:12px}
 .panel{display:none}.panel.active{display:block}
 .grid{display:grid;gap:14px}
 .grid-2{grid-template-columns:repeat(2,minmax(320px,1fr))}
-.grid-2-1{grid-template-columns:minmax(320px,1fr) 2fr}
-@media(max-width:900px){.grid-2,.grid-2-1{grid-template-columns:1fr}}
+.grid-2-1{grid-template-columns:minmax(320px,1fr) minmax(360px,2fr)}
+@media(max-width:900px){.grid-2,.grid-2-1{grid-template-columns:minmax(320px,1fr) minmax(360px,2fr)}}
 fieldset{border:1px solid #2b3b6b;border-radius:12px;padding:12px;background:#0f1e3d;color:#e8eeff}
 legend{padding:0 6px;color:#e8eeff}
 label{display:flex;align-items:center;gap:8px;margin:6px 0;min-width:0}
@@ -42,19 +42,19 @@ label>input,label>select{flex:1;min-width:0;background:#0d1f44;color:#e8eeff;bor
 .card .mon .type-badges{margin:0;margin-top:4px}
 
 /* v30 layout fixes */
-.grid-2-1{grid-template-columns:minmax(360px,1fr) minmax(520px,1.4fr)}
-@media(max-width:1200px){.grid-2-1{grid-template-columns:1fr}}
-.targets{display:grid;grid-template-columns:repeat(3,minmax(260px,1fr));gap:12px;align-content:start}
-@media(max-width:1400px){.targets{grid-template-columns:repeat(2,minmax(260px,1fr))}}
-@media(max-width:900px){.targets{grid-template-columns:1fr}}
+.grid-2-1{grid-template-columns:minmax(320px,1fr) minmax(360px,2fr)}
+@media(max-width:1200px){.grid-2-1{grid-template-columns:minmax(320px,1fr) minmax(360px,2fr)}}
+.targets{display:grid;grid-template-columns:1fr;gap:12px;align-content:start}
+@media(max-width:1400px){.targets{display:grid;grid-template-columns:1fr;gap:12px;align-content:start}}
+@media(max-width:900px){.targets{display:grid;grid-template-columns:1fr;gap:12px;align-content:start}}
 .targets fieldset{width:auto;min-width:0}
 
 /* v32 layout tuning */
 .grid{gap:20px}
-.grid-2-1{grid-template-columns:minmax(420px,1fr) minmax(660px,1.6fr)}
-@media(max-width:1500px){.grid-2-1{grid-template-columns:1fr}}
-.targets{display:grid;grid-template-columns:repeat(2,minmax(320px,1fr));gap:16px;align-items:start;align-content:start}
-@media(max-width:1100px){.targets{grid-template-columns:1fr}}
+.grid-2-1{grid-template-columns:minmax(320px,1fr) minmax(360px,2fr)}
+@media(max-width:1500px){.grid-2-1{grid-template-columns:minmax(320px,1fr) minmax(360px,2fr)}}
+.targets{display:grid;grid-template-columns:1fr;gap:12px;align-content:start}
+@media(max-width:1100px){.targets{display:grid;grid-template-columns:1fr;gap:12px;align-content:start}}
 .targets fieldset{min-width:0}
 /* builds: 2 columns default */
 .cards{grid-template-columns:repeat(2,minmax(320px,1fr))}
@@ -63,17 +63,55 @@ label>input,label>select{flex:1;min-width:0;background:#0d1f44;color:#e8eeff;bor
 /* v33: spacing for v13 badges after removing type inputs */
 .targets .type-badges{margin:6px 0}
 
-/* calc bottom row: spans both columns */
-#calc .calc-ops{ display:grid; grid-template-columns:repeat(2,minmax(320px,1fr)); gap:14px; margin-top:10px; grid-column:1 / -1 }
-#calc .calc-ops fieldset label{ display:flex; flex-wrap:wrap; gap:6px; align-items:center }
-#calc .calc-ops select,#calc .calc-ops input{ min-width:90px }
-@media (max-width: 1200px){
-  #calc .calc-ops{ grid-template-columns:1fr }
-}
 
-/* v13 layout safe */
+/* ==== fix: prevent overlap of STAB/相性 controls (1対3 & damage tabs) ==== */
+.line label{
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+.line label > *{
+  flex: 0 0 auto;
+}
+.line label input,
+.line label select{
+  min-width: 72px;
+}
+/* ==== end fix ==== */
+
+
+
+/* === layout fix for manual STAB/相性 row === */
+.opts-row{ display:grid; grid-template-columns: repeat(auto-fit,minmax(120px,1fr)); gap:8px; margin-top:6px; }
+.opts-row label{ display:flex; align-items:center; gap:6px; }
+.opts-row select{ min-width:80px; }
+/* keep .move dense, options row breaks to new line so nothing overlaps */
+
+
+/* wrap-fix */
+fieldset label{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+fieldset label > *{flex:0 0 auto}
+fieldset select, fieldset input{min-width:88px}
+
+
+/* === responsive & overflow fixes for 1対3 === */
+.panel fieldset{min-width:0} /* allow grid columns to shrink without overflow */
+#v13 .grid-2-1{grid-template-columns:minmax(380px,1fr) minmax(480px,2fr); align-items:start; gap:16px}
+#v13 .targets{display:grid; grid-template-columns:1fr; gap:12px; align-content:start}
+@media (max-width: 1200px){
+  #v13 .grid-2-1{grid-template-columns:1fr}
+  #v13 .targets{grid-template-columns:1fr}
+}
+/* === end === */
+
+
+
+/* stat badge style */
+.badge.stat{ margin-left:6px; padding:2px 8px; border-radius:12px; font-size:12px; opacity:.9 }
+#v13 fieldset{ min-width:0 }
 #v13 .grid-2-1{ grid-template-columns:minmax(420px,1fr) minmax(520px,2fr); gap:18px; align-items:start }
-#v13 .targets{ display:grid; grid-template-columns:1fr; gap:14px; align-content:start }
+#v13 .targets{ display:grid; grid-template-columns:1fr; gap:14px }
 @media (max-width: 1280px){
   #v13 .grid-2-1{ grid-template-columns:1fr }
 }
+
