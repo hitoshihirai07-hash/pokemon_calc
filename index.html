@@ -52,6 +52,25 @@
           <label>攻ランク<input id="atk_rank" type="number" min="-6" max="6" value="0"></label>
           <label>防ランク<input id="def_rank" type="number" min="-6" max="6" value="0"></label>
           <label>その他補正<input id="other_mod" type="number" step="0.01" value="1.0"></label>
+          <label>STAB
+            <select id="atk_stab_select">
+              <option value="">自動</option>
+              <option value="1">1</option>
+              <option value="1.5">1.5</option>
+              <option value="2">2</option>
+            </select>
+          </label>
+          <label>相性
+            <select id="atk_eff_select">
+              <option value="">自動</option>
+              <option value="0.25">1/4</option>
+              <option value="0.5">1/2</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="4">4</option>
+            </select>
+          </label>
+
         </div>
       </fieldset>
       <fieldset>
@@ -92,7 +111,28 @@
           <label>威力<input id="v13_move_power" type="number" min="0" max="300"></label>
           <label>分類<select id="v13_move_cat"><option>物理</option><option>特殊</option></select></label>
           <label>タイプ<input id="v13_move_type" list="dl_type"></label>
+        
+        <div class="stats-compact">
+          <label>STAB
+            <select id="v13_stab_select">
+              <option value="">自動</option>
+              <option value="1">1</option>
+              <option value="1.5">1.5</option>
+              <option value="2">2</option>
+            </select>
+          </label>
+          <label>相性
+            <select id="v13_eff_select">
+              <option value="">自動</option>
+              <option value="0.25">1/4</option>
+              <option value="0.5">1/2</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="4">4</option>
+            </select>
+          </label>
         </div>
+</div>
     <div class="stats-compact">
       <label>攻ランク<input id="v13_atk_rank" type="number" min="-6" max="6" value="0"></label>
       <label>防ランク<input id="v13_def_rank" type="number" min="-6" max="6" value="0"></label>
