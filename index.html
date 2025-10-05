@@ -23,17 +23,6 @@ label[for="v13_def2_t1"], label[for="v13_def2_t2"],
 label[for="v13_def3_t1"], label[for="v13_def3_t2"] {
   display: none !important;
 }
-</style><style>
-/* Hide Pokémon type displays (keep in DOM for logic) */
-#calc #atk_types,
-#calc #def_types,
-#calc #v13_def1_types,
-#calc #v13_def2_types,
-#calc #v13_def3_types { display:none !important; }
-/* Hide common 'タイプ' inline labels just before displays */
-#calc .label-type,
-#calc .lbl-type,
-#calc .txt-type { display:none !important; }
 </style></head>
 <body>
 <header class="topbar">
@@ -62,8 +51,8 @@ label[for="v13_def3_t1"], label[for="v13_def3_t2"] {
 <legend>攻撃側</legend>
 <label>ポケモン<input id="atk_name" list="dl_poke" placeholder="例: ピカチュウ"/></label><span class="type-badges" id="atk_types"></span>
 <label>レベル<input id="atk_lv" max="100" min="1" type="number" value="50"/></label>
-<label>タイプ1<input id="atk_t1" placeholder="" type="hidden"/></label>
-<label>タイプ2<input id="atk_t2" placeholder="" type="hidden"/></label>
+
+
 <div class="stats">
 <div><span>HP</span><span id="atk_base_HP">-</span><input id="a_iv_HP" max="31" min="0" type="number" value="31"/><input id="atk_ev_HP" max="252" min="0" type="number" value="0"/><span id="atk_fin_HP">-</span></div>
 <div><span>攻撃</span><span id="atk_base_攻撃">-</span><input id="a_iv_攻撃" max="31" min="0" type="number" value="31"/><input id="atk_ev_攻撃" max="252" min="0" type="number" value="0"/><select id="atk_mul_攻撃"><option value="1">等倍</option><option value="1.1">↑</option><option value="0.9">↓</option></select><span id="atk_fin_攻撃">-</span></div>
@@ -86,8 +75,8 @@ label[for="v13_def3_t1"], label[for="v13_def3_t2"] {
 <legend>防御側</legend>
 <label>ポケモン<input id="def_name" list="dl_poke"/></label><span class="type-badges" id="def_types"></span>
 <label>レベル<input id="def_lv" max="100" min="1" type="number" value="50"/></label>
-<label>タイプ1<input id="def_t1" placeholder="" type="hidden"/></label>
-<label>タイプ2<input id="def_t2" placeholder="" type="hidden"/></label>
+
+
 <div class="stats">
 <div><span>HP</span><span id="def_base_HP">-</span><input id="d_iv_HP" max="31" min="0" type="number" value="31"/><input id="def_ev_HP" max="252" min="0" type="number" value="0"/><span id="def_fin_HP">-</span></div>
 <div><span>攻撃</span><span id="def_base_攻撃">-</span><input id="d_iv_攻撃" max="31" min="0" type="number" value="31"/><input id="def_ev_攻撃" max="252" min="0" type="number" value="0"/><select id="def_mul_攻撃"><option value="1">等倍</option><option value="1.1">↑</option><option value="0.9">↓</option></select><span id="def_fin_攻撃">-</span></div>
@@ -216,28 +205,5 @@ label[for="v13_def3_t1"], label[for="v13_def3_t2"] {
     obs.observe(n, {childList:true, subtree:true, characterData:true});
   });
 })();
-</script><div id="build_version">HIDE-POKETYPE-DISPLAY 20251005-1229</div><script>
-document.addEventListener('DOMContentLoaded', function(){
-  const ids = ['atk_types','def_types','v13_def1_types','v13_def2_types','v13_def3_types'];
-  ids.forEach(id => {
-    const el = document.getElementById(id);
-    if(!el) return;
-    // hide immediate previous label/span/text that contains 'タイプ'
-    const prev = el.previousElementSibling;
-    if(prev && /タイプ/.test(prev.textContent)) prev.style.display = 'none';
-    // also hide parent prefix if it only contains that label + the hidden display
-    const p = el.parentElement;
-    if(p){
-      const txtOnly = [...p.childNodes].filter(n => n.nodeType === Node.TEXT_NODE && /\S/.test(n.nodeValue||''));
-      if(txtOnly.some(n => /タイプ/.test(n.nodeValue))) {
-        txtOnly.forEach(n => { n.parentElement && (n.parentElement.normalize()); });
-        // wrap in span and hide
-        const span = document.createElement('span');
-        span.className = 'txt-type';
-        p.insertBefore(span, p.firstChild);
-      }
-    }
-  });
-});
-</script></body>
+</script><div id="build_version">AUTO-POKETYPE-ONLY-LABELFIX 20251005-1233</div></body>
 </html>
