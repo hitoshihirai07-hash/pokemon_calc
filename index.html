@@ -397,8 +397,8 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
 (function(){
   function q(sel,root){ return (root||document).querySelector(sel); }
   function qa(sel,root){ return Array.prototype.slice.call((root||document).querySelectorAll(sel)); }
-  function clamp4(n){ n = parseInt(n||'0',10)||0; n=Math.max(0,Math.min(252,n)); return n - (n%4); }
-  function ensureLists(){ if(window.ensurePoke) { try{ ensurePoke(); }catch(e){} } }
+  function clamp4(n){ var v=parseInt(n||'0',10); if(isNaN(v)) v=0; if(v<0)v=0; if(v>252)v=252; return v - (v%4); }
+  function ensureLists(){ if(window.ensurePoke){ try{ ensurePoke(); }catch(e){} } }
 
   function getSpeciesList(){
     if(window.POKE && window.POKE.length) return window.POKE;
@@ -409,91 +409,126 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
     if(!name) return null;
     var arr = getSpeciesList();
     for(var i=0;i<arr.length;i++){
-      var nm = arr[i]['名前'] || arr[i].name || '';
+      var nm = (arr[i]['名前'] || arr[i].name || '');
       if(nm===name) return arr[i];
     }
     return null;
   }
   function getTypesText(name){
-    var sp = findSpeciesByName(name); if(!sp) return '—';
-    var t1 = sp['タイプ1'] || sp.type1 || ''; var t2 = sp['タイプ2'] || sp.type2 || '';
-    return (t1||'') + (t2? '/' + t2 : '');
+    var sp = findSpeciesByName(name);
+    if(!sp) return '—';
+    var t1 = sp['タイプ1'] || sp.type1 || '';
+    var t2 = sp['タイプ2'] || sp.type2 || '';
+    return (t1? t1 : '') + (t2? '/'+t2 : '');
   }
   function updateTypesLine(card){
-    var name = q('.name',card) ? q('.name',card).value.trim() : '';
+    var nameEl = q('.name',card);
+    var name = nameEl ? (nameEl.value||'').trim() : '';
     var line = q('.typesline',card);
-    if(line){ line.textContent = 'タイプ: ' + (getTypesText(name)||'—'); }
+    if(line){
+      var txt = getTypesText(name);
+      line.textContent = 'タイプ: ' + (txt||'—');
+    }
   }
 
   function readCard(card){
-    var side = card.dataset.side || '';
-    var name = q('.name',card) ? q('.name',card).value.trim() : '';
+    var side = card.getAttribute('data-side')||'';
+    var nameEl = q('.name',card);
+    var name = nameEl ? (nameEl.value||'').trim() : '';
     if(side==='opp'){
-      var hp = parseInt(card.dataset.evHp||'0',10)||0;
-      var df = parseInt(card.dataset.evDef||'0',10)||0;
-      var sd = parseInt(card.dataset.evSpd||'0',10)||0;
-      return { side:side, name:name, ev:{hp:hp, atk:0, def:df, spa:0, spd:sd}, rank:0, moves:[], sel: !!q('.six_sel',card)?.checked };
+      var hp = parseInt(card.getAttribute('data-ev-hp')||card.dataset.evHp||'0',10) || 0;
+      var df = parseInt(card.getAttribute('data-ev-def')||card.dataset.evDef||'0',10) || 0;
+      var sd = parseInt(card.getAttribute('data-ev-spd')||card.dataset.evSpd||'0',10) || 0;
+      var selEl = q('.six_sel',card);
+      var sel = !!(selEl && selEl.checked);
+      return { side:side, name:name, ev:{hp:hp, atk:0, def:df, spa:0, spd:sd}, rank:0, moves:[], sel: sel };
     }
-    function mv(k){ return {name:(q('.m'+k+'n',card)?.value||'').trim(), power: parseInt(q('.m'+k+'p',card)?.value||'0',10)||0, type: q('.m'+k+'t',card)?.value||'', cat: q('.m'+k+'c',card)?.value||'物理' }; }
-    var ev = {hp: clamp4(q('.hp',card)?.value), atk: clamp4(q('.atk',card)?.value), def: clamp4(q('.def',card)?.value), spa: clamp4(q('.spa',card)?.value), spd: clamp4(q('.spd',card)?.value)};
-    var rank = parseInt(q('.rank',card)?.value||'0',10)||0;
-    var sel = !!q('.six_sel',card)?.checked;
-    return { side:side, name:name, ev:ev, rank:rank, moves:[mv(1),mv(2),mv(3),mv(4)], sel:sel };
+    function mv(k){
+      var nEl=q('.m'+k+'n',card), pEl=q('.m'+k+'p',card), tEl=q('.m'+k+'t',card), cEl=q('.m'+k+'c',card);
+      var nm = nEl ? (nEl.value||'').trim() : '';
+      var pw = pEl ? (parseInt(pEl.value||'0',10)||0) : 0;
+      var tp = tEl ? (tEl.value||'') : '';
+      var ct = cEl ? (cEl.value||'物理') : '物理';
+      return {name:nm, power:pw, type:tp, cat:ct};
+    }
+    var ev = {
+      hp: clamp4(q('.hp',card) ? q('.hp',card).value : 0),
+      atk: clamp4(q('.atk',card) ? q('.atk',card).value : 0),
+      def: clamp4(q('.def',card) ? q('.def',card).value : 0),
+      spa: clamp4(q('.spa',card) ? q('.spa',card).value : 0),
+      spd: clamp4(q('.spd',card) ? q('.spd',card).value : 0)
+    };
+    var rankEl = q('.rank',card);
+    var rank = rankEl ? (parseInt(rankEl.value||'0',10)||0) : 0;
+    var selEl2 = q('.six_sel',card);
+    var sel2 = !!(selEl2 && selEl2.checked);
+    return { side:side, name:name, ev:ev, rank:rank, moves:[mv(1),mv(2),mv(3),mv(4)], sel:sel2 };
   }
 
   function updateEVSum(card){
-    if(card.dataset.side!=='my') return;
-    var ev = ['.hp','.atk','.def','.spa','.spd'].map(function(sel){ var v=parseInt(q(sel,card)?.value||'0',10)||0; return clamp4(v); });
-    var sum = ev.reduce(function(a,b){ return a+b; }, 0);
-    var label = q('.evsum',card);
-    if(label){ label.textContent = '合計 EV: '+sum+' / 508'; label.style.color = (sum>508?'#ff7a7a':''); }
-  }
-  function attachEVButtons(){
-    qa('#six_my .six-card').forEach(function(card){
-      // 252 quick buttons per-input
-      qa('.row label', card).forEach(function(lab){
-        var btn = lab.querySelector('.ev252');
-        var input = lab.querySelector('input');
-        if(btn && input){
-          btn.addEventListener('click', function(e){
-            e.preventDefault();
-            input.value = 252;
-            input.dispatchEvent(new Event('input',{bubbles:true}));
-            input.dispatchEvent(new Event('change',{bubbles:true}));
-            updateEVSum(card);
-          });
-        }
-      });
-      // Input change listeners (exclude rank)
-      qa('.row input', card).forEach(function(inp){
-        if(!inp.classList.contains('rank')){
-          inp.addEventListener('input', function(){ this.value = clamp4(this.value); updateEVSum(card); }, true);
-          inp.addEventListener('change', function(){ this.value = clamp4(this.value); updateEVSum(card); }, true);
-        }
-      });
-      updateEVSum(card);
+    if(card.getAttribute('data-side')!=='my') return;
+    var vals = ['.hp','.atk','.def','.spa','.spd'].map(function(sel){
+      var el=q(sel,card); var v= el? parseInt(el.value||'0',10) : 0; v = clamp4(v); return v;
     });
+    var sum=0; for(var i=0;i<vals.length;i++) sum+=vals[i];
+    var label = q('.evsum',card);
+    if(label){
+      label.textContent = '合計 EV: '+sum+' / 508';
+      label.style.color = (sum>508? '#ff7a7a' : '');
+    }
   }
-  
+
+  function attachEVButtons(){
+    var myCards = qa('#six_my .six-card');
+    for(var ci=0; ci<myCards.length; ci++){
+      (function(card){
+        var labs = qa('.row label', card);
+        for(var i=0;i<labs.length;i++){
+          var btn = labs[i].querySelector('.ev252');
+          var inp = labs[i].querySelector('input');
+          if(btn && inp){
+            btn.addEventListener('click', function(e){
+              e.preventDefault();
+              inp.value = 252;
+              inp.dispatchEvent(new Event('input',{bubbles:true}));
+              inp.dispatchEvent(new Event('change',{bubbles:true}));
+              updateEVSum(card);
+            });
+          }
+        }
+        // Input listeners (except rank)
+        var inputs = qa('.row input', card);
+        for(var k=0;k<inputs.length;k++){
+          (function(inp){
+            if(inp.classList.contains('rank')) return;
+            inp.addEventListener('input', function(){ inp.value = clamp4(inp.value); updateEVSum(card); }, true);
+            inp.addEventListener('change', function(){ inp.value = clamp4(inp.value); updateEVSum(card); }, true);
+          })(inputs[k]);
+        }
+        updateEVSum(card);
+      })(myCards[ci]);
+    }
+  }
+
   function setV13Att(att){
-    if(q('#v13_atk_name')){ q('#v13_atk_name').value = att.name; q('#v13_atk_name').dispatchEvent(new Event('change',{bubbles:true})); }
-    if(q('#v13_atk_ev_HP')) q('#v13_atk_ev_HP').value = att.ev.hp;
-    if(q('#v13_atk_ev_攻撃')) q('#v13_atk_ev_攻撃').value = att.ev.atk;
-    if(q('#v13_atk_ev_特攻')) q('#v13_atk_ev_特攻').value = att.ev.spa;
-    if(q('#v13_atk_rank')) q('#v13_atk_rank').value = att.rank;
+    var n=q('#v13_atk_name'); if(n){ n.value=att.name; n.dispatchEvent(new Event('change',{bubbles:true})); }
+    var e1=q('#v13_atk_ev_HP'); if(e1) e1.value=att.ev.hp;
+    var e2=q('#v13_atk_ev_攻撃'); if(e2) e2.value=att.ev.atk;
+    var e3=q('#v13_atk_ev_特攻'); if(e3) e3.value=att.ev.spa;
+    var rk=q('#v13_atk_rank'); if(rk) rk.value=att.rank;
   }
   function setV13Def(i,deff){
-    if(q('#v13_def'+i+'_name')){ q('#v13_def'+i+'_name').value = deff.name; q('#v13_def'+i+'_name').dispatchEvent(new Event('change',{bubbles:true})); }
-    if(q('#v13_def'+i+'_ev_HP')) q('#v13_def'+i+'_ev_HP').value = deff.ev.hp;
-    if(q('#v13_def'+i+'_ev_防御')) q('#v13_def'+i+'_ev_防御').value = deff.ev.def;
-    if(q('#v13_def'+i+'_ev_特防')) q('#v13_def'+i+'_ev_特防').value = deff.ev.spd;
-    if(q('#v13_def_rank')) q('#v13_def_rank').value = deff.rank;
+    var n=q('#v13_def'+i+'_name'); if(n){ n.value=deff.name; n.dispatchEvent(new Event('change',{bubbles:true})); }
+    var e1=q('#v13_def'+i+'_ev_HP'); if(e1) e1.value=deff.ev.hp;
+    var e2=q('#v13_def'+i+'_ev_防御'); if(e2) e2.value=deff.ev.def;
+    var e3=q('#v13_def'+i+'_ev_特防'); if(e3) e3.value=deff.ev.spd;
+    var rk=q('#v13_def_rank'); if(rk) rk.value=deff.rank;
   }
   function setMove(m){
-    if(q('#v13_move_name')) q('#v13_move_name').value = m.name;
-    if(q('#v13_move_power')) q('#v13_move_power').value = m.power;
-    if(q('#v13_move_type')) q('#v13_move_type').value = m.type;
-    if(q('#v13_move_cat')) q('#v13_move_cat').value = m.cat;
+    var n=q('#v13_move_name'); if(n) n.value=m.name;
+    var p=q('#v13_move_power'); if(p) p.value=m.power;
+    var t=q('#v13_move_type'); if(t) t.value=m.type;
+    var c=q('#v13_move_cat'); if(c) c.value=m.cat;
   }
   function readOut(i){
     var el=q('#v13_out'+i);
@@ -507,139 +542,94 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
 
   function bestVs(att){
     var results = [];
-    att.moves.forEach(function(mv){
-      if(!mv.power || !mv.type) return;
+    for(var mi=0; mi<att.moves.length; mi++){
+      var mv = att.moves[mi];
+      if(!mv.power || !mv.type) continue;
       setMove(mv);
       for(var i=1;i<=3;i++){ if(window.simpleDamageOne) window.simpleDamageOne(i); }
-      for(var i=1;i<=3;i++){
-        var out = readOut(i);
-        if(!results[i-1] || out.max > results[i-1].out.max){ results[i-1] = {out:out, move:mv}; }
+      for(var j=1;j<=3;j++){
+        var out = readOut(j);
+        if(!results[j-1] || out.max > results[j-1].out.max){ results[j-1] = {out:out, move:mv}; }
       }
-    });
-    if(results.length===0){ for(var i=0;i<3;i++) results[i]={out:{min:0,max:0,label:'—'}, move:{name:'—',type:'',power:0}}; }
+    }
+    if(results.length===0){ for(var k=0;k<3;k++) results[k]={out:{min:0,max:0,label:'—'}, move:{name:'—',type:'',power:0}}; }
     return results;
   }
 
   function rebuildMatrix(){
-    var myCards = qa('#six_my .six-card'); var opCards = qa('#six_opp .six-card');
+    var myCards = qa('#six_my .six-card');
+    var opCards = qa('#six_opp .six-card');
     var tbl = q('#six_matrix'); if(!tbl) return;
     tbl.innerHTML='';
-
-    // header
-    var thead = document.createElement('thead'); var trh = document.createElement('tr'); trh.appendChild(document.createElement('th'));
-    opCards.forEach(function(_,j){ var th=document.createElement('th'); th.textContent='相手#'+(j+1); th.style.position='sticky'; th.style.top='0'; th.style.background='rgba(34,41,70,.95)'; th.style.padding='.45rem'; th.style.borderBottom='1px solid rgba(255,255,255,.15)'; trh.appendChild(th); });
+    var thead = document.createElement('thead');
+    var trh = document.createElement('tr');
+    trh.appendChild(document.createElement('th'));
+    for(var j=0;j<opCards.length;j++){
+      var th=document.createElement('th');
+      th.textContent='相手#'+(j+1);
+      th.style.position='sticky'; th.style.top='0'; th.style.background='rgba(34,41,70,.95)';
+      th.style.padding='.45rem'; th.style.borderBottom='1px solid rgba(255,255,255,.15)';
+      trh.appendChild(th);
+    }
     thead.appendChild(trh); tbl.appendChild(thead);
     var tbody = document.createElement('tbody');
 
-    myCards.forEach(function(card,i){
+    for(var i=0;i<myCards.length;i++){
+      var card = myCards[i];
       var me = readCard(card);
       setV13Att(me);
-      var tr = document.createElement('tr'); var th=document.createElement('th'); th.textContent='自分#'+(i+1); th.style.position='sticky'; th.style.left='0'; th.style.background='rgba(34,41,70,.95)'; th.style.padding='.45rem'; th.style.borderRight='1px solid rgba(255,255,255,.15)'; tr.appendChild(th);
+      var tr = document.createElement('tr');
+      var th = document.createElement('th');
+      th.textContent='自分#'+(i+1);
+      th.style.position='sticky'; th.style.left='0'; th.style.background='rgba(34,41,70,.95)';
+      th.style.padding='.45rem'; th.style.borderRight='1px solid rgba(255,255,255,.15)';
+      tr.appendChild(th);
 
       for(var j=0;j<opCards.length;j+=3){
-        var batchCards = opCards.slice(j, j+3);
-        batchCards.forEach(function(dfCard, idx){ setV13Def(idx+1, readCard(dfCard)); });
-        for(var k=batchCards.length+1;k<=3;k++){ setV13Def(k, {name:'', ev:{hp:0,def:0,spd:0}, rank:0}); }
-
+        var batch = [];
+        for(var b=0;b<3 && (j+b)<opCards.length; b++){
+          var dfCard = opCards[j+b];
+          setV13Def(b+1, readCard(dfCard));
+          batch.push(dfCard);
+        }
+        for(var fill=batch.length+1; fill<=3; fill++){
+          setV13Def(fill, {name:'', ev:{hp:0,def:0,spd:0}, rank:0});
+        }
         var res = bestVs(me);
-        res.slice(0,batchCards.length).forEach(function(r, k){
-          var td=document.createElement('td'); td.style.padding='.4rem'; td.style.textAlign='center'; td.style.borderBottom='1px dashed rgba(255,255,255,.1)'; td.style.borderRight='1px dashed rgba(255,255,255,.08)';
+        for(var k=0;k<batch.length;k++){
+          var r = res[k];
+          var td=document.createElement('td');
+          td.style.padding='.4rem'; td.style.textAlign='center'; td.style.borderBottom='1px dashed rgba(255,255,255,.1)'; td.style.borderRight='1px dashed rgba(255,255,255,.08)';
           var label = (r.out.min+'-'+r.out.max+'%');
           td.innerHTML = '<span class="badge" style="'+badge(r.out.max)+'">'+label+'</span><div class="small">'+(r.move.name||'—')+' / '+(r.move.type||'')+' / '+(r.move.power||0)+'</div>';
           tr.appendChild(td);
-        });
+        }
       }
       tbody.appendChild(tr);
-    });
+    }
     tbl.appendChild(tbody);
   }
 
-  // Logs
   var LOG=[];
-  function addLog(txt){ var t=new Date(); var row={time:t.toLocaleTimeString(), text:txt}; LOG.push(row); var el=document.createElement('div'); el.className='logitem'; el.style.borderBottom='1px dashed rgba(255,255,255,.1)'; el.style.padding='.35rem 0'; el.innerHTML='<span class="small" style="opacity:.85">'+row.time+'</span> — '+row.text; var box=q('#six_log'); if(box) box.prepend(el); }
+  function addLog(txt){
+    var t=new Date();
+    var row={time:t.toLocaleTimeString(), text:txt};
+    LOG.push(row);
+    var el=document.createElement('div');
+    el.className='logitem';
+    el.style.borderBottom='1px dashed rgba(255,255,255,.1)';
+    el.style.padding='.35rem 0';
+    el.innerHTML='<span class="small" style="opacity:.85">'+row.time+'</span> — '+row.text;
+    var box=q('#six_log'); if(box) box.prepend(el);
+  }
   function onSelChange(target){
-    var my = qa('#six_my .six_sel:checked').map(function(el){ return '#'+(parseInt(el.closest('.six-card').dataset.ix,10)+1); });
-    var op = qa('#six_opp .six_sel:checked').map(function(el){ return '#'+(parseInt(el.closest('.six-card').dataset.ix,10)+1); });
+    var my = qa('#six_my .six_sel:checked').map(function(el){ var c=el.closest('.six-card'); return '#'+(parseInt(c.getAttribute('data-ix'),10)+1); });
+    var op = qa('#six_opp .six_sel:checked').map(function(el){ var c=el.closest('.six-card'); return '#'+(parseInt(c.getAttribute('data-ix'),10)+1); });
     if(my.length>3){ if(target) target.checked=false; return; }
     if(op.length>3){ if(target) target.checked=false; return; }
     addLog('選出: 自分 {'+my.join(', ')+'} vs 相手 {'+op.join(', ')+'}');
   }
 
-  function bindUI(){
-    ensureLists();
-    attachEVButtons();
-    // name field listeners (types update)
-    qa('#six .six-card .name').forEach(function(inp){
-      inp.addEventListener('change', function(){ var card=this.closest('.six-card'); if(card) updateTypesLine(card); }, true);
-      inp.addEventListener('input', function(){ var card=this.closest('.six-card'); if(card) updateTypesLine(card); }, true);
-    });
-    // initial types paint
-    qa('#six .six-card').forEach(updateTypesLine);
-
-    // card-level delegation
-    var wrap = q('#six_wrap');
-    if(wrap){
-      wrap.addEventListener('change', function(e){ if(e.target.classList.contains('six_sel')) onSelChange(e.target); }, true);
-      wrap.addEventListener('click', function(e){
-        var tgt = e.target;
-        if(tgt.classList.contains('name_search')){
-          e.preventDefault();
-          openModal(tgt.previousElementSibling);
-        }else if(tgt.classList.contains('opp-preset')){
-          e.preventDefault();
-          var card = tgt.closest('.six-card'); if(!card) return;
-          var p = tgt.getAttribute('data-preset')||'';
-          card.dataset.evHp = card.dataset.evDef = card.dataset.evSpd = '0';
-          delete card.dataset.evAtk; delete card.dataset.evSpe; delete card.dataset.evSpA;
-          if(p==='C252S252'){ card.dataset.evSpA='252'; card.dataset.evSpe='252'; }
-          else if(p==='A252S252'){ card.dataset.evAtk='252'; card.dataset.evSpe='252'; }
-          else if(p==='H252B252'){ card.dataset.evHp='252'; card.dataset.evDef='252'; }
-          else if(p==='H252D252'){ card.dataset.evHp='252'; card.dataset.evSpd='252'; }
-          card.querySelectorAll('.opp-preset').forEach(function(b){ b.classList.remove('active'); });
-          tgt.classList.add('active');
-          card.dataset.preset = p;
-          var st = q('.opp-preset-status', card); if(st) st.textContent = '適用: ' + p;
-        }else if(tgt.classList.contains('my-preset')){
-          e.preventDefault();
-          var card = tgt.closest('.six-card'); if(!card) return;
-          var p = tgt.getAttribute('data-preset')||'';
-          function setEV(cls, v){ var el = q('.'+cls, card); if(el){ el.value = v; el.dispatchEvent(new Event('input',{bubbles:true})); el.dispatchEvent(new Event('change',{bubbles:true})); } }
-          // reset
-          ['hp','atk','def','spa','spd'].forEach(function(c){ setEV(c, 0); });
-          if(p==='無振り'){ /* all zero */ }
-          else if(p==='H252B252'){ setEV('hp',252); setEV('def',252); }
-          else if(p==='H252D252'){ setEV('hp',252); setEV('spd',252); }
-          else if(p==='A252S252'){ setEV('atk',252); /* speed not shown */ }
-          else if(p==='C252S252'){ setEV('spa',252); /* speed not shown */ }
-          else if(p==='H252C252'){ setEV('hp',252); setEV('spa',252); }
-          card.querySelectorAll('.my-preset').forEach(function(b){ b.classList.remove('active'); });
-          tgt.classList.add('active');
-          var st = q('.my-preset-status', card); if(st) st.textContent = '適用: ' + p;
-        }else if(tgt.classList.contains('ev_toggle')){
-          e.preventDefault();
-          var card = tgt.closest('.six-card'); var evrow = q('.row',card);
-          if(evrow){ var show = evrow.style.display==='none'; evrow.style.display = show? '' : 'none'; tgt.textContent = show ? 'EV詳細を隠す' : 'EV詳細を表示'; }
-        }else if(tgt.classList.contains('ev252')){
-          // already handled by per-button listener; do nothing here
-        }
-      });
-          tgt.classList.add('active');
-          card.dataset.preset = p;
-          var st = q('.opp-preset-status', card); if(st) st.textContent = '適用: ' + p;
-        }else if(tgt.classList.contains('moves_toggle')){
-          e.preventDefault();
-          var card = tgt.closest('.six-card'); var mv = q('.moves', card);
-          if(mv){ var show = mv.style.display==='none'; mv.style.display = show? '' : 'none'; tgt.classList.toggle('active', show); tgt.textContent = show ? '技詳細を隠す' : '技詳細を表示'; }
-        }
-      });
-    }
-
-    var btnCalc = q('#six_calc_all'); if(btnCalc) btnCalc.addEventListener('click', rebuildMatrix);
-    var btnNote = q('#six_add_note'); if(btnNote) btnNote.addEventListener('click', function(){ var v=q('#six_note'); if(!v) return; var t=v.value.trim(); if(!t) return; addLog('メモ: '+t); v.value=''; });
-    var btnJson = q('#six_export_json'); if(btnJson) btnJson.addEventListener('click', function(){ var txt=JSON.stringify(LOG,null,2); navigator.clipboard.writeText(txt).then(function(){ addLog('ログJSONをコピーしました'); }); });
-  }
-
-  // Modal
   function openModal(targetInput){
     var modal = q('#six_modal'); if(!modal) return;
     var list  = q('#six_modal_list');
@@ -649,34 +639,126 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
     function renderList(qk){
       var arr = getSpeciesList();
       var out = [];
-      qk = (qk||'').trim();
+      var key = (qk||'').trim();
       for(var i=0;i<arr.length;i++){
         var n = arr[i]['名前'] || arr[i].name || '';
-        if(!qk || n.indexOf(qk)>=0) out.push(n);
+        if(!key || n.indexOf(key)>=0) out.push(n);
       }
       out = out.slice(0, 400);
-      if(list) list.innerHTML = out.map(function(nm){ return '<button class="pick" style="display:block;width:100%;text-align:left;padding:.35rem .5rem;border:1px solid rgba(255,255,255,.12);background:#1a2748;color:#fff;border-radius:8px;margin-bottom:6px;">'+nm+'</button>'; }).join('');
-    }
-    if(search) search.oninput = function(){ renderList(this.value); };
-    if(list) list.onclick = function(ev){
-      if(ev.target.classList.contains('pick')){
-        if(targetInput){
-          targetInput.value = ev.target.textContent.trim();
-          targetInput.dispatchEvent(new Event('input',{bubbles:true}));
-          targetInput.dispatchEvent(new Event('change',{bubbles:true}));
-          var card = targetInput.closest('.six-card'); if(card) updateTypesLine(card);
+      if(list){
+        var html = '';
+        for(var j=0;j<out.length;j++){
+          html += '<button class="pick" style="display:block;width:100%;text-align:left;padding:.35rem .5rem;border:1px solid rgba(255,255,255,.12);background:#1a2748;color:#fff;border-radius:8px;margin-bottom:6px;">'+out[j]+'</button>';
         }
-        hide();
+        list.innerHTML = html;
       }
-    };
-    var closeBtn = q('#six_modal_close'); if(closeBtn) closeBtn.onclick = hide;
+    }
+    if(search){ search.oninput = function(){ renderList(this.value); }; }
+    if(list){
+      list.onclick = function(ev){
+        var t = ev.target;
+        if(t && t.classList.contains('pick')){
+          if(targetInput){
+            targetInput.value = (t.textContent||'').trim();
+            targetInput.dispatchEvent(new Event('input',{bubbles:true}));
+            targetInput.dispatchEvent(new Event('change',{bubbles:true}));
+            var card = targetInput.closest('.six-card'); if(card) updateTypesLine(card);
+          }
+          hide();
+        }
+      };
+    }
+    var closeBtn = q('#six_modal_close'); if(closeBtn){ closeBtn.onclick = hide; }
     modal.onclick = function(ev){ if(ev.target===modal) hide(); };
     show();
   }
 
-  function init(){
-    bindUI();
+  function bindUI(){
+    ensureLists();
+    attachEVButtons();
+    // name -> types
+    var nms = qa('#six .six-card .name');
+    for(var i=0;i<nms.length;i++){
+      (function(inp){
+        inp.addEventListener('change', function(){ var c=inp.closest('.six-card'); if(c) updateTypesLine(c); }, true);
+        inp.addEventListener('input', function(){ var c=inp.closest('.six-card'); if(c) updateTypesLine(c); }, true);
+      })(nms[i]);
+    }
+    qa('#six .six-card').forEach(updateTypesLine);
+
+    var wrap = q('#six_wrap');
+    if(wrap){
+      wrap.addEventListener('change', function(e){ var t=e.target; if(t && t.classList.contains('six_sel')) onSelChange(t); }, true);
+      wrap.addEventListener('click', function(e){
+        var tgt = e.target;
+        if(!tgt) return;
+        if(tgt.classList.contains('name_search')){
+          e.preventDefault();
+          var input = tgt.previousElementSibling;
+          openModal(input);
+          return;
+        }
+        if(tgt.classList.contains('opp-preset')){
+          e.preventDefault();
+          var card = tgt.closest('.six-card'); if(!card) return;
+          var p = tgt.getAttribute('data-preset')||'';
+          card.dataset.evHp='0'; card.dataset.evDef='0'; card.dataset.evSpd='0';
+          delete card.dataset.evAtk; delete card.dataset.evSpe; delete card.dataset.evSpA;
+          if(p==='C252S252'){ card.dataset.evSpA='252'; card.dataset.evSpe='252'; }
+          else if(p==='A252S252'){ card.dataset.evAtk='252'; card.dataset.evSpe='252'; }
+          else if(p==='H252B252'){ card.dataset.evHp='252'; card.dataset.evDef='252'; }
+          else if(p==='H252D252'){ card.dataset.evHp='252'; card.dataset.evSpd='252'; }
+          var btns = card.querySelectorAll('.opp-preset');
+          for(var bi=0; bi<btns.length; bi++){ btns[bi].classList.remove('active'); }
+          tgt.classList.add('active');
+          var st = q('.opp-preset-status', card); if(st) st.textContent = '適用: ' + p;
+          return;
+        }
+        if(tgt.classList.contains('my-preset')){
+          e.preventDefault();
+          var card = tgt.closest('.six-card'); if(!card) return;
+          var p = tgt.getAttribute('data-preset')||'';
+          function setEV(cls, v){
+            var el = q('.'+cls, card);
+            if(el){
+              el.value = v;
+              el.dispatchEvent(new Event('input',{bubbles:true}));
+              el.dispatchEvent(new Event('change',{bubbles:true}));
+            }
+          }
+          setEV('hp',0); setEV('atk',0); setEV('def',0); setEV('spa',0); setEV('spd',0);
+          if(p==='無振り'){ /* keep zeros */ }
+          else if(p==='H252B252'){ setEV('hp',252); setEV('def',252); }
+          else if(p==='H252D252'){ setEV('hp',252); setEV('spd',252); }
+          else if(p==='A252S252'){ setEV('atk',252); /* speed UI無し */ }
+          else if(p==='C252S252'){ setEV('spa',252); /* speed UI無し */ }
+          else if(p==='H252C252'){ setEV('hp',252); setEV('spa',252); }
+          var btns2 = card.querySelectorAll('.my-preset');
+          for(var bj=0; bj<btns2.length; bj++){ btns2[bj].classList.remove('active'); }
+          tgt.classList.add('active');
+          var st2 = q('.my-preset-status', card); if(st2) st2.textContent = '適用: ' + p;
+          updateEVSum(card);
+          return;
+        }
+        if(tgt.classList.contains('ev_toggle')){
+          e.preventDefault();
+          var card = tgt.closest('.six-card'); var evrow = q('.row',card);
+          if(evrow){
+            var show = (evrow.style.display==='none' || evrow.style.display==='');
+            evrow.style.display = show ? '' : 'none';
+            tgt.textContent = show ? 'EV詳細を隠す' : 'EV詳細を表示';
+          }
+          return;
+        }
+      }, true);
+    }
+
+    var btnCalc = q('#six_calc_all'); if(btnCalc){ btnCalc.addEventListener('click', rebuildMatrix); }
+    var btnNote = q('#six_add_note'); if(btnNote){ btnNote.addEventListener('click', function(){ var v=q('#six_note'); if(!v) return; var t=v.value.trim(); if(!t) return; addLog('メモ: '+t); v.value=''; }); }
+    var btnJson = q('#six_export_json'); if(btnJson){ btnJson.addEventListener('click', function(){ var txt=JSON.stringify(LOG,null,2); navigator.clipboard.writeText(txt).then(function(){ addLog('ログJSONをコピーしました'); }); }); }
   }
+
+  function init(){ bindUI(); }
   if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', init); } else { init(); }
 })();</script>
 <div id="six_modal" style="position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:9999;">
