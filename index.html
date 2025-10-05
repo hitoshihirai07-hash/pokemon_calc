@@ -4,15 +4,9 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1" name="viewport"/>
-<title>ポケモン ダメージ計算 v36</title>
+<title>ポケモン ダメージ計算 v36 - AUTO-TYPE 20251005-1216</title>
 <link href="styles.css?v=36" rel="stylesheet"/>
-<link href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMjgiIGZpbGw9IiMxYTMyNzAiLz48dGV4dCB4PSIzMiIgeT0iNDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMzYiIGZpbGw9IiNlOGVlZmYiPlA8L3RleHQ+PC9zdmc+" rel="icon"/><style>
-/* hide manual type selection UIs in the damage calc tab */
-#calc select[id*="type"],
-#calc .type-select,
-#calc [data-type-select],
-#calc [id*="type_select"] { display:none !important; }
-</style></head>
+<link href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMjgiIGZpbGw9IiMxYTMyNzAiLz48dGV4dCB4PSIzMiIgeT0iNDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMzYiIGZpbGw9IiNlOGVlZmYiPlA8L3RleHQ+PC9zdmc+" rel="icon"/></head>
 <body>
 <header class="topbar">
 <div class="brand">計算機 <span class="badge">v36</span></div>
@@ -54,7 +48,7 @@
 <label>技<input id="atk_move_name" list="dl_move" placeholder="例: 10まんボルト"/></label>
 <label>威力<input id="atk_move_power" max="300" min="0" type="number"/></label>
 <label>分類<select id="atk_move_cat"><option>物理</option><option>特殊</option></select></label>
-<label>タイプ<input id="atk_move_type" list="dl_type" placeholder=""/></label>
+
 <label>攻ランク<input id="atk_rank" max="6" min="-6" type="number" value="0"/></label>
 <label>防ランク<input id="def_rank" max="6" min="-6" type="number" value="0"/></label>
 <label>その他補正<input id="other_mod" step="0.01" type="number" value="1.0"/></label>
@@ -96,7 +90,7 @@
 <label>技<input id="v13_move_name" list="dl_move"/></label>
 <label>威力<input id="v13_move_power" max="300" min="0" type="number"/></label>
 <label>分類<select id="v13_move_cat"><option>物理</option><option>特殊</option></select></label>
-<label>タイプ<input id="v13_move_type" list="dl_type"/></label>
+
 </div>
 <div class="stats-compact">
 <label>攻ランク<input id="v13_atk_rank" max="6" min="-6" type="number" value="0"/></label>
@@ -154,28 +148,7 @@
 <datalist id="dl_poke"></datalist>
 <datalist id="dl_move"></datalist>
 <datalist id="dl_build_names"></datalist>
-<datalist id="dl_type"><option value="ノーマル"></option><option value="ほのお"></option><option value="みず"></option><option value="でんき"></option><option value="くさ"></option><option value="こおり"></option><option value="かくとう"></option><option value="どく"></option><option value="じめん"></option><option value="ひこう"></option><option value="エスパー"></option><option value="むし"></option><option value="いわ"></option><option value="ゴースト"></option><option value="ドラゴン"></option><option value="あく"></option><option value="はがね"></option><option value="フェアリー"></option></datalist>
+
 <script src="app.js?v=36"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function(){
-  const kill = (el)=>{
-    let p = el;
-    for(let i=0;i<2 && p;i++){ p = p.parentElement; }
-    if(p && p.parentElement) p.remove();
-    else el.remove();
-  };
-  const q = '#calc select[id*="type"], #calc .type-select, #calc [data-type-select], #calc [id*="type_select"]';
-  document.querySelectorAll(q).forEach(kill);
-  // Mutation observer for late-injected nodes
-  const obs = new MutationObserver(muts=>{
-    muts.forEach(m=>{
-      if(m.addedNodes) m.addedNodes.forEach(n=>{
-        if(!(n instanceof Element)) return;
-        n.matches && (n.matches(q) ? kill(n) : n.querySelectorAll && n.querySelectorAll(q).forEach(kill));
-      });
-    });
-  });
-  obs.observe(document.body, {childList:true, subtree:true});
-});
-</script><div id="build_version">TYPE-AUTO-ONLY v20251005-1209</div></body>
+<div id="build_version">AUTO-TYPE 20251005-1216</div></body>
 </html>
