@@ -1,36 +1,15 @@
 
-// === injected: safe DOM access for removed manual type selectors ===
-(function(){
-  const removedTypeIdRe = /(atk|def\d?)_type[12]|type_select/i;
-  const _origGet = document.getElementById.bind(document);
-  document.getByIdSafe = function(id){
-    try{
-      if(removedTypeIdRe.test(String(id))) return null;
-      return _origGet(id);
-    }catch(e){ return null; }
-  };
-  // Monkey patch common query patterns if present
-  const _origQuery = Document.prototype.querySelector;
-  Document.prototype.querySelector = function(sel){
-    try{
-      if(typeof sel === 'string' && /#((atk|def\d?)_type[12]|type_select)/i.test(sel)) return null;
-    }catch(e){}
-    return _origQuery.call(this, sel);
-  };
-})();
-// === end injected shim ===
-
 (function(){
 'use strict';
 /* v36: fallback type-badge renderer */
 function renderTypeBadges(elId, t1, t2){
-  var host=document.getByIdSafe(elId); if(!host) return;
+  var host=document.getElementById(elId); if(!host) return;
   function chip(txt){ return '<span class="tb">'+String(txt)+'</span>'; }
   var html=''; if(t1){ html+=chip(t1); } if(t2 && t2!==t1){ html+=chip(t2); }
   host.innerHTML=html;
 }
 
-function $(id){return document.getByIdSafe(id);}
+function $(id){return document.getElementById(id);}
 function qa(sel,root){return Array.prototype.slice.call((root||document).querySelectorAll(sel));}
 function toN(v,d){var n=parseFloat(v);return isFinite(n)?n:(d||0);}
 function ready(fn){if(document.readyState!=='loading'){fn();}else{document.addEventListener('DOMContentLoaded',fn,false);}}
@@ -51,7 +30,7 @@ function injectManualMods(){
     return wrap;
   }
   function attachRow(container, rowId){
-    if(!container || document.getByIdSafe(rowId)) return;
+    if(!container || document.getElementById(rowId)) return;
     var row = document.createElement('div'); row.className='line opts-row'; row.id = rowId;
     row.appendChild(mkSel(container.id==='atk_fieldset'?'atk_stab_sel':'v13_stab_sel', [1,1.5,2], 'STAB'));
     row.appendChild(mkSel(container.id==='atk_fieldset'?'atk_eff_sel':'v13_eff_sel', [0.25,0.5,1,2,4], '相性'));
@@ -418,9 +397,9 @@ function bindTypeBadgesRealtime(){
     ['v13_atk_name','v13_atk_types', null, null]
   ];
   function renderFrom(nameId, badgeId, t1Id, t2Id){
-    var name=document.getByIdSafe(nameId);
-    var t1=t1Id?document.getByIdSafe(t1Id):null;
-    var t2=t2Id?document.getByIdSafe(t2Id):null;
+    var name=document.getElementById(nameId);
+    var t1=t1Id?document.getElementById(t1Id):null;
+    var t2=t2Id?document.getElementById(t2Id):null;
     function calc(){
       var mon=findMon(name && name.value);
       var a1=t1&&(t1.value)?t1.value:(mon?(mon.type1||mon.タイプ1||''):'');
@@ -436,7 +415,7 @@ function bindTypeBadgesRealtime(){
 
   // Targets (v13) — update badges on name change
   ['v13_def1_name','v13_def2_name','v13_def3_name'].forEach(function(id){
-    var el=document.getByIdSafe(id);
+    var el=document.getElementById(id);
     if(!el) return;
     el.addEventListener('change', function(){
       var m=findMon(el.value)||{};

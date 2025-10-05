@@ -6,7 +6,13 @@
 <meta content="width=device-width,initial-scale=1" name="viewport"/>
 <title>ポケモン ダメージ計算 v36</title>
 <link href="styles.css?v=36" rel="stylesheet"/>
-<link href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMjgiIGZpbGw9IiMxYTMyNzAiLz48dGV4dCB4PSIzMiIgeT0iNDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMzYiIGZpbGw9IiNlOGVlZmYiPlA8L3RleHQ+PC9zdmc+" rel="icon"/></head>
+<link href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMjgiIGZpbGw9IiMxYTMyNzAiLz48dGV4dCB4PSIzMiIgeT0iNDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMzYiIGZpbGw9IiNlOGVlZmYiPlA8L3RleHQ+PC9zdmc+" rel="icon"/><style>
+/* hide manual type selection UIs in the damage calc tab */
+#calc select[id*="type"],
+#calc .type-select,
+#calc [data-type-select],
+#calc [id*="type_select"] { display:none !important; }
+</style></head>
 <body>
 <header class="topbar">
 <div class="brand">計算機 <span class="badge">v36</span></div>
@@ -102,7 +108,7 @@
 <fieldset>
 <legend>対象1</legend>
 <label>ポケモン<input id="v13_def1_name" list="dl_poke"/></label><span class="type-badges" id="v13_def1_types"></span>
-<div class="type-badges" id="v13_def1_types-x2"></div>
+<div class="type-badges" id="v13_def1_types"></div>
 <div class="line">
 <label>HP EV<input id="v13_def1_ev_HP" max="252" min="0" type="number"/></label>
 <label>防御EV<input id="v13_def1_ev_防御" max="252" min="0" type="number"/></label>
@@ -113,7 +119,7 @@
 <fieldset>
 <legend>対象2</legend>
 <label>ポケモン<input id="v13_def2_name" list="dl_poke"/></label><span class="type-badges" id="v13_def2_types"></span>
-<div class="type-badges" id="v13_def2_types-x2"></div>
+<div class="type-badges" id="v13_def2_types"></div>
 <div class="line">
 <label>HP EV<input id="v13_def2_ev_HP" max="252" min="0" type="number"/></label>
 <label>防御EV<input id="v13_def2_ev_防御" max="252" min="0" type="number"/></label>
@@ -124,7 +130,7 @@
 <fieldset>
 <legend>対象3</legend>
 <label>ポケモン<input id="v13_def3_name" list="dl_poke"/></label><span class="type-badges" id="v13_def3_types"></span>
-<div class="type-badges" id="v13_def3_types-x2"></div>
+<div class="type-badges" id="v13_def3_types"></div>
 <div class="line">
 <label>HP EV<input id="v13_def3_ev_HP" max="252" min="0" type="number"/></label>
 <label>防御EV<input id="v13_def3_ev_防御" max="252" min="0" type="number"/></label>
@@ -150,5 +156,26 @@
 <datalist id="dl_build_names"></datalist>
 <datalist id="dl_type"><option value="ノーマル"></option><option value="ほのお"></option><option value="みず"></option><option value="でんき"></option><option value="くさ"></option><option value="こおり"></option><option value="かくとう"></option><option value="どく"></option><option value="じめん"></option><option value="ひこう"></option><option value="エスパー"></option><option value="むし"></option><option value="いわ"></option><option value="ゴースト"></option><option value="ドラゴン"></option><option value="あく"></option><option value="はがね"></option><option value="フェアリー"></option></datalist>
 <script src="app.js?v=36"></script>
-</body>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  const kill = (el)=>{
+    let p = el;
+    for(let i=0;i<2 && p;i++){ p = p.parentElement; }
+    if(p && p.parentElement) p.remove();
+    else el.remove();
+  };
+  const q = '#calc select[id*="type"], #calc .type-select, #calc [data-type-select], #calc [id*="type_select"]';
+  document.querySelectorAll(q).forEach(kill);
+  // Mutation observer for late-injected nodes
+  const obs = new MutationObserver(muts=>{
+    muts.forEach(m=>{
+      if(m.addedNodes) m.addedNodes.forEach(n=>{
+        if(!(n instanceof Element)) return;
+        n.matches && (n.matches(q) ? kill(n) : n.querySelectorAll && n.querySelectorAll(q).forEach(kill));
+      });
+    });
+  });
+  obs.observe(document.body, {childList:true, subtree:true});
+});
+</script><div id="build_version">TYPE-AUTO-ONLY v20251005-1209</div></body>
 </html>
