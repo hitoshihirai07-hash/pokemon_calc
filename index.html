@@ -94,6 +94,10 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
 #six .opp-preset.active { background:#3a4f7a !important; }
 </style><style>
 #six .my-preset.active, #six .opp-preset.active { background:#3a4f7a !important; }
+</style><style>
+#six .six-card{ margin-bottom:.5rem; }
+#six .moves_toggle.active{ background:#35507f; }
+#six .my-preset.active, #six .opp-preset.active{ background:#3a4f7a !important; }
 </style></head>
 <body>
 <header class="topbar">
@@ -479,6 +483,7 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
   }
 
   function attachEVButtons(){
+    var allowed = {'hp':1,'atk':1,'def':1,'spa':1,'spd':1};
     var myCards = qa('#six_my .six-card');
     for(var ci=0; ci<myCards.length; ci++){
       (function(card){
@@ -486,30 +491,38 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
         for(var i=0;i<labs.length;i++){
           var btn = labs[i].querySelector('.ev252');
           var inp = labs[i].querySelector('input');
-          if(btn && inp){
+          if(btn && inp && inp.type==='number'){
+            // ensure it's one of EV inputs
+            var ok=false;
+            for(var k in allowed){ if(inp.classList.contains(k)){ ok=true; break; } }
+            if(!ok) continue;
             btn.addEventListener('click', function(e){
               e.preventDefault();
-              inp.value = 252;
-              inp.dispatchEvent(new Event('input',{bubbles:true}));
-              inp.dispatchEvent(new Event('change',{bubbles:true}));
+              var input=this.previousElementSibling;
+              if(!input || input.type!=='number') return;
+              var ok2=false; for(var k in allowed){ if(input.classList.contains(k)){ ok2=true; break; } }
+              if(!ok2) return;
+              input.value = 252;
+              input.dispatchEvent(new Event('input',{bubbles:true}));
+              input.dispatchEvent(new Event('change',{bubbles:true}));
               updateEVSum(card);
             });
           }
         }
-        // Input listeners (except rank)
         var inputs = qa('.row input', card);
-        for(var k=0;k<inputs.length;k++){
+        for(var j=0;j<inputs.length;j++){
           (function(inp){
+            if(inp.type!=='number') return;
             if(inp.classList.contains('rank')) return;
             inp.addEventListener('input', function(){ inp.value = clamp4(inp.value); updateEVSum(card); }, true);
             inp.addEventListener('change', function(){ inp.value = clamp4(inp.value); updateEVSum(card); }, true);
-          })(inputs[k]);
+          })(inputs[j]);
         }
         updateEVSum(card);
       })(myCards[ci]);
     }
   }
-
+  
   function setV13Att(att){
     var n=q('#v13_atk_name'); if(n){ n.value=att.name; n.dispatchEvent(new Event('change',{bubbles:true})); }
     var e1=q('#v13_atk_ev_HP'); if(e1) e1.value=att.ev.hp;
@@ -744,9 +757,9 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
           e.preventDefault();
           var card = tgt.closest('.six-card'); var evrow = q('.row',card);
           if(evrow){
-            var show = (evrow.style.display==='none' || evrow.style.display==='');
-            evrow.style.display = show ? '' : 'none';
-            tgt.textContent = show ? 'EV詳細を隠す' : 'EV詳細を表示';
+            var hidden = (evrow.style.display==='none');
+            evrow.style.display = hidden ? '' : 'none';
+            tgt.textContent = hidden ? 'EV詳細を隠す' : 'EV詳細を表示';
           }
           return;
         }
@@ -758,7 +771,13 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
     var btnJson = q('#six_export_json'); if(btnJson){ btnJson.addEventListener('click', function(){ var txt=JSON.stringify(LOG,null,2); navigator.clipboard.writeText(txt).then(function(){ addLog('ログJSONをコピーしました'); }); }); }
   }
 
-  function init(){ bindUI(); }
+  function init(){
+    bindUI();
+    // sanitize accidental name=0
+    qa('#six .six-card .name').forEach(function(inp){
+      if(inp && (inp.value||'').trim()==='0'){ inp.value=''; }
+    });
+  }
   if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', init); } else { init(); }
 })();</script>
 <div id="six_modal" style="position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:9999;">
