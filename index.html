@@ -382,202 +382,219 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
 </div>
 <script>
 (function(){
-  // Sync other_mod -> v13_other_mod
-  function syncOther(){ var s=document.getElementById('other_mod'), t=document.getElementById('v13_other_mod'); if(s&&t){ t.value=s.value; t.dispatchEvent(new Event('input',{bubbles:true})); t.dispatchEvent(new Event('change',{bubbles:true})); } }
-  var om=document.getElementById('other_mod'); if(om){ om.addEventListener('input', syncOther, true); om.addEventListener('change', syncOther, true); syncOther(); }
+  function init(){
+    try{
+      // proactively ensure species/moves lists
+      if(window.ensurePoke) try{ ensurePoke(); }catch(e){}
 
-  // Build type options for selects
-  var TYPES=['ノーマル','ほのお','みず','でんき','くさ','こおり','かくとう','どく','じめん','ひこう','エスパー','むし','いわ','ゴースト','ドラゴン','あく','はがね','フェアリー'];
-  document.querySelectorAll('#six .moves select[class$=\"t\"]').forEach(function(sel){
-    sel.innerHTML = TYPES.map(function(t){ return '<option value=\"'+t+'\">'+t+'</option>'; }).join('');
-  });
+      // Sync other_mod -> v13_other_mod
+      function syncOther(){ var s=document.getElementById('other_mod'), t=document.getElementById('v13_other_mod'); if(s&&t){ t.value=s.value; t.dispatchEvent(new Event('input',{bubbles:true})); t.dispatchEvent(new Event('change',{bubbles:true})); } }
+      var om=document.getElementById('other_mod'); if(om){ om.addEventListener('input', syncOther, true); om.addEventListener('change', syncOther, true); syncOther(); }
 
-  // Helpers
-  function q(sel,root){ return (root||document).querySelector(sel); }
-  function qa(sel,root){ return Array.prototype.slice.call((root||document).querySelectorAll(sel)); }
-  function clamp4(n){ n = parseInt(n||'0',10)||0; n=Math.max(0,Math.min(252,n)); return n - (n%4); }
-
-  function readCard(card){
-    var side = card.dataset.side;
-    var name = q('.name',card)?.value.trim() || '';
-    if(side==='opp'){
-      return { side:side, name:name, ev:{hp:0,atk:0,def:0,spa:0,spd:0}, rank:0, moves:[], sel: !!q('.six_sel',card)?.checked };
-    }
-    function mv(k){ return {name:q('.m'+k+'n',card).value.trim(), power: parseInt(q('.m'+k+'p',card).value||'0',10)||0, type: q('.m'+k+'t',card).value, cat: q('.m'+k+'c',card).value }; }
-    var ev = {hp: clamp4(q('.hp',card)?.value), atk: clamp4(q('.atk',card)?.value), def: clamp4(q('.def',card)?.value), spa: clamp4(q('.spa',card)?.value), spd: clamp4(q('.spd',card)?.value)};
-    var rank = parseInt(q('.rank',card)?.value||'0',10)||0;
-    var sel = !!q('.six_sel',card)?.checked;
-    return { side:side, name:name, ev:ev, rank:rank, moves:[mv(1),mv(2),mv(3),mv(4)], sel:sel };
-  }
-
-  function updateEVSum(card){
-    if(card.dataset.side!=='my') return;
-    var ev = ['.hp','.atk','.def','.spa','.spd'].map(function(sel){ var v=parseInt(q(sel,card)?.value||'0',10)||0; return clamp4(v); });
-    var sum = ev.reduce(function(a,b){ return a+b; }, 0);
-    var label = q('.evsum',card);
-    if(label){ label.textContent = '合計 EV: '+sum+' / 508'; label.style.color = (sum>508?'#ff7a7a':''); }
-  }
-
-  function attachEVButtons(){
-    qa('#six_my .six-card').forEach(function(card){
-      qa('.ev252',card).forEach(function(btn){
-        btn.addEventListener('click', function(e){
-          e.preventDefault();
-          var input = this.previousElementSibling;
-          if(input && input.tagName==='INPUT'){ input.value = 252; input.dispatchEvent(new Event('input',{bubbles:true})); input.dispatchEvent(new Event('change',{bubbles:true})); updateEVSum(card); }
-        });
+      // Build type options for selects
+      var TYPES=['ノーマル','ほのお','みず','でんき','くさ','こおり','かくとう','どく','じめん','ひこう','エスパー','むし','いわ','ゴースト','ドラゴン','あく','はがね','フェアリー'];
+      document.querySelectorAll('#six .moves select[class$="t"]').forEach(function(sel){
+        if(!sel.options.length){
+          sel.innerHTML = TYPES.map(function(t){ return '<option value="'+t+'">'+t+'</option>'; }).join('');
+        }
       });
-      // watch inputs to update sum
-      qa('.row input',card).forEach(function(inp){
-        inp.addEventListener('input', function(){ this.value = clamp4(this.value); updateEVSum(card); }, true);
-        inp.addEventListener('change', function(){ this.value = clamp4(this.value); updateEVSum(card); }, true);
-      });
-      updateEVSum(card);
-    });
-  }
 
-  function setV13Att(att){
-    if(q('#v13_atk_name')){ q('#v13_atk_name').value = att.name; q('#v13_atk_name').dispatchEvent(new Event('change',{bubbles:true})); }
-    if(q('#v13_atk_ev_HP')) q('#v13_atk_ev_HP').value = att.ev.hp;
-    if(q('#v13_atk_ev_攻撃')) q('#v13_atk_ev_攻撃').value = att.ev.atk;
-    if(q('#v13_atk_ev_特攻')) q('#v13_atk_ev_特攻').value = att.ev.spa;
-    if(q('#v13_atk_rank')) q('#v13_atk_rank').value = att.rank;
-  }
-  function setV13Def(i,deff){
-    if(q('#v13_def'+i+'_name')){ q('#v13_def'+i+'_name').value = deff.name; q('#v13_def'+i+'_name').dispatchEvent(new Event('change',{bubbles:true})); }
-    if(q('#v13_def'+i+'_ev_HP')) q('#v13_def'+i+'_ev_HP').value = deff.ev.hp;
-    if(q('#v13_def'+i+'_ev_防御')) q('#v13_def'+i+'_ev_防御').value = deff.ev.def;
-    if(q('#v13_def'+i+'_ev_特防')) q('#v13_def'+i+'_ev_特防').value = deff.ev.spd;
-    if(q('#v13_def_rank')) q('#v13_def_rank').value = deff.rank;
-  }
-  function setMove(m){
-    if(q('#v13_move_name')) q('#v13_move_name').value = m.name;
-    if(q('#v13_move_power')) q('#v13_move_power').value = m.power;
-    if(q('#v13_move_type')) q('#v13_move_type').value = m.type;
-    if(q('#v13_move_cat')) q('#v13_move_cat').value = m.cat;
-  }
-  function readOut(i){
-    var el=q('#v13_out'+i);
-    if(!el) return {min:0,max:0,label:'—'};
-    var s = el.value || el.textContent || '';
-    var m = s.match(/(\d+)\s*〜\s*(\d+)/);
-    if(m){ return {min:parseInt(m[1],10)||0, max:parseInt(m[2],10)||0, label:s}; }
-    return {min:0,max:0,label:s||'—'};
-  }
-  function badge(pct){ if(pct>=70) return 'background:#ff7a7a;color:#180000;'; if(pct>=40) return 'background:#ffe07a;color:#302000;'; return 'background:#7ab8ff;color:#001428;'; }
+      // Helpers
+      function q(sel,root){ return (root||document).querySelector(sel); }
+      function qa(sel,root){ return Array.prototype.slice.call((root||document).querySelectorAll(sel)); }
+      function clamp4(n){ n = parseInt(n||'0',10)||0; n=Math.max(0,Math.min(252,n)); return n - (n%4); }
 
-  function bestVs(att, deff){
-    var results = [];
-    att.moves.forEach(function(mv){
-      if(!mv.power || !mv.type) return;
-      setMove(mv);
-      for(var i=1;i<=3;i++){ if(window.simpleDamageOne) window.simpleDamageOne(i); }
-      for(var i=1;i<=3;i++){
-        var out = readOut(i);
-        if(!results[i-1] || out.max > results[i-1].out.max){ results[i-1] = {out:out, move:mv}; }
+      function readCard(card){
+        var side = card.dataset.side;
+        var name = q('.name',card)?.value.trim() || '';
+        if(side==='opp'){
+          return { side:side, name:name, ev:{hp:0,atk:0,def:0,spa:0,spd:0}, rank:0, moves:[], sel: !!q('.six_sel',card)?.checked };
+        }
+        function mv(k){ return {name:q('.m'+k+'n',card).value.trim(), power: parseInt(q('.m'+k+'p',card).value||'0',10)||0, type: q('.m'+k+'t',card).value, cat: q('.m'+k+'c',card).value }; }
+        var ev = {hp: clamp4(q('.hp',card)?.value), atk: clamp4(q('.atk',card)?.value), def: clamp4(q('.def',card)?.value), spa: clamp4(q('.spa',card)?.value), spd: clamp4(q('.spd',card)?.value)};
+        var rank = parseInt(q('.rank',card)?.value||'0',10)||0;
+        var sel = !!q('.six_sel',card)?.checked;
+        return { side:side, name:name, ev:ev, rank:rank, moves:[mv(1),mv(2),mv(3),mv(4)], sel:sel };
       }
-    });
-    // If attacker has no valid moves, fallback zeros
-    if(results.length===0){ for(var i=0;i<3;i++) results[i]={out:{min:0,max:0,label:'—'}, move:{name:'—',type:'',power:0}}; }
-    return results;
-  }
 
-  function rebuildMatrix(){
-    var myCards = qa('#six_my .six-card'); var opCards = qa('#six_opp .six-card');
-    var myList = myCards.map(readCard); var opList = opCards.map(readCard);
-    var tbl = q('#six_matrix'); tbl.innerHTML='';
-    // header
-    var thead = document.createElement('thead'); var trh = document.createElement('tr'); trh.appendChild(document.createElement('th'));
-    opList.forEach(function(_,j){ var th=document.createElement('th'); th.textContent='相手#'+(j+1); th.style.position='sticky'; th.style.top='0'; th.style.background='rgba(34,41,70,.95)'; th.style.padding='.45rem'; th.style.borderBottom='1px solid rgba(255,255,255,.15)'; trh.appendChild(th); });
-    thead.appendChild(trh); tbl.appendChild(thead);
-    var tbody = document.createElement('tbody');
+      function updateEVSum(card){
+        if(card.dataset.side!=='my') return;
+        var ev = ['.hp','.atk','.def','.spa','.spd'].map(function(sel){ var v=parseInt(q(sel,card)?.value||'0',10)||0; return clamp4(v); });
+        var sum = ev.reduce(function(a,b){ return a+b; }, 0);
+        var label = q('.evsum',card);
+        if(label){ label.textContent = '合計 EV: '+sum+' / 508'; label.style.color = (sum>508?'#ff7a7a':''); }
+      }
 
-    myList.forEach(function(me,i){
-      setV13Att(me);
-      var tr = document.createElement('tr'); var th=document.createElement('th'); th.textContent='自分#'+(i+1); th.style.position='sticky'; th.style.left='0'; th.style.background='rgba(34,41,70,.95)'; th.style.padding='.45rem'; th.style.borderRight='1px solid rgba(255,255,255,.15)'; tr.appendChild(th);
-
-      for(var j=0;j<opList.length;j+=3){
-        var batch = opList.slice(j, j+3);
-        batch.forEach(function(df, idx){ setV13Def(idx+1, df); });
-        // clear remaining slots if batch < 3
-        for(var k=batch.length+1;k<=3;k++){ setV13Def(k, {name:'', ev:{hp:0,def:0,spd:0}, rank:0}); }
-
-        var res = bestVs(me, {});
-        res.slice(0,batch.length).forEach(function(r, k){
-          var td=document.createElement('td'); td.style.padding='.4rem'; td.style.textAlign='center'; td.style.borderBottom='1px dashed rgba(255,255,255,.1)'; td.style.borderRight='1px dashed rgba(255,255,255,.08)';
-          var label = (r.out.min+'-'+r.out.max+'%');
-          td.innerHTML = '<span class=\"badge\" style=\"'+badge(r.out.max)+'\">'+label+'</span><div class=\"small\">'+(r.move.name||'—')+' / '+(r.move.type||'')+' / '+(r.move.power||0)+'</div>';
-          tr.appendChild(td);
+      function attachEVButtons(){
+        qa('#six_my .six-card').forEach(function(card){
+          qa('.ev252',card).forEach(function(btn){
+            btn.addEventListener('click', function(e){
+              e.preventDefault();
+              var input = this.previousElementSibling;
+              if(input && input.tagName==='INPUT'){ input.value = 252; input.dispatchEvent(new Event('input',{bubbles:true})); input.dispatchEvent(new Event('change',{bubbles:true})); updateEVSum(card); }
+            });
+          });
+          // EV chips
+          qa('.evchip',card).forEach(function(chip){
+            chip.addEventListener('click', function(e){
+              e.preventDefault();
+              var v = parseInt(this.getAttribute('data-ev'),10)||0;
+              qa('.row input',card).forEach(function(inp){ if(inp && !inp.classList.contains('rank')){ inp.value = v; inp.dispatchEvent(new Event('input',{bubbles:true})); inp.dispatchEvent(new Event('change',{bubbles:true})); } });
+              updateEVSum(card);
+            });
+          });
+          qa('.row input',card).forEach(function(inp){
+            if(!inp.classList.contains('rank')){
+              inp.addEventListener('input', function(){ this.value = clamp4(this.value); updateEVSum(card); }, true);
+              inp.addEventListener('change', function(){ this.value = clamp4(this.value); updateEVSum(card); }, true);
+            }
+          });
+          updateEVSum(card);
         });
       }
-      tbody.appendChild(tr);
-    });
-    tbl.appendChild(tbody);
-  }
 
-  // Selection & auto-log
-  var LOG=[];
-  function addLog(txt){ var t=new Date(); var row={time:t.toLocaleTimeString(), text:txt}; LOG.push(row); var el=document.createElement('div'); el.className='logitem'; el.style.borderBottom='1px dashed rgba(255,255,255,.1)'; el.style.padding='.35rem 0'; el.innerHTML='<span class=\"small\" style=\"opacity:.85\">'+row.time+'</span> — '+row.text; document.getElementById('six_log').prepend(el); }
-  function onSelChange(){
-    var my = qa('#six_my .six_sel:checked').map(function(el){ return '#'+(parseInt(el.closest('.six-card').dataset.ix,10)+1); });
-    var op = qa('#six_opp .six_sel:checked').map(function(el){ return '#'+(parseInt(el.closest('.six-card').dataset.ix,10)+1); });
-    if(my.length>3){ this.checked=false; return; }
-    if(op.length>3){ this.checked=false; return; }
-    addLog('選出: 自分 {'+my.join(', ')+'} vs 相手 {'+op.join(', ')+'}');
-  }
-  q('#six_wrap').addEventListener('change', function(e){ if(e.target.classList.contains('six_sel')) onSelChange.call(e.target); }, true);
-  q('#six_add_note').addEventListener('click', function(){ var v=q('#six_note').value.trim(); if(!v) return; addLog('メモ: '+v); q('#six_note').value=''; });
-  q('#six_export_json').addEventListener('click', function(){ var txt=JSON.stringify(LOG,null,2); navigator.clipboard.writeText(txt).then(function(){ addLog('ログJSONをコピーしました'); }); });
-
-  q('#six_calc_all').addEventListener('click', rebuildMatrix);
-
-  // Attach EV helpers
-  attachEVButtons();
-
-
-  // Modal for species selection
-  (function(){
-    var modal = document.getElementById('six_modal');
-    var list  = document.getElementById('six_modal_list');
-    var search= document.getElementById('six_modal_search');
-    var targetInput = null;
-    function show(){ modal.style.display='flex'; search.value=''; renderList(''); search.focus(); }
-    function hide(){ modal.style.display='none'; targetInput=null; }
-    function getSpecies(){
-      if(window.POKE && window.POKE.length) return window.POKE;
-      if(typeof POKE_INLINE!=='undefined') return POKE_INLINE;
-      return [];
-    }
-    function renderList(q){
-      var arr = getSpecies();
-      var out = [];
-      q = (q||'').trim();
-      for(var i=0;i<arr.length;i++){
-        var n = arr[i]['名前'] || arr[i].name || '';
-        if(!q || n.indexOf(q)>=0) out.push(n);
+      function setV13Att(att){
+        if(q('#v13_atk_name')){ q('#v13_atk_name').value = att.name; q('#v13_atk_name').dispatchEvent(new Event('change',{bubbles:true})); }
+        if(q('#v13_atk_ev_HP')) q('#v13_atk_ev_HP').value = att.ev.hp;
+        if(q('#v13_atk_ev_攻撃')) q('#v13_atk_ev_攻撃').value = att.ev.atk;
+        if(q('#v13_atk_ev_特攻')) q('#v13_atk_ev_特攻').value = att.ev.spa;
+        if(q('#v13_atk_rank')) q('#v13_atk_rank').value = att.rank;
       }
-      out = out.slice(0, 400); // cap for performance
-      list.innerHTML = out.map(function(nm){ return '<button class="pick" style="display:block;width:100%;text-align:left;padding:.35rem .5rem;border:1px solid rgba(255,255,255,.12);background:#1a2748;color:#fff;border-radius:8px;margin-bottom:6px;">'+nm+'</button>'; }).join('');
-    }
-    search.addEventListener('input', function(){ renderList(this.value); });
-    list.addEventListener('click', function(e){
-      if(e.target.classList.contains('pick')){
-        if(targetInput){ targetInput.value = e.target.textContent.trim(); targetInput.dispatchEvent(new Event('input',{bubbles:true})); targetInput.dispatchEvent(new Event('change',{bubbles:true})); }
-        hide();
+      function setV13Def(i,deff){
+        if(q('#v13_def'+i+'_name')){ q('#v13_def'+i+'_name').value = deff.name; q('#v13_def'+i+'_name').dispatchEvent(new Event('change',{bubbles:true})); }
+        if(q('#v13_def'+i+'_ev_HP')) q('#v13_def'+i+'_ev_HP').value = deff.ev.hp;
+        if(q('#v13_def'+i+'_ev_防御')) q('#v13_def'+i+'_ev_防御').value = deff.ev.def;
+        if(q('#v13_def'+i+'_ev_特防')) q('#v13_def'+i+'_ev_特防').value = deff.ev.spd;
+        if(q('#v13_def_rank')) q('#v13_def_rank').value = deff.rank;
       }
-    });
-    document.getElementById('six_modal_close').addEventListener('click', hide);
-    modal.addEventListener('click', function(e){ if(e.target===modal) hide(); });
+      function setMove(m){
+        if(q('#v13_move_name')) q('#v13_move_name').value = m.name;
+        if(q('#v13_move_power')) q('#v13_move_power').value = m.power;
+        if(q('#v13_move_type')) q('#v13_move_type').value = m.type;
+        if(q('#v13_move_cat')) q('#v13_move_cat').value = m.cat;
+      }
+      function readOut(i){
+        var el=q('#v13_out'+i);
+        if(!el) return {min:0,max:0,label:'—'};
+        var s = el.value || el.textContent || '';
+        var m = s.match(/(\d+)\s*〜\s*(\d+)/);
+        if(m){ return {min:parseInt(m[1],10)||0, max:parseInt(m[2],10)||0, label:s}; }
+        return {min:0,max:0,label:s||'—'};
+      }
+      function badge(pct){ if(pct>=70) return 'background:#ff7a7a;color:#180000;'; if(pct>=40) return 'background:#ffe07a;color:#302000;'; return 'background:#7ab8ff;color:#001428;'; }
 
-    // Bind buttons
-    document.querySelectorAll('#six .name_search').forEach(function(btn){
-      btn.addEventListener('click', function(e){
-        e.preventDefault();
-        targetInput = this.previousElementSibling; // the input.name
-        show();
-      });
-    });
-  })();
+      function bestVs(att, deff){
+        var results = [];
+        att.moves.forEach(function(mv){
+          if(!mv.power || !mv.type) return;
+          setMove(mv);
+          for(var i=1;i<=3;i++){ if(window.simpleDamageOne) window.simpleDamageOne(i); }
+          for(var i=1;i<=3;i++){
+            var out = readOut(i);
+            if(!results[i-1] || out.max > results[i-1].out.max){ results[i-1] = {out:out, move:mv}; }
+          }
+        });
+        if(results.length===0){ for(var i=0;i<3;i++) results[i]={out:{min:0,max:0,label:'—'}, move:{name:'—',type:'',power:0}}; }
+        return results;
+      }
+
+      function rebuildMatrix(){
+        var wrap = document.getElementById('six_wrap'); if(!wrap) return;
+        var myCards = qa('#six_my .six-card'); var opCards = qa('#six_opp .six-card');
+        var tbl = document.getElementById('six_matrix'); if(!tbl) return;
+        tbl.innerHTML='';
+
+        // header
+        var thead = document.createElement('thead'); var trh = document.createElement('tr'); trh.appendChild(document.createElement('th'));
+        opCards.forEach(function(_,j){ var th=document.createElement('th'); th.textContent='相手#'+(j+1); th.style.position='sticky'; th.style.top='0'; th.style.background='rgba(34,41,70,.95)'; th.style.padding='.45rem'; th.style.borderBottom='1px solid rgba(255,255,255,.15)'; trh.appendChild(th); });
+        thead.appendChild(trh); tbl.appendChild(thead);
+        var tbody = document.createElement('tbody');
+
+        myCards.forEach(function(card,i){
+          var me = readCard(card);
+          setV13Att(me);
+          var tr = document.createElement('tr'); var th=document.createElement('th'); th.textContent='自分#'+(i+1); th.style.position='sticky'; th.style.left='0'; th.style.background='rgba(34,41,70,.95)'; th.style.padding='.45rem'; th.style.borderRight='1px solid rgba(255,255,255,.15)'; tr.appendChild(th);
+
+          for(var j=0;j<opCards.length;j+=3){
+            var batchCards = opCards.slice(j, j+3);
+            batchCards.forEach(function(dfCard, idx){ setV13Def(idx+1, readCard(dfCard)); });
+            for(var k=batchCards.length+1;k<=3;k++){ setV13Def(k, {name:'', ev:{hp:0,def:0,spd:0}, rank:0}); }
+
+            var res = bestVs(me, {});
+            res.slice(0,batchCards.length).forEach(function(r, k){
+              var td=document.createElement('td'); td.style.padding='.4rem'; td.style.textAlign='center'; td.style.borderBottom='1px dashed rgba(255,255,255,.1)'; td.style.borderRight='1px dashed rgba(255,255,255,.08)';
+              var label = (r.out.min+'-'+r.out.max+'%');
+              td.innerHTML = '<span class="badge" style="'+badge(r.out.max)+'">'+label+'</span><div class="small">'+(r.move.name||'—')+' / '+(r.move.type||'')+' / '+(r.move.power||0)+'</div>';
+              tr.appendChild(td);
+            });
+          }
+          tbody.appendChild(tr);
+        });
+        tbl.appendChild(tbody);
+      }
+
+      // Selection & auto-log
+      var LOG=[];
+      function addLog(txt){ var t=new Date(); var row={time:t.toLocaleTimeString(), text:txt}; LOG.push(row); var el=document.createElement('div'); el.className='logitem'; el.style.borderBottom='1px dashed rgba(255,255,255,.1)'; el.style.padding='.35rem 0'; el.innerHTML='<span class="small" style="opacity:.85">'+row.time+'</span> — '+row.text; var logBox=document.getElementById('six_log'); if(logBox) logBox.prepend(el); }
+      function onSelChange(target){
+        var my = qa('#six_my .six_sel:checked').map(function(el){ return '#'+(parseInt(el.closest('.six-card').dataset.ix,10)+1); });
+        var op = qa('#six_opp .six_sel:checked').map(function(el){ return '#'+(parseInt(el.closest('.six-card').dataset.ix,10)+1); });
+        if(my.length>3){ if(target) target.checked=false; return; }
+        if(op.length>3){ if(target) target.checked=false; return; }
+        addLog('選出: 自分 {'+my.join(', ')+'} vs 相手 {'+op.join(', ')+'}');
+      }
+
+      var wrap = document.getElementById('six_wrap');
+      if(wrap){
+        wrap.addEventListener('change', function(e){ if(e.target.classList.contains('six_sel')) onSelChange(e.target); }, true);
+        wrap.addEventListener('click', function(e){
+          if(e.target.classList.contains('name_search')){
+            e.preventDefault();
+            var modal = document.getElementById('six_modal'); if(!modal) return;
+            var list  = document.getElementById('six_modal_list');
+            var search= document.getElementById('six_modal_search');
+            var targetInput = e.target.previousElementSibling;
+            function show(){ modal.style.display='flex'; if(search){ search.value=''; renderList(''); search.focus(); } }
+            function hide(){ modal.style.display='none'; }
+            function getSpecies(){
+              if(window.POKE && window.POKE.length) return window.POKE;
+              if(typeof POKE_INLINE!=='undefined') return POKE_INLINE;
+              return [];
+            }
+            function renderList(q){
+              if(!list) return;
+              var arr = getSpecies();
+              var out = [];
+              q = (q||'').trim();
+              for(var i=0;i<arr.length;i++){
+                var n = arr[i]['名前'] || arr[i].name || '';
+                if(!q || n.indexOf(q)>=0) out.push(n);
+              }
+              out = out.slice(0, 400);
+              list.innerHTML = out.map(function(nm){ return '<button class="pick" style="display:block;width:100%;text-align:left;padding:.35rem .5rem;border:1px solid rgba(255,255,255,.12);background:#1a2748;color:#fff;border-radius:8px;margin-bottom:6px;">'+nm+'</button>'; }).join('');
+            }
+            if(search) search.oninput = function(){ renderList(this.value); };
+            if(list) list.onclick = function(ev){
+              if(ev.target.classList.contains('pick')){
+                if(targetInput){ targetInput.value = ev.target.textContent.trim(); targetInput.dispatchEvent(new Event('input',{bubbles:true})); targetInput.dispatchEvent(new Event('change',{bubbles:true})); }
+                hide();
+              }
+            };
+            var closeBtn = document.getElementById('six_modal_close'); if(closeBtn) closeBtn.onclick = hide;
+            modal.onclick = function(ev){ if(ev.target===modal) hide(); };
+            show();
+          }
+        });
+      }
+
+      var btnCalc = document.getElementById('six_calc_all'); if(btnCalc) btnCalc.addEventListener('click', rebuildMatrix);
+      var btnNote = document.getElementById('six_add_note'); if(btnNote) btnNote.addEventListener('click', function(){ var v=document.getElementById('six_note'); if(!v) return; var t=v.value.trim(); if(!t) return; addLog('メモ: '+t); v.value=''; });
+      var btnJson = document.getElementById('six_export_json'); if(btnJson) btnJson.addEventListener('click', function(){ var txt=JSON.stringify(LOG,null,2); navigator.clipboard.writeText(txt).then(function(){ addLog('ログJSONをコピーしました'); }); });
+
+      attachEVButtons();
+    }catch(err){ console.error('6x6 init error:', err); }
+  }
+  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', init); } else { init(); }
 })();</script>
 <div id="six_modal" style="position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:9999;">
 <div style="position:absolute;inset:0;background:rgba(0,0,0,.55);"></div>
