@@ -145,7 +145,7 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
 </div>
 </fieldset>
 </div>
-<input id="v13_def1_t1" type="hidden"/><input id="v13_def1_t2" type="hidden"/><input id="v13_def2_t1" type="hidden"/><input id="v13_def2_t2" type="hidden"/><input id="v13_def3_t1" type="hidden"/><input id="v13_def3_t2" type="hidden"/></section><section aria-labelledby="tab-six" id="six" role="tabpanel">
+<input id="v13_def1_t1" type="hidden"/><input id="v13_def1_t2" type="hidden"/><input id="v13_def2_t1" type="hidden"/><input id="v13_def2_t2" type="hidden"/><input id="v13_def3_t1" type="hidden"/><input id="v13_def3_t2" type="hidden"/></section><section aria-labelledby="tab-six" id="six" role="tabpanel" style=" display:none">
 <div class="six-wrap" id="six_wrap" style="margin-top:.8rem;">
 <div class="six-topbar" style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;position:sticky;top:8px;background:rgba(25,32,56,.85);padding:.5rem .75rem;border:1px solid rgba(255,255,255,.15);border-radius:10px;">
 <strong>6対6プランナー</strong>
@@ -984,5 +984,41 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
   const cont = document.getElementById('details_content');
   if(head && cont){ head.addEventListener('click', ()=>{ cont.classList.toggle('show'); }); }
 })();
-</script></body>
+</script>
+<script>
+(function(){
+  function showSix(flag){
+    var sec = document.getElementById('six');
+    if(!sec) return;
+    sec.style.display = flag ? '' : 'none';
+  }
+  function isSixTab(el){
+    return el && el.classList && el.classList.contains('tab') && (el.dataset && el.dataset.tabTarget === '#six');
+  }
+  function handleTabClick(e){
+    var t = e.target;
+    if(!t) return;
+    // bubble up to button.tab
+    while(t && !(t.classList && t.classList.contains('tab'))) t = t.parentElement;
+    if(!t) return;
+    if(isSixTab(t)) showSix(true); else showSix(false);
+  }
+  document.addEventListener('click', handleTabClick, true);
+  // On load, if six's tab is not selected, keep it hidden.
+  document.addEventListener('DOMContentLoaded', function(){
+    var active = document.querySelector('.tab[aria-selected="true"], .tab.active');
+    if(active && active.dataset && active.dataset.tabTarget === '#six') showSix(true); else showSix(false);
+    // Defensive: remove stray 252 buttons under rank inputs (if any)
+    document.querySelectorAll('#six .six-card .row .rank').forEach(function(inp){
+      var parent = inp.closest('label'); if(!parent) return;
+      parent.querySelectorAll('.ev252').forEach(function(b){ b.remove(); });
+    });
+  });
+  window.addEventListener('hashchange', function(){
+    var active = document.querySelector('.tab[aria-selected="true"], .tab.active');
+    if(active && active.dataset && active.dataset.tabTarget === '#six') showSix(true); else showSix(false);
+  });
+})();
+</script>
+</body>
 </html>
