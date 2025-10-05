@@ -193,7 +193,7 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
 <div class="row" style="display:grid;grid-template-columns:repeat(2,minmax(200px,1fr));gap:.35rem;margin:.3rem 0; align-items:end;">
 <label>ポケモン<input class="name" inputmode="search" list="dl_poke" placeholder="例: ピカチュウ" type="text"/><button class="name_search" style="margin-left:.35rem;padding:.25rem .55rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">検索</button></label>
 </div>
-<button class="moves_toggle" style="margin-top:.3rem;padding:.25rem .55rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">技詳細を表示</button><div class="moves" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem;; display:none;">
+<button class="moves_toggle" style="margin-top:.3rem;padding:.25rem .55rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">技詳細を表示</button><div class="moves_hint small" style="opacity:.75;margin:.25rem 0 .2rem;">※ マトリクスは下の「技1〜4」の威力/タイプ/分類を使って計算します</div><div class="moves" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem;; display:none;">
 <input class="m1n" list="dl_move" placeholder="技1 名"/><input class="m1p" placeholder="威力" type="number"/><select class="m1t"></select><select class="m1c"><option>物理</option><option>特殊</option></select>
 <input class="m2n" list="dl_move" placeholder="技2 名"/><input class="m2p" placeholder="威力" type="number"/><select class="m2t"></select><select class="m2c"><option>物理</option><option>特殊</option></select>
 <input class="m3n" list="dl_move" placeholder="技3 名"/><input class="m3p" placeholder="威力" type="number"/><select class="m3t"></select><select class="m3c"><option>物理</option><option>特殊</option></select>
@@ -216,7 +216,7 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
 <div class="row" style="display:grid;grid-template-columns:repeat(2,minmax(200px,1fr));gap:.35rem;margin:.3rem 0; align-items:end;">
 <label>ポケモン<input class="name" inputmode="search" list="dl_poke" placeholder="例: ピカチュウ" type="text"/><button class="name_search" style="margin-left:.35rem;padding:.25rem .55rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">検索</button></label>
 </div>
-<button class="moves_toggle" style="margin-top:.3rem;padding:.25rem .55rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">技詳細を表示</button><div class="moves" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem;; display:none;">
+<button class="moves_toggle" style="margin-top:.3rem;padding:.25rem .55rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">技詳細を表示</button><div class="moves_hint small" style="opacity:.75;margin:.25rem 0 .2rem;">※ マトリクスは下の「技1〜4」の威力/タイプ/分類を使って計算します</div><div class="moves" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem;; display:none;">
 <input class="m1n" list="dl_move" placeholder="技1 名"/><input class="m1p" placeholder="威力" type="number"/><select class="m1t"></select><select class="m1c"><option>物理</option><option>特殊</option></select>
 <input class="m2n" list="dl_move" placeholder="技2 名"/><input class="m2p" placeholder="威力" type="number"/><select class="m2t"></select><select class="m2c"><option>物理</option><option>特殊</option></select>
 <input class="m3n" list="dl_move" placeholder="技3 名"/><input class="m3p" placeholder="威力" type="number"/><select class="m3t"></select><select class="m3c"><option>物理</option><option>特殊</option></select>
@@ -239,7 +239,7 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
 <div class="row" style="display:grid;grid-template-columns:repeat(2,minmax(200px,1fr));gap:.35rem;margin:.3rem 0; align-items:end;">
 <label>ポケモン<input class="name" inputmode="search" list="dl_poke" placeholder="例: ピカチュウ" type="text"/><button class="name_search" style="margin-left:.35rem;padding:.25rem .55rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">検索</button></label>
 </div>
-<button class="moves_toggle" style="margin-top:.3rem;padding:.25rem .55rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">技詳細を表示</button><div class="moves" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem;; display:none;">
+<button class="moves_toggle" style="margin-top:.3rem;padding:.25rem .55rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">技詳細を表示</button><div class="moves_hint small" style="opacity:.75;margin:.25rem 0 .2rem;">※ マトリクスは下の「技1〜4」の威力/タイプ/分類を使って計算します</div><div class="moves" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem;; display:none;">
 <input class="m1n" list="dl_move" placeholder="技1 名"/><input class="m1p" placeholder="威力" type="number"/><select class="m1t"></select><select class="m1c"><option>物理</option><option>特殊</option></select>
 <input class="m2n" list="dl_move" placeholder="技2 名"/><input class="m2p" placeholder="威力" type="number"/><select class="m2t"></select><select class="m2c"><option>物理</option><option>特殊</option></select>
 <input class="m3n" list="dl_move" placeholder="技3 名"/><input class="m3p" placeholder="威力" type="number"/><select class="m3t"></select><select class="m3c"><option>物理</option><option>特殊</option></select>
@@ -262,7 +262,7 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
 <div class="row" style="display:grid;grid-template-columns:repeat(2,minmax(200px,1fr));gap:.35rem;margin:.3rem 0; align-items:end;">
 <label>ポケモン<input class="name" inputmode="search" list="dl_poke" placeholder="例: ピカチュウ" type="text"/><button class="name_search" style="margin-left:.35rem;padding:.25rem .55rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">検索</button></label>
 </div>
-<button class="moves_toggle" style="margin-top:.3rem;padding:.25rem .55rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">技詳細を表示</button><div class="moves" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem;; display:none;">
+<button class="moves_toggle" style="margin-top:.3rem;padding:.25rem .55rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">技詳細を表示</button><div class="moves_hint small" style="opacity:.75;margin:.25rem 0 .2rem;">※ マトリクスは下の「技1〜4」の威力/タイプ/分類を使って計算します</div><div class="moves" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem;; display:none;">
 <input class="m1n" list="dl_move" placeholder="技1 名"/><input class="m1p" placeholder="威力" type="number"/><select class="m1t"></select><select class="m1c"><option>物理</option><option>特殊</option></select>
 <input class="m2n" list="dl_move" placeholder="技2 名"/><input class="m2p" placeholder="威力" type="number"/><select class="m2t"></select><select class="m2c"><option>物理</option><option>特殊</option></select>
 <input class="m3n" list="dl_move" placeholder="技3 名"/><input class="m3p" placeholder="威力" type="number"/><select class="m3t"></select><select class="m3c"><option>物理</option><option>特殊</option></select>
@@ -285,7 +285,7 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
 <div class="row" style="display:grid;grid-template-columns:repeat(2,minmax(200px,1fr));gap:.35rem;margin:.3rem 0; align-items:end;">
 <label>ポケモン<input class="name" inputmode="search" list="dl_poke" placeholder="例: ピカチュウ" type="text"/><button class="name_search" style="margin-left:.35rem;padding:.25rem .55rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">検索</button></label>
 </div>
-<button class="moves_toggle" style="margin-top:.3rem;padding:.25rem .55rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">技詳細を表示</button><div class="moves" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem;; display:none;">
+<button class="moves_toggle" style="margin-top:.3rem;padding:.25rem .55rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">技詳細を表示</button><div class="moves_hint small" style="opacity:.75;margin:.25rem 0 .2rem;">※ マトリクスは下の「技1〜4」の威力/タイプ/分類を使って計算します</div><div class="moves" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem;; display:none;">
 <input class="m1n" list="dl_move" placeholder="技1 名"/><input class="m1p" placeholder="威力" type="number"/><select class="m1t"></select><select class="m1c"><option>物理</option><option>特殊</option></select>
 <input class="m2n" list="dl_move" placeholder="技2 名"/><input class="m2p" placeholder="威力" type="number"/><select class="m2t"></select><select class="m2c"><option>物理</option><option>特殊</option></select>
 <input class="m3n" list="dl_move" placeholder="技3 名"/><input class="m3p" placeholder="威力" type="number"/><select class="m3t"></select><select class="m3c"><option>物理</option><option>特殊</option></select>
@@ -308,7 +308,7 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
 <div class="row" style="display:grid;grid-template-columns:repeat(2,minmax(200px,1fr));gap:.35rem;margin:.3rem 0; align-items:end;">
 <label>ポケモン<input class="name" inputmode="search" list="dl_poke" placeholder="例: ピカチュウ" type="text"/><button class="name_search" style="margin-left:.35rem;padding:.25rem .55rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">検索</button></label>
 </div>
-<button class="moves_toggle" style="margin-top:.3rem;padding:.25rem .55rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">技詳細を表示</button><div class="moves" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem;; display:none;">
+<button class="moves_toggle" style="margin-top:.3rem;padding:.25rem .55rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">技詳細を表示</button><div class="moves_hint small" style="opacity:.75;margin:.25rem 0 .2rem;">※ マトリクスは下の「技1〜4」の威力/タイプ/分類を使って計算します</div><div class="moves" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem;; display:none;">
 <input class="m1n" list="dl_move" placeholder="技1 名"/><input class="m1p" placeholder="威力" type="number"/><select class="m1t"></select><select class="m1c"><option>物理</option><option>特殊</option></select>
 <input class="m2n" list="dl_move" placeholder="技2 名"/><input class="m2p" placeholder="威力" type="number"/><select class="m2t"></select><select class="m2c"><option>物理</option><option>特殊</option></select>
 <input class="m3n" list="dl_move" placeholder="技3 名"/><input class="m3p" placeholder="威力" type="number"/><select class="m3t"></select><select class="m3c"><option>物理</option><option>特殊</option></select>
@@ -760,6 +760,19 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
             var hidden = (evrow.style.display==='none');
             evrow.style.display = hidden ? '' : 'none';
             tgt.textContent = hidden ? 'EV詳細を隠す' : 'EV詳細を表示';
+          }
+          return;
+        }
+      
+        if(tgt.classList && tgt.classList.contains('moves_toggle')){
+          e.preventDefault();
+          var card = tgt.closest('.six-card');
+          var mv = card ? card.querySelector('.moves') : null;
+          if(mv){
+            var hidden = (mv.style.display==='none');
+            mv.style.display = hidden ? '' : 'none';
+            tgt.classList.toggle('active', hidden);
+            tgt.textContent = hidden ? '技詳細を隠す' : '技詳細を表示';
           }
           return;
         }
