@@ -98,7 +98,7 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
 #six .six-card{ margin-bottom:.5rem; }
 #six .moves_toggle.active{ background:#35507f; }
 #six .my-preset.active, #six .opp-preset.active{ background:#3a4f7a !important; }
-</style></head>
+</style><datalist id="dl_pokemon"></datalist><datalist id="dl_moves"></datalist></head>
 <body>
 <header class="topbar">
 <div class="brand">計算機 <span class="badge">v36</span></div>
@@ -184,6 +184,16 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
 <input checked="" id="six_move_autofill" type="checkbox"/>
     技名から威力/タイプ/分類を自動反映
   </label>
+</div><div id="opp_party_loader" style="display:flex; gap:.5rem; align-items:center; flex-wrap:wrap; margin:.25rem 0 .6rem;">
+<label class="small" style="opacity:.9;">相手パーティー：</label>
+<select id="opp_ev_policy" style="background:#1f2947;color:#fff;border:1px solid rgba(122,162,255,.55);border-radius:8px;padding:.35rem .6rem;">
+<option value="H252D252">EV自動: H252D252</option>
+<option value="H252B252">EV自動: H252B252</option>
+<option value="C252S252">EV自動: C252S252</option>
+<option value="A252S252">EV自動: A252S252</option>
+<option value="無振り">EV自動: 無振り</option>
+</select>
+<button class="btn" id="opp_party_from_json" style="padding:.35rem .7rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">構築JSONから相手へ</button>
 </div>
 <div class="six-wrap" id="six_wrap" style="margin-top:.8rem;">
 <div class="six-topbar" style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;position:sticky;top:8px;background:rgba(25,32,56,.85);padding:.5rem .75rem;border:1px solid rgba(255,255,255,.15);border-radius:10px;">
@@ -1518,5 +1528,112 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
 
   // initial render
   renderPartyList();
+})();</script><script>
+(function(){
+  function q(sel,root){ return (root||document).querySelector(sel); }
+  function qa(sel,root){ return Array.prototype.slice.call((root||document).querySelectorAll(sel)); }
+  function getSpecies(){ if(window.POKE && window.POKE.length) return window.POKE; if(typeof POKE_INLINE!=='undefined') return POKE_INLINE; return []; }
+  function getMoves(){ if(window.MOVES && window.MOVES.length) return window.MOVES; if(typeof MOVES_INLINE!=='undefined') return MOVES_INLINE; return []; }
+
+  function fillDatalists(){
+    var dlp = q('#dl_pokemon'), dlm = q('#dl_moves'); if(!dlp || !dlm) return;
+    if(!dlp.__filled){
+      var sp = getSpecies(); var html='';
+      for(var i=0;i<sp.length;i++){ var n = sp[i]['名前'] || sp[i].name || ''; if(n) html += '<option value="'+n+'"></option>'; }
+      dlp.innerHTML = html; dlp.__filled = true;
+    }
+    if(!dlm.__filled){
+      var mv = getMoves(); var html2='';
+      for(var j=0;j<mv.length;j++){ var n = mv[j]['技名'] || mv[j]['技'] || mv[j]['わざ'] || mv[j]['name'] || mv[j]['Name'] || ''; if(n) html2 += '<option value="'+n+'"></option>'; }
+      dlm.innerHTML = html2; dlm.__filled = true;
+    }
+  }
+  function assignLists(){
+    // Party tab
+    qa('#party .party-card .p_name').forEach(function(el){ el.setAttribute('list','dl_pokemon'); });
+    for(var k=1;k<=4;k++){ qa('#party .party-card .p_m'+k).forEach(function(el){ el.setAttribute('list','dl_moves'); }); }
+    // (Optional) 6x6 my moves too
+    for(var k=1;k<=4;k++){ qa('#six_my .six-card .m'+k+'n').forEach(function(el){ el.setAttribute('list','dl_moves'); }); }
+  }
+  function init(){
+    try{ if(window.ensurePoke) ensurePoke(); }catch(e){}
+    fillDatalists();
+    assignLists();
+  }
+  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', init); } else { init(); }
+})();</script><div id="opp_json_modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.55); align-items:center; justify-content:center; z-index:9999;"></div><script>
+(function(){
+  function q(sel,root){ return (root||document).querySelector(sel); }
+  function qa(sel,root){ return Array.prototype.slice.call((root||document).querySelectorAll(sel)); }
+  function applyEVPolicy(card, policy){
+    card.dataset.evHp = card.dataset.evDef = card.dataset.evSpd = card.dataset.evAtk = card.dataset.evSpe = card.dataset.evSpA = '0';
+    if(policy==='H252D252'){ card.dataset.evHp='252'; card.dataset.evSpd='252'; }
+    else if(policy==='H252B252'){ card.dataset.evHp='252'; card.dataset.evDef='252'; }
+    else if(policy==='C252S252'){ card.dataset.evSpA='252'; card.dataset.evSpe='252'; }
+    else if(policy==='A252S252'){ card.dataset.evAtk='252'; card.dataset.evSpe='252'; }
+    // 無振り -> all zero
+  }
+  function parseBuildJSON(txt){
+    try{
+      var obj = JSON.parse(txt);
+      // Accept formats: {party:[{name,tera,item},...] } or simple array
+      if(Array.isArray(obj)) return obj;
+      if(obj && Array.isArray(obj.party)) return obj.party;
+      if(obj && Array.isArray(obj.pokemon)) return obj.pokemon;
+      return [];
+    }catch(e){ return []; }
+  }
+  function applyOppParty(list){
+    var cards = qa('#six_opp .six-card');
+    var policySel = q('#opp_ev_policy');
+    var policy = policySel ? policySel.value : 'H252D252';
+    for(var i=0;i<cards.length;i++){
+      var d = list[i] || {};
+      var card = cards[i];
+      var nm = d.name || d.名前 || '';
+      var tera = d.tera || d.テラスタイプ || d.テラス || '';
+      var item = d.item || d.持ち物 || '';
+      var nameInput = card.querySelector('.name');
+      if(nameInput){
+        nameInput.value = nm;
+        nameInput.dispatchEvent(new Event('input',{bubbles:true}));
+        nameInput.dispatchEvent(new Event('change',{bubbles:true}));
+      }
+      // store for future
+      card.dataset.tera = tera;
+      card.dataset.item = item;
+      // apply EV policy
+      applyEVPolicy(card, policy);
+      // visual: preset active highlight
+      qa('.opp-preset',card).forEach(function(b){ b.classList.remove('active'); });
+      // no button to match policy necessarily; just status line
+      var st = q('.opp-preset-status', card); if(st) st.textContent = '適用: ' + policy;
+    }
+  }
+
+  // Modal wiring
+  var btn = q('#opp_party_from_json');
+  if(btn){
+    btn.addEventListener('click', function(){
+      var modal = q('#opp_json_modal'); if(modal) modal.style.display='flex';
+    });
+  }
+  var btnClose = q('#opp_json_close');
+  if(btnClose){
+    btnClose.addEventListener('click', function(){ var modal=q('#opp_json_modal'); if(modal) modal.style.display='none'; });
+  }
+  var btnApply = q('#opp_json_apply');
+  if(btnApply){
+    btnApply.addEventListener('click', function(){
+      var ta = q('#opp_json_text'); if(!ta) return;
+      var list = parseBuildJSON(ta.value||'[]');
+      if(list && list.length){
+        applyOppParty(list);
+        var modal=q('#opp_json_modal'); if(modal) modal.style.display='none';
+      }else{
+        alert('JSONの形式が認識できませんでした。 [ {\"name\":\"ピカチュウ\",\"tera\":\"でんき\",\"item\":\"でんきだま\"}, … ] の配列形式を推奨します。');
+      }
+    });
+  }
 })();</script></body>
 </html>
