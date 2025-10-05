@@ -29,6 +29,48 @@ label[for="v13_def3_t1"], label[for="v13_def3_t2"] {
 #tera_type_select{ padding:.3rem .4rem; border-radius:6px; border:1px solid #bbb; }
 #copy_toast{ position:fixed; right:12px; bottom:12px; background:#222; color:#fff; padding:.5rem .7rem; border-radius:6px; opacity:.95; display:none; z-index:9999; }
 #tera_status_badge{ display:inline-block; padding:.25rem .5rem; border-radius:999px; border:1px solid #444; background:#ffecc7; font-weight:600; }
+
+
+/* --- Share/Tera Bar Visibility --- */
+#share_bar{
+  position: sticky; top: 8px; z-index: 100;
+  display:flex; gap:.6rem; align-items:center; flex-wrap:wrap;
+  margin:.6rem 0 1.1rem;
+  background: rgba(30, 35, 50, 0.9);
+  border: 1px solid rgba(255,255,255,0.18);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+  border-radius: 10px; padding:.6rem .8rem;
+  backdrop-filter: blur(4px);
+}
+#share_copy_btn, #tera_toggle_box{
+  cursor:pointer; user-select:none;
+  border:1px solid rgba(255,255,255,0.25);
+  border-radius: 8px; padding:.45rem .7rem; font-size:1rem;
+  background: rgba(255,255,255,0.08); color:#fff;
+}
+#tera_type_select{
+  padding:.42rem .5rem; border-radius: 8px;
+  border:1px solid rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.08); color:#fff;
+}
+#tera_status_badge{
+  display:inline-block; padding:.35rem .7rem; border-radius: 999px;
+  border:1px solid #ffcc33; background:#ffcc33; color:#1a1a1a; font-weight:700;
+}
+#copy_toast{ position:fixed; right:12px; bottom:12px; background:#222; color:#fff; padding:.5rem .7rem; border-radius:6px; opacity:.95; display:none; z-index:9999; }
+#details_panel{
+  margin:.2rem 0 1.2rem; border:1px dashed rgba(255,255,255,0.25); border-radius:10px; padding:.6rem .8rem;
+  background: rgba(30, 35, 50, 0.6); color:#fff;
+}
+#details_header{ display:flex; align-items:center; gap:.6rem; cursor:pointer; user-select:none; font-weight:700; }
+#details_content{ margin-top:.6rem; display:none; }
+#details_content.show{ display:block; }
+.details_grid{ display:grid; gap:.6rem; grid-template-columns: repeat(auto-fit,minmax(200px,1fr)); }
+.select_like, .checkbox_group{
+  border:1px solid rgba(255,255,255,0.25); border-radius:8px; padding:.45rem .6rem; background: rgba(255,255,255,0.05);
+}
+#auto_mod_info{ font-size:.9rem; opacity:.85; margin-top:.4rem; }
+label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
 </style></head>
 <body>
 <header class="topbar">
@@ -50,7 +92,7 @@ label[for="v13_def3_t1"], label[for="v13_def3_t2"] {
 </div>
 </header>
 <main>
-<section class="panel active" id="calc" role="tabpanel"><div id="share_bar"><button id="share_copy_btn">共有URLをコピー</button><label id="tera_toggle_box"><input id="tera_on" type="checkbox"/><span>テラスタル適用</span></label><select id="tera_type_select"><option value="">（未選択）</option><option value="ノーマル">ノーマル</option><option value="ほのお">ほのお</option><option value="みず">みず</option><option value="でんき">でんき</option><option value="くさ">くさ</option><option value="こおり">こおり</option><option value="かくとう">かくとう</option><option value="どく">どく</option><option value="じめん">じめん</option><option value="ひこう">ひこう</option><option value="エスパー">エスパー</option><option value="むし">むし</option><option value="いわ">いわ</option><option value="ゴースト">ゴースト</option><option value="ドラゴン">ドラゴン</option><option value="あく">あく</option><option value="はがね">はがね</option><option value="フェアリー">フェアリー</option></select><span id="tera_status_badge">テラOFF</span></div>
+<section class="panel active" id="calc" role="tabpanel"><div id="share_bar"><button id="share_copy_btn">共有URLをコピー</button><label id="tera_toggle_box"><input id="tera_on" type="checkbox"/><span>テラスタル適用</span></label><select id="tera_type_select"><option value="">（未選択）</option><option value="ノーマル">ノーマル</option><option value="ほのお">ほのお</option><option value="みず">みず</option><option value="でんき">でんき</option><option value="くさ">くさ</option><option value="こおり">こおり</option><option value="かくとう">かくとう</option><option value="どく">どく</option><option value="じめん">じめん</option><option value="ひこう">ひこう</option><option value="エスパー">エスパー</option><option value="むし">むし</option><option value="いわ">いわ</option><option value="ゴースト">ゴースト</option><option value="ドラゴン">ドラゴン</option><option value="あく">あく</option><option value="はがね">はがね</option><option value="フェアリー">フェアリー</option></select><span id="tera_status_badge">テラOFF</span></div><section id="details_panel"><div id="details_header">▼ 詳細設定（天候・壁・持ち物・特性）</div><div id="details_content"><div class="details_grid"><div class="select_like"><label for="weather_select">天候</label><select id="weather_select"><option value="">（なし）</option><option value="晴れ">晴れ</option><option value="雨">雨</option><option value="砂">砂</option><option value="雪">雪</option></select></div><div class="checkbox_group"><div>壁（シングル）</div><label class="inline"><input id="screen_reflect" type="checkbox"/>リフレクター</label><label class="inline"><input id="screen_lightscreen" type="checkbox"/>ひかりのかべ</label><label class="inline"><input id="screen_veil" type="checkbox"/>オーロラベール</label></div><div class="select_like"><label for="item_attacker">攻撃側アイテム</label><select id="item_attacker"><option value="">（なし）</option><option value="命の珠（1.3）">命の珠（1.3）</option><option value="こだわりハチマキ（1.5/物理）">こだわりハチマキ（1.5/物理）</option><option value="こだわりメガネ（1.5/特殊）">こだわりメガネ（1.5/特殊）</option></select></div><div class="select_like"><label for="item_defender">防御側アイテム</label><select id="item_defender"><option value="">（なし）</option><option value="とつげきチョッキ（1.5/特防）">とつげきチョッキ（1.5/特防）</option></select></div><div class="checkbox_group"><div>特性</div><label class="inline"><input id="abil_adaptability" type="checkbox"/>てきおうりょく（STAB2.0）</label></div></div><div id="auto_mod_info">※ ここで選んだ条件は自動的に「その他補正」に反映されます。</div></div></section>
 <h2>ダメージ計算</h2>
 <div class="grid grid-2">
 <fieldset>
@@ -207,7 +249,7 @@ label[for="v13_def3_t1"], label[for="v13_def3_t2"] {
     obs.observe(n, {childList:true, subtree:true, characterData:true});
   });
 })();
-</script><div id="build_version">SHARE+TERA v2 20251005-1247</div><div id="copy_toast">コピーしました</div><script>
+</script><div id="build_version">SHARE+TERA v3 20251005-1256</div><div id="copy_toast">コピーしました</div><script>
 (function(){
   // --- Helpers ---
   function debounce(fn, ms){
@@ -376,6 +418,99 @@ label[for="v13_def3_t1"], label[for="v13_def3_t2"] {
     if(m && m[1]){ const st = decodeState(m[1]); applyState(st); } else { syncTera(); updateURLHash(); }
   }
   document.addEventListener('DOMContentLoaded', tryRestoreFromHash);
+})();
+</script><script>
+(function(){
+  const JP_TYPES = ['ノーマル','ほのお','みず','でんき','くさ','こおり','かくとう','どく','じめん','ひこう','エスパー','むし','いわ','ゴースト','ドラゴン','あく','はがね','フェアリー'];
+  const EN_TYPES = ['Normal','Fire','Water','Electric','Grass','Ice','Fighting','Poison','Ground','Flying','Psychic','Bug','Rock','Ghost','Dragon','Dark','Steel','Fairy'];
+  const TYPES = new Set(JP_TYPES.concat(EN_TYPES));
+
+  function val(id){ const e=document.getElementById(id); if(!e) return ""; const t=(e.type||"").toLowerCase(); return (t==='checkbox')?(e.checked?1:0):e.value; }
+  function set(id,v){ const e=document.getElementById(id); if(!e) return; e.value=String(v); e.dispatchEvent(new Event('input',{bubbles:true})); e.dispatchEvent(new Event('change',{bubbles:true})); }
+  function getMoveType(){ return document.getElementById('v13_move_type')?.value || ""; }
+  function getMoveCat(){ return document.getElementById('v13_move_cat')?.value || ""; }
+  function getAtkTypes(){ return [document.getElementById('atk_t1')?.value||"", document.getElementById('atk_t2')?.value||""]; }
+  function getDefTypes(){ return [document.getElementById('def_t1')?.value||"", document.getElementById('def_t2')?.value||""]; }
+
+  function approxIsSTAB(){
+    const mt = getMoveType().trim();
+    if(!TYPES.has(mt)) return false;
+    const [t1,t2] = getAtkTypes().map(s=>s.trim());
+    return mt && (mt===t1 || mt===t2);
+  }
+
+  function computeOtherMod(){
+    let mod = 1.0;
+    const cat = getMoveCat(); // "物理"/"特殊" を想定
+    const mtype = getMoveType().trim();
+
+    // --- Weather ---
+    const w = val('weather_select');
+    if(w==='晴れ'){
+      if(/^(ほのお|Fire)$/.test(mtype)) mod *= 1.5;
+      if(/^(みず|Water)$/.test(mtype)) mod *= 0.5;
+    }else if(w==='雨'){
+      if(/^(みず|Water)$/.test(mtype)) mod *= 1.5;
+      if(/^(ほのお|Fire)$/.test(mtype)) mod *= 0.5;
+    }else if(w==='砂'){
+      // Rock-type special bulk +50% → dmg * 2/3
+      const [d1,d2] = getDefTypes();
+      if(cat==='特殊' || /Special/i.test(cat)){
+        if(/^(いわ|Rock)$/.test(d1) || /^(いわ|Rock)$/.test(d2)) mod *= (2/3);
+      }
+    }else if(w==='雪'){
+      // Ice-type physical bulk +50% → dmg * 2/3
+      const [d1,d2] = getDefTypes();
+      if(cat==='物理' || /Physical/i.test(cat)){
+        if(/^(こおり|Ice)$/.test(d1) || /^(こおり|Ice)$/.test(d2)) mod *= (2/3);
+      }
+    }
+
+    // --- Screens (single battle) ---
+    if(val('screen_reflect')){
+      if(cat==='物理' || /Physical/i.test(cat)) mod *= 0.5;
+    }
+    if(val('screen_lightscreen')){
+      if(cat==='特殊' || /Special/i.test(cat)) mod *= 0.5;
+    }
+    if(val('screen_veil')){ // both
+      if(cat==='物理' || /Physical/i.test(cat) || cat==='特殊' || /Special/i.test(cat)) mod *= 0.5;
+    }
+
+    // --- Items ---
+    const att = val('item_attacker');
+    const def = val('item_defender');
+    if(att==='命の珠（1.3）') mod *= 1.3;
+    if(att==='こだわりハチマキ（1.5/物理）' && (cat==='物理' || /Physical/i.test(cat))) mod *= 1.5;
+    if(att==='こだわりメガネ（1.5/特殊）' && (cat==='特殊' || /Special/i.test(cat))) mod *= 1.5;
+    if(def==='とつげきチョッキ（1.5/特防）' && (cat==='特殊' || /Special/i.test(cat))) mod *= (2/3);
+
+    // --- Abilities ---
+    if(val('abil_adaptability')){
+      if(approxIsSTAB()) mod *= (4/3); // STAB 1.5 → 2.0 の増分
+    }
+
+    return Math.round(mod*1000)/1000;
+  }
+
+  function applyOtherMod(){
+    const m = computeOtherMod();
+    set('other_mod', m);
+  }
+
+  // Wire up events
+  const ids = ['weather_select','screen_reflect','screen_lightscreen','screen_veil','item_attacker','item_defender','abil_adaptability','v13_move_cat','v13_move_type','atk_t1','atk_t2','def_t1','def_t2'];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.addEventListener('change', applyOtherMod, true);
+    el.addEventListener('input', applyOtherMod, true);
+  });
+  document.addEventListener('DOMContentLoaded', applyOtherMod);
+  // Toggle details
+  const head = document.getElementById('details_header');
+  const cont = document.getElementById('details_content');
+  if(head && cont){ head.addEventListener('click', ()=>{ cont.classList.toggle('show'); }); }
 })();
 </script></body>
 </html>
