@@ -282,7 +282,7 @@ function simpleDamage(){
   var cat=$('atk_move_cat')?$('atk_move_cat').value:'物理';
   var pwr=toN($('atk_move_power')?$('atk_move_power').value:0,0);
   var lvl=toN($('atk_lv')?$('atk_lv').value:50,50);
-  var mvn=$('atk_move_name')?$('atk_move_name').value:''; var mv=IDX_MOVE[String((mvn||'')).trim().toLowerCase()]; var mt=(mv&&mv.type)?mv.type:'';
+  var mt=$('atk_move_type')?$('atk_move_type').value:'';
   var atk_t1=$('atk_t1')?$('atk_t1').value:''; var atk_t2=$('atk_t2')?$('atk_t2').value:'';
   var def_t1=$('def_t1')?$('def_t1').value:''; var def_t2=$('def_t2')?$('def_t2').value:'';
   var rkA=parseInt($('atk_rank')?$('atk_rank').value:0,10);
@@ -313,7 +313,7 @@ function simpleDamageOne(i){
   var rkD=parseInt($('v13_def_rank')?$('v13_def_rank').value:0,10);
   var other=toN($('v13_other_mod')?$('v13_other_mod').value:1,1);
   A=Math.floor(A*stageMult(rkA)); D=Math.floor(D*stageMult(-rkD));
-  var mvn=$('v13_move_name')?$('v13_move_name').value:''; var mv=IDX_MOVE[String((mvn||'')).trim().toLowerCase()]; var mt=(mv&&mv.type)?mv.type:'';
+  var mt=$('v13_move_type')?$('v13_move_type').value:'';
   var atk_t1=(atk&&(atk.type1||atk.タイプ1))||''; var atk_t2=(atk&&(atk.type2||atk.タイプ2))||'';
   var t1=(deff&&(deff.type1||deff.タイプ1))||''; var t2=(deff&&(deff.type2||deff.タイプ2))||'';
   var base = (pwr && A && D) ? (Math.floor(Math.floor((2*lvl)/5+2)*pwr*A/D/50)+2) : 0;

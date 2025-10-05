@@ -4,9 +4,26 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1" name="viewport"/>
-<title>ポケモン ダメージ計算 v36 - AUTO-TYPE 20251005-1216</title>
+<title>ポケモン ダメージ計算 v36</title>
 <link href="styles.css?v=36" rel="stylesheet"/>
-<link href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMjgiIGZpbGw9IiMxYTMyNzAiLz48dGV4dCB4PSIzMiIgeT0iNDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMzYiIGZpbGw9IiNlOGVlZmYiPlA8L3RleHQ+PC9zdmc+" rel="icon"/></head>
+<link href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMjgiIGZpbGw9IiMxYTMyNzAiLz48dGV4dCB4PSIzMiIgeT0iNDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMzYiIGZpbGw9IiNlOGVlZmYiPlA8L3RleHQ+PC9zdmc+" rel="icon"/><style>
+/* Hide Pokémon BASE type manual selectors; keep move-type UI intact */
+#calc input#atk_t1, #calc input#atk_t2,
+#calc input#def_t1, #calc input#def_t2,
+#calc input#v13_def1_t1, #calc input#v13_def1_t2,
+#calc input#v13_def2_t1, #calc input#v13_def2_t2,
+#calc input#v13_def3_t1, #calc input#v13_def3_t2 {
+  display: none !important;
+}
+/* Hide labels pointing to those inputs */
+label[for="atk_t1"], label[for="atk_t2"],
+label[for="def_t1"], label[for="def_t2"],
+label[for="v13_def1_t1"], label[for="v13_def1_t2"],
+label[for="v13_def2_t1"], label[for="v13_def2_t2"],
+label[for="v13_def3_t1"], label[for="v13_def3_t2"] {
+  display: none !important;
+}
+</style></head>
 <body>
 <header class="topbar">
 <div class="brand">計算機 <span class="badge">v36</span></div>
@@ -34,8 +51,8 @@
 <legend>攻撃側</legend>
 <label>ポケモン<input id="atk_name" list="dl_poke" placeholder="例: ピカチュウ"/></label><span class="type-badges" id="atk_types"></span>
 <label>レベル<input id="atk_lv" max="100" min="1" type="number" value="50"/></label>
-<label>タイプ1<input id="atk_t1" placeholder=""/></label>
-<label>タイプ2<input id="atk_t2" placeholder=""/></label>
+<label>タイプ1<input id="atk_t1" placeholder="" type="hidden"/></label>
+<label>タイプ2<input id="atk_t2" placeholder="" type="hidden"/></label>
 <div class="stats">
 <div><span>HP</span><span id="atk_base_HP">-</span><input id="a_iv_HP" max="31" min="0" type="number" value="31"/><input id="atk_ev_HP" max="252" min="0" type="number" value="0"/><span id="atk_fin_HP">-</span></div>
 <div><span>攻撃</span><span id="atk_base_攻撃">-</span><input id="a_iv_攻撃" max="31" min="0" type="number" value="31"/><input id="atk_ev_攻撃" max="252" min="0" type="number" value="0"/><select id="atk_mul_攻撃"><option value="1">等倍</option><option value="1.1">↑</option><option value="0.9">↓</option></select><span id="atk_fin_攻撃">-</span></div>
@@ -48,7 +65,7 @@
 <label>技<input id="atk_move_name" list="dl_move" placeholder="例: 10まんボルト"/></label>
 <label>威力<input id="atk_move_power" max="300" min="0" type="number"/></label>
 <label>分類<select id="atk_move_cat"><option>物理</option><option>特殊</option></select></label>
-
+<label>タイプ<input id="atk_move_type" list="dl_type" placeholder=""/></label>
 <label>攻ランク<input id="atk_rank" max="6" min="-6" type="number" value="0"/></label>
 <label>防ランク<input id="def_rank" max="6" min="-6" type="number" value="0"/></label>
 <label>その他補正<input id="other_mod" step="0.01" type="number" value="1.0"/></label>
@@ -58,8 +75,8 @@
 <legend>防御側</legend>
 <label>ポケモン<input id="def_name" list="dl_poke"/></label><span class="type-badges" id="def_types"></span>
 <label>レベル<input id="def_lv" max="100" min="1" type="number" value="50"/></label>
-<label>タイプ1<input id="def_t1" placeholder=""/></label>
-<label>タイプ2<input id="def_t2" placeholder=""/></label>
+<label>タイプ1<input id="def_t1" placeholder="" type="hidden"/></label>
+<label>タイプ2<input id="def_t2" placeholder="" type="hidden"/></label>
 <div class="stats">
 <div><span>HP</span><span id="def_base_HP">-</span><input id="d_iv_HP" max="31" min="0" type="number" value="31"/><input id="def_ev_HP" max="252" min="0" type="number" value="0"/><span id="def_fin_HP">-</span></div>
 <div><span>攻撃</span><span id="def_base_攻撃">-</span><input id="d_iv_攻撃" max="31" min="0" type="number" value="31"/><input id="def_ev_攻撃" max="252" min="0" type="number" value="0"/><select id="def_mul_攻撃"><option value="1">等倍</option><option value="1.1">↑</option><option value="0.9">↓</option></select><span id="def_fin_攻撃">-</span></div>
@@ -74,7 +91,7 @@
 </div>
 </fieldset>
 </div>
-</section>
+<input id="v13_def1_t1" type="hidden"/><input id="v13_def1_t2" type="hidden"/><input id="v13_def2_t1" type="hidden"/><input id="v13_def2_t2" type="hidden"/><input id="v13_def3_t1" type="hidden"/><input id="v13_def3_t2" type="hidden"/></section>
 <section class="panel" id="v13" role="tabpanel">
 <h2>1対3</h2>
 <div class="grid grid-2-1">
@@ -90,7 +107,7 @@
 <label>技<input id="v13_move_name" list="dl_move"/></label>
 <label>威力<input id="v13_move_power" max="300" min="0" type="number"/></label>
 <label>分類<select id="v13_move_cat"><option>物理</option><option>特殊</option></select></label>
-
+<label>タイプ<input id="v13_move_type" list="dl_type"/></label>
 </div>
 <div class="stats-compact">
 <label>攻ランク<input id="v13_atk_rank" max="6" min="-6" type="number" value="0"/></label>
@@ -148,7 +165,45 @@
 <datalist id="dl_poke"></datalist>
 <datalist id="dl_move"></datalist>
 <datalist id="dl_build_names"></datalist>
-
+<datalist id="dl_type"><option value="ノーマル"></option><option value="ほのお"></option><option value="みず"></option><option value="でんき"></option><option value="くさ"></option><option value="こおり"></option><option value="かくとう"></option><option value="どく"></option><option value="じめん"></option><option value="ひこう"></option><option value="エスパー"></option><option value="むし"></option><option value="いわ"></option><option value="ゴースト"></option><option value="ドラゴン"></option><option value="あく"></option><option value="はがね"></option><option value="フェアリー"></option></datalist>
 <script src="app.js?v=36"></script>
-<div id="build_version">AUTO-TYPE 20251005-1216</div></body>
+<script>
+(function(){
+  const JP = ['ノーマル','ほのお','みず','でんき','くさ','こおり','かくとう','どく','じめん','ひこう','エスパー','むし','いわ','ゴースト','ドラゴン','あく','はがね','フェアリー'];
+  const EN = ['Normal','Fire','Water','Electric','Grass','Ice','Fighting','Poison','Ground','Flying','Psychic','Bug','Rock','Ghost','Dragon','Dark','Steel','Fairy'];
+  const TYPESET = new Set(JP.concat(EN));
+  function extractTypes(fromNode){
+    if(!fromNode) return [];
+    const texts = [];
+    const walker = document.createTreeWalker(fromNode, NodeFilter.SHOW_TEXT, null);
+    while(walker.nextNode()){
+      const t = walker.currentNode.nodeValue.trim();
+      if(TYPESET.has(t)) texts.push(t);
+    }
+    return texts.slice(0,2);
+  }
+  function setVal(id, val){ const el = document.getElementById(id); if(el) el.value = val||''; }
+  function syncOne(prefixAuto, id1, id2){
+    const auto = document.getElementById(prefixAuto);
+    const ts = extractTypes(auto);
+    setVal(id1, ts[0]||'');
+    setVal(id2, ts[1]||'');
+  }
+  function syncAll(){
+    syncOne('atk_types','atk_t1','atk_t2');
+    syncOne('def_types','def_t1','def_t2');
+    syncOne('v13_def1_types','v13_def1_t1','v13_def1_t2');
+    syncOne('v13_def2_types','v13_def2_t1','v13_def2_t2');
+    syncOne('v13_def3_types','v13_def3_t1','v13_def3_t2');
+  }
+  document.addEventListener('DOMContentLoaded', syncAll);
+  // Observe changes in auto-badges to keep inputs in sync
+  ['atk_types','def_types','v13_def1_types','v13_def2_types','v13_def3_types'].forEach(id=>{
+    const n = document.getElementById(id);
+    if(!n) return;
+    const obs = new MutationObserver(syncAll);
+    obs.observe(n, {childList:true, subtree:true, characterData:true});
+  });
+})();
+</script><div id="build_version">AUTO-POKETYPE-ONLY 20251005-1225</div></body>
 </html>
