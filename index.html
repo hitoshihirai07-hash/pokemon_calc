@@ -194,6 +194,10 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
 <option value="無振り">EV自動: 無振り</option>
 </select>
 <button class="btn" id="opp_party_from_json" style="padding:.35rem .7rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">構築JSONから相手へ</button>
+</div><div id="opp_team_picker" style="display:flex; gap:.5rem; align-items:center; flex-wrap:wrap;">
+<button class="btn" id="opp_open_builtin" style="padding:.35rem .7rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:#2c3a64;color:#fff;cursor:pointer;">構築記事（同梱JSON）を開く</button>
+<select id="opp_builtin_select" style="min-width:260px;background:#1f2947;color:#fff;border:1px solid rgba(122,162,255,.55);border-radius:8px;padding:.35rem .6rem; display:none;"></select>
+<button class="btn" id="opp_builtin_apply" style="padding:.35rem .7rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer; display:none;">選択を相手へ反映</button>
 </div>
 <div class="six-wrap" id="six_wrap" style="margin-top:.8rem;">
 <div class="six-topbar" style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;position:sticky;top:8px;background:rgba(25,32,56,.85);padding:.5rem .75rem;border:1px solid rgba(255,255,255,.15);border-radius:10px;">
@@ -1635,5 +1639,154 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
       }
     });
   }
+})();</script><script>
+(function(){
+  // Simple CSV parser for moves.csv
+  function parseCSV(text){
+    var lines = text.replace(/\r\n?/g, '\n').split('\n').filter(Boolean);
+    if(lines.length===0) return [];
+    var head = lines[0].split(',');
+    var rows = [];
+    for(var i=1;i<lines.length;i++){
+      var cols = lines[i].split(',');
+      var obj = {};
+      for(var c=0;c<head.length;c++){
+        obj[head[c]] = (cols[c]||'').trim();
+      }
+      rows.push(obj);
+    }
+    return rows;
+  }
+  function dispatchReady(){
+    document.dispatchEvent(new CustomEvent('databases:ready', {detail:{poke:(window.POKE||window.POKE_INLINE||[]).length, moves:(window.MOVES||window.MOVES_INLINE||[]).length, teams:(window.BUILTIN_TEAMS||[]).length}}));
+  }
+  // Load all three in parallel and then make globals
+  function ensureDatabases(){
+    var want = 0, done = 0;
+    function mark(){ done++; if(done===want) dispatchReady(); }
+    function loadPoke(){
+      want++;
+      fetch('./pokemon_master.json').then(r=>r.json()).then(function(js){
+        window.POKE_INLINE = js; window.POKE = js; mark();
+      }).catch(function(){ mark(); });
+    }
+    function loadMoves(){
+      want++;
+      fetch('./moves.csv').then(r=>r.text()).then(function(txt){
+        var arr = parseCSV(txt);
+        window.MOVES_INLINE = arr; window.MOVES = arr; mark();
+      }).catch(function(){ mark(); });
+    }
+    function loadTeams(){
+      want++;
+      fetch('./s34_single_ranked_teams.json').then(r=>r.json()).then(function(js){
+        try{
+          if(js && Array.isArray(js.teams)) window.BUILTIN_TEAMS = js.teams;
+          else if(Array.isArray(js)) window.BUILTIN_TEAMS = js;
+          else window.BUILTIN_TEAMS = [];
+        }catch(e){ window.BUILTIN_TEAMS = []; }
+        mark();
+      }).catch(function(){ mark(); });
+    }
+    loadPoke(); loadMoves(); loadTeams();
+  }
+
+  // Populate datalists after databases ready
+  function fillDatalists(){
+    var sp = (window.POKE||window.POKE_INLINE||[]);
+    var mv = (window.MOVES||window.MOVES_INLINE||[]);
+    var dlp = document.getElementById('dl_pokemon');
+    var dlm = document.getElementById('dl_moves');
+    if(dlp && !dlp.__filled){
+      var html='';
+      for(var i=0;i<sp.length;i++){
+        var n = sp[i]['名前'] || sp[i].name || sp[i]['pokemon'] || '';
+        if(n) html += '<option value="'+n+'"></option>';
+      }
+      dlp.innerHTML = html; dlp.__filled = true;
+    }
+    if(dlm && !dlm.__filled){
+      var html2='';
+      for(var j=0;j<mv.length;j++){
+        var n = mv[j]['技名'] || mv[j]['技'] || mv[j]['わざ'] || mv[j]['name'] || mv[j]['Name'] || '';
+        if(n) html2 += '<option value="'+n+'"></option>';
+      }
+      dlm.innerHTML = html2; dlm.__filled = true;
+    }
+    // Assign list attributes dynamically
+    document.querySelectorAll('#party .party-card .p_name').forEach(function(el){ el.setAttribute('list','dl_pokemon'); });
+    for(var k=1;k<=4;k++){ document.querySelectorAll('#party .party-card .p_m'+k).forEach(function(el){ el.setAttribute('list','dl_moves'); }); }
+    for(var k=1;k<=4;k++){ document.querySelectorAll('#six_my .six-card .m'+k+'n').forEach(function(el){ el.setAttribute('list','dl_moves'); }); }
+  }
+
+  // Opponent team picker from BUILTIN_TEAMS
+  function bindOppTeamPicker(){
+    var btnOpen = document.getElementById('opp_open_builtin');
+    var sel = document.getElementById('opp_builtin_select');
+    var btnApply = document.getElementById('opp_builtin_apply');
+    if(!btnOpen || !sel || !btnApply) return;
+    btnOpen.addEventListener('click', function(){
+      var teams = window.BUILTIN_TEAMS || [];
+      if(!teams.length){ alert('同梱の構築JSONが読み込めませんでした。'); return; }
+      var html = '';
+      for(var i=0;i<teams.length;i++){
+        var t = teams[i];
+        var title = 'R'+(t.rank||i+1)+': ' + (t.team && t.team.map(x=>x.pokemon||x['pokemon']||x['名前']||'').slice(0,3).join(' / '));
+        html += '<option value="'+i+'">'+title+'</option>';
+      }
+      sel.innerHTML = html;
+      sel.style.display='inline-block';
+      btnApply.style.display='inline-block';
+    });
+    btnApply.addEventListener('click', function(){
+      var idx = parseInt(sel.value||'0',10)||0;
+      var teams = window.BUILTIN_TEAMS || [];
+      var rec = teams[idx] || null;
+      if(!rec){ alert('チームを選択してください'); return; }
+      applyOppFromTeam(rec);
+    });
+  }
+
+  // Apply opponent party to #six_opp from a team record
+  function applyOppFromTeam(rec){
+    var members = rec.team || rec.members || [];
+    var cards = Array.prototype.slice.call(document.querySelectorAll('#six_opp .six-card'));
+    var policySel = document.getElementById('opp_ev_policy');
+    var policy = policySel ? policySel.value : 'H252D252';
+    function applyEVPolicy(card, policy){
+      card.dataset.evHp = card.dataset.evDef = card.dataset.evSpd = card.dataset.evAtk = card.dataset.evSpe = card.dataset.evSpA = '0';
+      if(policy==='H252D252'){ card.dataset.evHp='252'; card.dataset.evSpd='252'; }
+      else if(policy==='H252B252'){ card.dataset.evHp='252'; card.dataset.evDef='252'; }
+      else if(policy==='C252S252'){ card.dataset.evSpA='252'; card.dataset.evSpe='252'; }
+      else if(policy==='A252S252'){ card.dataset.evAtk='252'; card.dataset.evSpe='252'; }
+    }
+    for(var i=0;i<cards.length;i++){
+      var d = members[i] || {};
+      var card = cards[i];
+      var name = d.pokemon || d['pokemon'] || d['名前'] || d.name || '';
+      var tera = d.terastal || d['テラスタル'] || d['テラス'] || '';
+      var item = d.item || d['item'] || d['持ち物'] || '';
+      var nmEl = card.querySelector('.name');
+      if(nmEl){
+        nmEl.value = name;
+        nmEl.dispatchEvent(new Event('input',{bubbles:true}));
+        nmEl.dispatchEvent(new Event('change',{bubbles:true}));
+      }
+      card.dataset.tera = tera;
+      card.dataset.item = item;
+      applyEVPolicy(card, policy);
+      var st = card.querySelector('.opp-preset-status');
+      if(st) st.textContent = '適用: ' + policy;
+    }
+  }
+
+  // Glue
+  document.addEventListener('DOMContentLoaded', function(){
+    ensureDatabases();
+  });
+  document.addEventListener('databases:ready', function(){
+    fillDatalists();
+    bindOppTeamPicker();
+  });
 })();</script></body>
 </html>
