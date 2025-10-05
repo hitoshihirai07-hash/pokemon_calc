@@ -79,7 +79,7 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
 <button aria-controls="calc" class="tab active" data-tab-target="#calc" role="tab">ダメージ計算</button>
 <button aria-controls="v13" class="tab" data-tab-target="#v13" role="tab">1対3</button>
 <button aria-controls="builds" class="tab" data-tab-target="#builds" role="tab">構築記事</button>
-</nav>
+<button class="tab" data-tab-target="#six" role="tab">6対6</button></nav>
 <div class="actions">
 <div class="timer" id="timer">
 <span id="tm_disp">20:00</span>
@@ -135,7 +135,459 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
 </div>
 </fieldset>
 </div>
-<input id="v13_def1_t1" type="hidden"/><input id="v13_def1_t2" type="hidden"/><input id="v13_def2_t1" type="hidden"/><input id="v13_def2_t2" type="hidden"/><input id="v13_def3_t1" type="hidden"/><input id="v13_def3_t2" type="hidden"/></section>
+<input id="v13_def1_t1" type="hidden"/><input id="v13_def1_t2" type="hidden"/><input id="v13_def2_t1" type="hidden"/><input id="v13_def2_t2" type="hidden"/><input id="v13_def3_t1" type="hidden"/><input id="v13_def3_t2" type="hidden"/></section><section aria-labelledby="tab-six" id="six" role="tabpanel">
+<div class="six-wrap" id="six_wrap" style="margin-top:.8rem;">
+<div class="six-topbar" style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;position:sticky;top:8px;background:rgba(25,32,56,.85);padding:.5rem .75rem;border:1px solid rgba(255,255,255,.15);border-radius:10px;">
+<strong>6対6プランナー</strong>
+<button class="btn" id="six_calc_all" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:8px;padding:.35rem .7rem;cursor:pointer;">一括計算</button>
+<span class="small" style="opacity:.8;">凡例:</span>
+<span class="badge b-good" style="display:inline-block;padding:.1rem .35rem;border-radius:6px;font-weight:700;background:#ff7a7a;color:#180000;">高</span>
+<span class="badge b-mid" style="display:inline-block;padding:.1rem .35rem;border-radius:6px;font-weight:700;background:#ffe07a;color:#302000;">中</span>
+<span class="badge b-bad" style="display:inline-block;padding:.1rem .35rem;border-radius:6px;font-weight:700;background:#7ab8ff;color:#001428;">低</span>
+<span class="small" id="six_build" style="margin-left:auto;opacity:.85;">6×6 v20251005-1330</span>
+</div>
+<div class="six-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;align-items:start;">
+<div class="card" style="background:#192038;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:.6rem .7rem;">
+<h3 style="margin:.2rem 0 .6rem;display:flex;justify-content:space-between;align-items:center;">あなたのチーム<small style="opacity:.75;">（6体から3体選出）</small></h3>
+<div class="six-pokegrid" id="six_my" style="display:grid;grid-template-columns:repeat(2,minmax(220px,1fr));gap:.6rem;">
+<div class="six-card" data-ix="0" data-side="my" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:.5rem;">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.35rem;">
+<strong>自分 #1</strong>
+<label style="display:flex;align-items:center;gap:.3rem;"><input class="six_sel" type="checkbox"/> 選出</label>
+</div>
+<div class="row" style="display:grid;grid-template-columns:repeat(6,1fr);gap:.35rem;margin:.3rem 0;">
+<label>HP EV<input class="hp" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>攻EV<input class="atk" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>防EV<input class="def" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>特攻EV<input class="spa" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>特防EV<input class="spd" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>ランク<input class="rank" max="6" min="-6" step="1" type="number" value="0"/></label>
+</div>
+<div class="row" style="display:grid;grid-template-columns:repeat(2,1fr);gap:.35rem;margin:.3rem 0;">
+<label>ポケモン<input class="name" list="dl_poke" placeholder="例: ピカチュウ"/></label>
+</div>
+<div class="moves" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem;">
+<input class="m1n" list="dl_move" placeholder="技1 名"/><input class="m1p" placeholder="威力" type="number"/><select class="m1t"></select><select class="m1c"><option>物理</option><option>特殊</option></select>
+<input class="m2n" list="dl_move" placeholder="技2 名"/><input class="m2p" placeholder="威力" type="number"/><select class="m2t"></select><select class="m2c"><option>物理</option><option>特殊</option></select>
+<input class="m3n" list="dl_move" placeholder="技3 名"/><input class="m3p" placeholder="威力" type="number"/><select class="m3t"></select><select class="m3c"><option>物理</option><option>特殊</option></select>
+<input class="m4n" list="dl_move" placeholder="技4 名"/><input class="m4p" placeholder="威力" type="number"/><select class="m4t"></select><select class="m4c"><option>物理</option><option>特殊</option></select>
+</div>
+</div>
+
+<div class="six-card" data-ix="1" data-side="my" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:.5rem;">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.35rem;">
+<strong>自分 #2</strong>
+<label style="display:flex;align-items:center;gap:.3rem;"><input class="six_sel" type="checkbox"/> 選出</label>
+</div>
+<div class="row" style="display:grid;grid-template-columns:repeat(6,1fr);gap:.35rem;margin:.3rem 0;">
+<label>HP EV<input class="hp" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>攻EV<input class="atk" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>防EV<input class="def" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>特攻EV<input class="spa" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>特防EV<input class="spd" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>ランク<input class="rank" max="6" min="-6" step="1" type="number" value="0"/></label>
+</div>
+<div class="row" style="display:grid;grid-template-columns:repeat(2,1fr);gap:.35rem;margin:.3rem 0;">
+<label>ポケモン<input class="name" list="dl_poke" placeholder="例: ピカチュウ"/></label>
+</div>
+<div class="moves" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem;">
+<input class="m1n" list="dl_move" placeholder="技1 名"/><input class="m1p" placeholder="威力" type="number"/><select class="m1t"></select><select class="m1c"><option>物理</option><option>特殊</option></select>
+<input class="m2n" list="dl_move" placeholder="技2 名"/><input class="m2p" placeholder="威力" type="number"/><select class="m2t"></select><select class="m2c"><option>物理</option><option>特殊</option></select>
+<input class="m3n" list="dl_move" placeholder="技3 名"/><input class="m3p" placeholder="威力" type="number"/><select class="m3t"></select><select class="m3c"><option>物理</option><option>特殊</option></select>
+<input class="m4n" list="dl_move" placeholder="技4 名"/><input class="m4p" placeholder="威力" type="number"/><select class="m4t"></select><select class="m4c"><option>物理</option><option>特殊</option></select>
+</div>
+</div>
+
+<div class="six-card" data-ix="2" data-side="my" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:.5rem;">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.35rem;">
+<strong>自分 #3</strong>
+<label style="display:flex;align-items:center;gap:.3rem;"><input class="six_sel" type="checkbox"/> 選出</label>
+</div>
+<div class="row" style="display:grid;grid-template-columns:repeat(6,1fr);gap:.35rem;margin:.3rem 0;">
+<label>HP EV<input class="hp" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>攻EV<input class="atk" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>防EV<input class="def" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>特攻EV<input class="spa" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>特防EV<input class="spd" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>ランク<input class="rank" max="6" min="-6" step="1" type="number" value="0"/></label>
+</div>
+<div class="row" style="display:grid;grid-template-columns:repeat(2,1fr);gap:.35rem;margin:.3rem 0;">
+<label>ポケモン<input class="name" list="dl_poke" placeholder="例: ピカチュウ"/></label>
+</div>
+<div class="moves" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem;">
+<input class="m1n" list="dl_move" placeholder="技1 名"/><input class="m1p" placeholder="威力" type="number"/><select class="m1t"></select><select class="m1c"><option>物理</option><option>特殊</option></select>
+<input class="m2n" list="dl_move" placeholder="技2 名"/><input class="m2p" placeholder="威力" type="number"/><select class="m2t"></select><select class="m2c"><option>物理</option><option>特殊</option></select>
+<input class="m3n" list="dl_move" placeholder="技3 名"/><input class="m3p" placeholder="威力" type="number"/><select class="m3t"></select><select class="m3c"><option>物理</option><option>特殊</option></select>
+<input class="m4n" list="dl_move" placeholder="技4 名"/><input class="m4p" placeholder="威力" type="number"/><select class="m4t"></select><select class="m4c"><option>物理</option><option>特殊</option></select>
+</div>
+</div>
+
+<div class="six-card" data-ix="3" data-side="my" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:.5rem;">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.35rem;">
+<strong>自分 #4</strong>
+<label style="display:flex;align-items:center;gap:.3rem;"><input class="six_sel" type="checkbox"/> 選出</label>
+</div>
+<div class="row" style="display:grid;grid-template-columns:repeat(6,1fr);gap:.35rem;margin:.3rem 0;">
+<label>HP EV<input class="hp" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>攻EV<input class="atk" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>防EV<input class="def" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>特攻EV<input class="spa" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>特防EV<input class="spd" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>ランク<input class="rank" max="6" min="-6" step="1" type="number" value="0"/></label>
+</div>
+<div class="row" style="display:grid;grid-template-columns:repeat(2,1fr);gap:.35rem;margin:.3rem 0;">
+<label>ポケモン<input class="name" list="dl_poke" placeholder="例: ピカチュウ"/></label>
+</div>
+<div class="moves" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem;">
+<input class="m1n" list="dl_move" placeholder="技1 名"/><input class="m1p" placeholder="威力" type="number"/><select class="m1t"></select><select class="m1c"><option>物理</option><option>特殊</option></select>
+<input class="m2n" list="dl_move" placeholder="技2 名"/><input class="m2p" placeholder="威力" type="number"/><select class="m2t"></select><select class="m2c"><option>物理</option><option>特殊</option></select>
+<input class="m3n" list="dl_move" placeholder="技3 名"/><input class="m3p" placeholder="威力" type="number"/><select class="m3t"></select><select class="m3c"><option>物理</option><option>特殊</option></select>
+<input class="m4n" list="dl_move" placeholder="技4 名"/><input class="m4p" placeholder="威力" type="number"/><select class="m4t"></select><select class="m4c"><option>物理</option><option>特殊</option></select>
+</div>
+</div>
+
+<div class="six-card" data-ix="4" data-side="my" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:.5rem;">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.35rem;">
+<strong>自分 #5</strong>
+<label style="display:flex;align-items:center;gap:.3rem;"><input class="six_sel" type="checkbox"/> 選出</label>
+</div>
+<div class="row" style="display:grid;grid-template-columns:repeat(6,1fr);gap:.35rem;margin:.3rem 0;">
+<label>HP EV<input class="hp" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>攻EV<input class="atk" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>防EV<input class="def" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>特攻EV<input class="spa" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>特防EV<input class="spd" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>ランク<input class="rank" max="6" min="-6" step="1" type="number" value="0"/></label>
+</div>
+<div class="row" style="display:grid;grid-template-columns:repeat(2,1fr);gap:.35rem;margin:.3rem 0;">
+<label>ポケモン<input class="name" list="dl_poke" placeholder="例: ピカチュウ"/></label>
+</div>
+<div class="moves" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem;">
+<input class="m1n" list="dl_move" placeholder="技1 名"/><input class="m1p" placeholder="威力" type="number"/><select class="m1t"></select><select class="m1c"><option>物理</option><option>特殊</option></select>
+<input class="m2n" list="dl_move" placeholder="技2 名"/><input class="m2p" placeholder="威力" type="number"/><select class="m2t"></select><select class="m2c"><option>物理</option><option>特殊</option></select>
+<input class="m3n" list="dl_move" placeholder="技3 名"/><input class="m3p" placeholder="威力" type="number"/><select class="m3t"></select><select class="m3c"><option>物理</option><option>特殊</option></select>
+<input class="m4n" list="dl_move" placeholder="技4 名"/><input class="m4p" placeholder="威力" type="number"/><select class="m4t"></select><select class="m4c"><option>物理</option><option>特殊</option></select>
+</div>
+</div>
+
+<div class="six-card" data-ix="5" data-side="my" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:.5rem;">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.35rem;">
+<strong>自分 #6</strong>
+<label style="display:flex;align-items:center;gap:.3rem;"><input class="six_sel" type="checkbox"/> 選出</label>
+</div>
+<div class="row" style="display:grid;grid-template-columns:repeat(6,1fr);gap:.35rem;margin:.3rem 0;">
+<label>HP EV<input class="hp" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>攻EV<input class="atk" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>防EV<input class="def" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>特攻EV<input class="spa" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>特防EV<input class="spd" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>ランク<input class="rank" max="6" min="-6" step="1" type="number" value="0"/></label>
+</div>
+<div class="row" style="display:grid;grid-template-columns:repeat(2,1fr);gap:.35rem;margin:.3rem 0;">
+<label>ポケモン<input class="name" list="dl_poke" placeholder="例: ピカチュウ"/></label>
+</div>
+<div class="moves" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem;">
+<input class="m1n" list="dl_move" placeholder="技1 名"/><input class="m1p" placeholder="威力" type="number"/><select class="m1t"></select><select class="m1c"><option>物理</option><option>特殊</option></select>
+<input class="m2n" list="dl_move" placeholder="技2 名"/><input class="m2p" placeholder="威力" type="number"/><select class="m2t"></select><select class="m2c"><option>物理</option><option>特殊</option></select>
+<input class="m3n" list="dl_move" placeholder="技3 名"/><input class="m3p" placeholder="威力" type="number"/><select class="m3t"></select><select class="m3c"><option>物理</option><option>特殊</option></select>
+<input class="m4n" list="dl_move" placeholder="技4 名"/><input class="m4p" placeholder="威力" type="number"/><select class="m4t"></select><select class="m4c"><option>物理</option><option>特殊</option></select>
+</div>
+</div>
+</div>
+</div>
+<div class="card" style="background:#192038;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:.6rem .7rem;">
+<h3 style="margin:.2rem 0 .6rem;display:flex;justify-content:space-between;align-items:center;">相手のチーム<small style="opacity:.75;">（6体から3体選出）</small></h3>
+<div class="six-pokegrid" id="six_opp" style="display:grid;grid-template-columns:repeat(2,minmax(220px,1fr));gap:.6rem;">
+<div class="six-card" data-ix="0" data-side="opp" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:.5rem;">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.35rem;">
+<strong>相手 #1</strong>
+<label style="display:flex;align-items:center;gap:.3rem;"><input class="six_sel" type="checkbox"/> 選出</label>
+</div>
+<div class="row" style="display:grid;grid-template-columns:repeat(6,1fr);gap:.35rem;margin:.3rem 0;">
+<label>HP EV<input class="hp" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>攻EV<input class="atk" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>防EV<input class="def" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>特攻EV<input class="spa" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>特防EV<input class="spd" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>ランク<input class="rank" max="6" min="-6" step="1" type="number" value="0"/></label>
+</div>
+<div class="row" style="display:grid;grid-template-columns:repeat(2,1fr);gap:.35rem;margin:.3rem 0;">
+<label>ポケモン<input class="name" list="dl_poke" placeholder="例: ピカチュウ"/></label>
+</div>
+<div class="moves" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem;">
+<input class="m1n" list="dl_move" placeholder="技1 名"/><input class="m1p" placeholder="威力" type="number"/><select class="m1t"></select><select class="m1c"><option>物理</option><option>特殊</option></select>
+<input class="m2n" list="dl_move" placeholder="技2 名"/><input class="m2p" placeholder="威力" type="number"/><select class="m2t"></select><select class="m2c"><option>物理</option><option>特殊</option></select>
+<input class="m3n" list="dl_move" placeholder="技3 名"/><input class="m3p" placeholder="威力" type="number"/><select class="m3t"></select><select class="m3c"><option>物理</option><option>特殊</option></select>
+<input class="m4n" list="dl_move" placeholder="技4 名"/><input class="m4p" placeholder="威力" type="number"/><select class="m4t"></select><select class="m4c"><option>物理</option><option>特殊</option></select>
+</div>
+</div>
+
+<div class="six-card" data-ix="1" data-side="opp" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:.5rem;">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.35rem;">
+<strong>相手 #2</strong>
+<label style="display:flex;align-items:center;gap:.3rem;"><input class="six_sel" type="checkbox"/> 選出</label>
+</div>
+<div class="row" style="display:grid;grid-template-columns:repeat(6,1fr);gap:.35rem;margin:.3rem 0;">
+<label>HP EV<input class="hp" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>攻EV<input class="atk" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>防EV<input class="def" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>特攻EV<input class="spa" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>特防EV<input class="spd" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>ランク<input class="rank" max="6" min="-6" step="1" type="number" value="0"/></label>
+</div>
+<div class="row" style="display:grid;grid-template-columns:repeat(2,1fr);gap:.35rem;margin:.3rem 0;">
+<label>ポケモン<input class="name" list="dl_poke" placeholder="例: ピカチュウ"/></label>
+</div>
+<div class="moves" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem;">
+<input class="m1n" list="dl_move" placeholder="技1 名"/><input class="m1p" placeholder="威力" type="number"/><select class="m1t"></select><select class="m1c"><option>物理</option><option>特殊</option></select>
+<input class="m2n" list="dl_move" placeholder="技2 名"/><input class="m2p" placeholder="威力" type="number"/><select class="m2t"></select><select class="m2c"><option>物理</option><option>特殊</option></select>
+<input class="m3n" list="dl_move" placeholder="技3 名"/><input class="m3p" placeholder="威力" type="number"/><select class="m3t"></select><select class="m3c"><option>物理</option><option>特殊</option></select>
+<input class="m4n" list="dl_move" placeholder="技4 名"/><input class="m4p" placeholder="威力" type="number"/><select class="m4t"></select><select class="m4c"><option>物理</option><option>特殊</option></select>
+</div>
+</div>
+
+<div class="six-card" data-ix="2" data-side="opp" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:.5rem;">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.35rem;">
+<strong>相手 #3</strong>
+<label style="display:flex;align-items:center;gap:.3rem;"><input class="six_sel" type="checkbox"/> 選出</label>
+</div>
+<div class="row" style="display:grid;grid-template-columns:repeat(6,1fr);gap:.35rem;margin:.3rem 0;">
+<label>HP EV<input class="hp" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>攻EV<input class="atk" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>防EV<input class="def" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>特攻EV<input class="spa" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>特防EV<input class="spd" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>ランク<input class="rank" max="6" min="-6" step="1" type="number" value="0"/></label>
+</div>
+<div class="row" style="display:grid;grid-template-columns:repeat(2,1fr);gap:.35rem;margin:.3rem 0;">
+<label>ポケモン<input class="name" list="dl_poke" placeholder="例: ピカチュウ"/></label>
+</div>
+<div class="moves" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem;">
+<input class="m1n" list="dl_move" placeholder="技1 名"/><input class="m1p" placeholder="威力" type="number"/><select class="m1t"></select><select class="m1c"><option>物理</option><option>特殊</option></select>
+<input class="m2n" list="dl_move" placeholder="技2 名"/><input class="m2p" placeholder="威力" type="number"/><select class="m2t"></select><select class="m2c"><option>物理</option><option>特殊</option></select>
+<input class="m3n" list="dl_move" placeholder="技3 名"/><input class="m3p" placeholder="威力" type="number"/><select class="m3t"></select><select class="m3c"><option>物理</option><option>特殊</option></select>
+<input class="m4n" list="dl_move" placeholder="技4 名"/><input class="m4p" placeholder="威力" type="number"/><select class="m4t"></select><select class="m4c"><option>物理</option><option>特殊</option></select>
+</div>
+</div>
+
+<div class="six-card" data-ix="3" data-side="opp" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:.5rem;">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.35rem;">
+<strong>相手 #4</strong>
+<label style="display:flex;align-items:center;gap:.3rem;"><input class="six_sel" type="checkbox"/> 選出</label>
+</div>
+<div class="row" style="display:grid;grid-template-columns:repeat(6,1fr);gap:.35rem;margin:.3rem 0;">
+<label>HP EV<input class="hp" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>攻EV<input class="atk" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>防EV<input class="def" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>特攻EV<input class="spa" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>特防EV<input class="spd" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>ランク<input class="rank" max="6" min="-6" step="1" type="number" value="0"/></label>
+</div>
+<div class="row" style="display:grid;grid-template-columns:repeat(2,1fr);gap:.35rem;margin:.3rem 0;">
+<label>ポケモン<input class="name" list="dl_poke" placeholder="例: ピカチュウ"/></label>
+</div>
+<div class="moves" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem;">
+<input class="m1n" list="dl_move" placeholder="技1 名"/><input class="m1p" placeholder="威力" type="number"/><select class="m1t"></select><select class="m1c"><option>物理</option><option>特殊</option></select>
+<input class="m2n" list="dl_move" placeholder="技2 名"/><input class="m2p" placeholder="威力" type="number"/><select class="m2t"></select><select class="m2c"><option>物理</option><option>特殊</option></select>
+<input class="m3n" list="dl_move" placeholder="技3 名"/><input class="m3p" placeholder="威力" type="number"/><select class="m3t"></select><select class="m3c"><option>物理</option><option>特殊</option></select>
+<input class="m4n" list="dl_move" placeholder="技4 名"/><input class="m4p" placeholder="威力" type="number"/><select class="m4t"></select><select class="m4c"><option>物理</option><option>特殊</option></select>
+</div>
+</div>
+
+<div class="six-card" data-ix="4" data-side="opp" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:.5rem;">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.35rem;">
+<strong>相手 #5</strong>
+<label style="display:flex;align-items:center;gap:.3rem;"><input class="six_sel" type="checkbox"/> 選出</label>
+</div>
+<div class="row" style="display:grid;grid-template-columns:repeat(6,1fr);gap:.35rem;margin:.3rem 0;">
+<label>HP EV<input class="hp" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>攻EV<input class="atk" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>防EV<input class="def" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>特攻EV<input class="spa" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>特防EV<input class="spd" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>ランク<input class="rank" max="6" min="-6" step="1" type="number" value="0"/></label>
+</div>
+<div class="row" style="display:grid;grid-template-columns:repeat(2,1fr);gap:.35rem;margin:.3rem 0;">
+<label>ポケモン<input class="name" list="dl_poke" placeholder="例: ピカチュウ"/></label>
+</div>
+<div class="moves" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem;">
+<input class="m1n" list="dl_move" placeholder="技1 名"/><input class="m1p" placeholder="威力" type="number"/><select class="m1t"></select><select class="m1c"><option>物理</option><option>特殊</option></select>
+<input class="m2n" list="dl_move" placeholder="技2 名"/><input class="m2p" placeholder="威力" type="number"/><select class="m2t"></select><select class="m2c"><option>物理</option><option>特殊</option></select>
+<input class="m3n" list="dl_move" placeholder="技3 名"/><input class="m3p" placeholder="威力" type="number"/><select class="m3t"></select><select class="m3c"><option>物理</option><option>特殊</option></select>
+<input class="m4n" list="dl_move" placeholder="技4 名"/><input class="m4p" placeholder="威力" type="number"/><select class="m4t"></select><select class="m4c"><option>物理</option><option>特殊</option></select>
+</div>
+</div>
+
+<div class="six-card" data-ix="5" data-side="opp" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:.5rem;">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.35rem;">
+<strong>相手 #6</strong>
+<label style="display:flex;align-items:center;gap:.3rem;"><input class="six_sel" type="checkbox"/> 選出</label>
+</div>
+<div class="row" style="display:grid;grid-template-columns:repeat(6,1fr);gap:.35rem;margin:.3rem 0;">
+<label>HP EV<input class="hp" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>攻EV<input class="atk" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>防EV<input class="def" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>特攻EV<input class="spa" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>特防EV<input class="spd" max="252" min="0" step="4" type="number" value="0"/></label>
+<label>ランク<input class="rank" max="6" min="-6" step="1" type="number" value="0"/></label>
+</div>
+<div class="row" style="display:grid;grid-template-columns:repeat(2,1fr);gap:.35rem;margin:.3rem 0;">
+<label>ポケモン<input class="name" list="dl_poke" placeholder="例: ピカチュウ"/></label>
+</div>
+<div class="moves" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem;">
+<input class="m1n" list="dl_move" placeholder="技1 名"/><input class="m1p" placeholder="威力" type="number"/><select class="m1t"></select><select class="m1c"><option>物理</option><option>特殊</option></select>
+<input class="m2n" list="dl_move" placeholder="技2 名"/><input class="m2p" placeholder="威力" type="number"/><select class="m2t"></select><select class="m2c"><option>物理</option><option>特殊</option></select>
+<input class="m3n" list="dl_move" placeholder="技3 名"/><input class="m3p" placeholder="威力" type="number"/><select class="m3t"></select><select class="m3c"><option>物理</option><option>特殊</option></select>
+<input class="m4n" list="dl_move" placeholder="技4 名"/><input class="m4p" placeholder="威力" type="number"/><select class="m4t"></select><select class="m4c"><option>物理</option><option>特殊</option></select>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="card" style="margin-top:1rem;background:#192038;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:.6rem .7rem;">
+<h3 style="margin:.2rem 0 .6rem;">6×6 ダメージマトリクス</h3>
+<div class="matrix" style="overflow:auto;max-height:52vh;">
+<table id="six_matrix" style="width:100%;border-collapse:separate;border-spacing:0;table-layout:fixed;font-size:.9rem;">
+</table>
+</div>
+</div>
+<div class="card" style="margin-top:1rem;background:#192038;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:.6rem .7rem;">
+<h3 style="margin:.2rem 0 .6rem;">対戦ログ</h3>
+<div id="six_log" style="max-height:52vh;overflow:auto;"></div>
+<div style="margin-top:.5rem;">
+<label class="small" style="opacity:.85;">結果/備考（手動）</label>
+<textarea id="six_note" style="width:100%;height:64px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:8px;padding:.4rem;"></textarea>
+<div style="display:flex;gap:.5rem;margin-top:.4rem;">
+<button class="btn" id="six_add_note" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:8px;padding:.35rem .7rem;cursor:pointer;">メモ追加</button>
+<button class="btn" id="six_export_json" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:8px;padding:.35rem .7rem;cursor:pointer;">JSONコピー</button>
+</div>
+</div>
+</div>
+</div>
+<script>
+(function(){
+  // Ensure other_mod sync into v13_other_mod
+  function syncOther(){ var s=document.getElementById('other_mod'), t=document.getElementById('v13_other_mod'); if(s&&t){ t.value = s.value; t.dispatchEvent(new Event('input',{bubbles:true})); t.dispatchEvent(new Event('change',{bubbles:true})); } }
+  var om=document.getElementById('other_mod'); if(om){ om.addEventListener('input', syncOther, true); om.addEventListener('change', syncOther, true); syncOther(); }
+
+  // Build type options for selects
+  var TYPES=['ノーマル','ほのお','みず','でんき','くさ','こおり','かくとう','どく','じめん','ひこう','エスパー','むし','いわ','ゴースト','ドラゴン','あく','はがね','フェアリー'];
+  document.querySelectorAll('#six .moves select[class$="t"]').forEach(function(sel){
+    sel.innerHTML = TYPES.map(function(t){ return '<option value="'+t+'">'+t+'</option>'; }).join('');
+  });
+
+  // Helpers
+  function q(sel,root){ return (root||document).querySelector(sel); }
+  function qa(sel,root){ return Array.prototype.slice.call((root||document).querySelectorAll(sel)); }
+  function valNum(el){ return Math.max(0, Math.min(252, parseInt((el&&el.value)||'0',10)||0)); }
+  function readCard(card){
+    function mv(k){ return {name:q('.m'+k+'n',card).value.trim(), power: parseInt(q('.m'+k+'p',card).value||'0',10)||0, type: q('.m'+k+'t',card).value, cat: q('.m'+k+'c',card).value }; }
+    return {
+      name: q('.name',card).value.trim(),
+      ev: {hp: valNum(q('.hp',card)), atk: valNum(q('.atk',card)), def: valNum(q('.def',card)), spa: valNum(q('.spa',card)), spd: valNum(q('.spd',card))},
+      rank: parseInt(q('.rank',card).value||'0',10)||0,
+      moves: [mv(1),mv(2),mv(3),mv(4)],
+      sel: !!q('.six_sel',card).checked
+    };
+  }
+  function setV13Att(att){
+    if(q('#v13_atk_name')) q('#v13_atk_name').value = att.name, q('#v13_atk_name').dispatchEvent(new Event('change',{bubbles:true}));
+    if(q('#v13_atk_ev_HP')) q('#v13_atk_ev_HP').value = att.ev.hp;
+    if(q('#v13_atk_ev_攻撃')) q('#v13_atk_ev_攻撃').value = att.ev.atk;
+    if(q('#v13_atk_ev_特攻')) q('#v13_atk_ev_特攻').value = att.ev.spa;
+    if(q('#v13_atk_rank')) q('#v13_atk_rank').value = att.rank;
+  }
+  function setV13Def(i, deff){
+    if(q('#v13_def'+i+'_name')) q('#v13_def'+i+'_name').value = deff.name, q('#v13_def'+i+'_name').dispatchEvent(new Event('change',{bubbles:true}));
+    if(q('#v13_def'+i+'_ev_HP')) q('#v13_def'+i+'_ev_HP').value = deff.ev.hp;
+    if(q('#v13_def'+i+'_ev_防御')) q('#v13_def'+i+'_ev_防御').value = deff.ev.def;
+    if(q('#v13_def'+i+'_ev_特防')) q('#v13_def'+i+'_ev_特防').value = deff.ev.spd;
+    if(q('#v13_def_rank')) q('#v13_def_rank').value = deff.rank;
+  }
+  function setMove(m){
+    if(q('#v13_move_name')) q('#v13_move_name').value = m.name;
+    if(q('#v13_move_power')) q('#v13_move_power').value = m.power;
+    if(q('#v13_move_type')) q('#v13_move_type').value = m.type;
+    if(q('#v13_move_cat')) q('#v13_move_cat').value = m.cat;
+  }
+  function readOut(i){
+    var el=q('#v13_out'+i);
+    if(!el) return {min:0,max:0,label:'—'};
+    var s = el.value || el.textContent || '';
+    var m = s.match(/(\d+)\s*〜\s*(\d+)/);
+    if(m){ return {min:parseInt(m[1],10)||0, max:parseInt(m[2],10)||0, label:s}; }
+    return {min:0,max:0,label:s||'—'};
+  }
+
+  // Matrix build
+  function badge(pct){ if(pct>=70) return 'background:#ff7a7a;color:#180000;'; if(pct>=40) return 'background:#ffe07a;color:#302000;'; return 'background:#7ab8ff;color:#001428;'; }
+  function rebuildMatrix(){
+    var myCards = qa('#six_my .six-card'); var opCards = qa('#six_opp .six-card');
+    var myList = myCards.map(readCard); var opList = opCards.map(readCard);
+    var tbl = q('#six_matrix'); tbl.innerHTML='';
+    // head
+    var thead = document.createElement('thead'); var trh = document.createElement('tr'); trh.appendChild(document.createElement('th'));
+    opList.forEach(function(_,j){ var th=document.createElement('th'); th.textContent='相手#'+(j+1); th.style.position='sticky'; th.style.top='0'; th.style.background='rgba(34,41,70,.95)'; th.style.padding='.45rem'; th.style.borderBottom='1px solid rgba(255,255,255,.15)'; trh.appendChild(th); });
+    thead.appendChild(trh); tbl.appendChild(thead);
+    var tbody = document.createElement('tbody');
+    // compute in batches of 3 defenders
+    function computeBatch(att, defBatch, jOffset){
+      defBatch.forEach(function(df, idx){ setV13Def(idx+1, df); });
+      for(var k=defBatch.length+1;k<=3;k++){ setV13Def(k, {name:'', ev:{hp:0,def:0,spd:0}, rank:0}); }
+      var results = [];
+      // try 4 moves and pick best per defender
+      att.moves.forEach(function(mv){
+        if(!mv.power || !mv.type) return;
+        setMove(mv);
+        for(var i=1;i<=defBatch.length;i++){ if(window.simpleDamageOne) window.simpleDamageOne(i); }
+        for(var i=1;i<=defBatch.length;i++){
+          var out=readOut(i); if(!results[i-1] || out.max > results[i-1].max){ results[i-1]={out:out, move:mv}; }
+        }
+      });
+      // fill in defaults if no moves
+      for(var i=0;i<defBatch.length;i++){ if(!results[i]) results[i]={out:{min:0,max:0,label:'—'}, move:{name:'—',type:'',power:0}}; }
+      return results;
+    }
+
+    myList.forEach(function(me,i){
+      setV13Att(me);
+      var tr = document.createElement('tr'); var th=document.createElement('th'); th.textContent='自分#'+(i+1); th.style.position='sticky'; th.style.left='0'; th.style.background='rgba(34,41,70,.95)'; th.style.padding='.45rem'; th.style.borderRight='1px solid rgba(255,255,255,.15)'; tr.appendChild(th);
+      for(var j=0;j<opList.length;j+=3){
+        var batch = opList.slice(j, j+3);
+        var res = computeBatch(me, batch, j);
+        res.forEach(function(r, k){
+          var td=document.createElement('td'); td.style.padding='.4rem'; td.style.textAlign='center'; td.style.borderBottom='1px dashed rgba(255,255,255,.1)'; td.style.borderRight='1px dashed rgba(255,255,255,.08)';
+          var label = (r.out.min+'-'+r.out.max+'%');
+          td.innerHTML = '<span class="badge" style="'+badge(r.out.max)+'">'+label+'</span><div class="small">'+(r.move.name||'—')+' / '+(r.move.type||'')+' / '+(r.move.power||0)+'</div>';
+          tr.appendChild(td);
+        });
+      }
+      tbody.appendChild(tr);
+    });
+    tbl.appendChild(tbody);
+  }
+
+  // Selection & auto-log
+  var LOG=[];
+  function addLog(txt){ var t=new Date(); var row={time:t.toLocaleTimeString(), text:txt}; LOG.push(row); var el=document.createElement('div'); el.className='logitem'; el.style.borderBottom='1px dashed rgba(255,255,255,.1)'; el.style.padding='.35rem 0'; el.innerHTML='<span class="small" style="opacity:.85">'+row.time+'</span> — '+row.text; document.getElementById('six_log').prepend(el); }
+  function onSelChange(){
+    var my = qa('#six_my .six_sel:checked').map(function(el){ return '#'+(parseInt(el.closest('.six-card').dataset.ix,10)+1); });
+    var op = qa('#six_opp .six_sel:checked').map(function(el){ return '#'+(parseInt(el.closest('.six-card').dataset.ix,10)+1); });
+    // enforce <=3
+    if(my.length>3){ this.checked=false; return; }
+    if(op.length>3){ this.checked=false; return; }
+    addLog('選出: 自分 {'+my.join(', ')+'} vs 相手 {'+op.join(', ')+'}');
+  }
+  document.getElementById('six_wrap').addEventListener('change', function(e){ if(e.target.classList.contains('six_sel')) onSelChange.call(e.target); }, true);
+  document.getElementById('six_add_note').addEventListener('click', function(){ var v=document.getElementById('six_note').value.trim(); if(!v) return; addLog('メモ: '+v); document.getElementById('six_note').value=''; });
+  document.getElementById('six_export_json').addEventListener('click', function(){ var txt=JSON.stringify(LOG,null,2); navigator.clipboard.writeText(txt).then(function(){ addLog('ログJSONをコピーしました'); }); });
+
+  document.getElementById('six_calc_all').addEventListener('click', rebuildMatrix);
+
+  // Initialize type selects to default 'ノーマル'
+  qa('#six .moves select[class$=\"t\"]').forEach(function(sel){ sel.value='ノーマル'; });
+
+})();</script></section>
 <section class="panel" id="v13" role="tabpanel">
 <h2>1対3</h2>
 <div class="grid grid-2-1">
@@ -249,7 +701,7 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
     obs.observe(n, {childList:true, subtree:true, characterData:true});
   });
 })();
-</script><div id="build_version">SHARE+TERA v3 20251005-1256</div><div id="copy_toast">コピーしました</div><script>
+</script><div id="build_version">SHARE+TERA v3 + 6x6 20251005-1330</div><div id="copy_toast">コピーしました</div><script>
 (function(){
   // --- Helpers ---
   function debounce(fn, ms){
