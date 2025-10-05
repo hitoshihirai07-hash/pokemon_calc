@@ -450,15 +450,22 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
   }
   function attachEVButtons(){
     qa('#six_my .six-card').forEach(function(card){
-      qa('.ev252',card).forEach(function(btn){
-        btn.addEventListener('click', function(e){
-          e.preventDefault();
-          var input = this.previousElementSibling;
-          if(input && input.tagName==='INPUT'){ input.value = 252; input.dispatchEvent(new Event('input',{bubbles:true})); input.dispatchEvent(new Event('change',{bubbles:true})); updateEVSum(card); }
-        });
+      // 252 quick buttons per-input
+      qa('.row label', card).forEach(function(lab){
+        var btn = lab.querySelector('.ev252');
+        var input = lab.querySelector('input');
+        if(btn && input){
+          btn.addEventListener('click', function(e){
+            e.preventDefault();
+            input.value = 252;
+            input.dispatchEvent(new Event('input',{bubbles:true}));
+            input.dispatchEvent(new Event('change',{bubbles:true}));
+            updateEVSum(card);
+          });
+        }
       });
-            });
-      qa('.row input',card).forEach(function(inp){
+      // Input change listeners (exclude rank)
+      qa('.row input', card).forEach(function(inp){
         if(!inp.classList.contains('rank')){
           inp.addEventListener('input', function(){ this.value = clamp4(this.value); updateEVSum(card); }, true);
           inp.addEventListener('change', function(){ this.value = clamp4(this.value); updateEVSum(card); }, true);
@@ -467,7 +474,7 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
       updateEVSum(card);
     });
   }
-
+  
   function setV13Att(att){
     if(q('#v13_atk_name')){ q('#v13_atk_name').value = att.name; q('#v13_atk_name').dispatchEvent(new Event('change',{bubbles:true})); }
     if(q('#v13_atk_ev_HP')) q('#v13_atk_ev_HP').value = att.ev.hp;
