@@ -81,6 +81,12 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
 #six input:focus, #six select:focus { border-color:#a0baff; box-shadow:0 0 0 2px rgba(122,162,255,.25); }
 #six .ev252, #six .evchip { transition: transform .05s ease; }
 #six .ev252:active, #six .evchip:active { transform: scale(0.96); }
+</style><style>
+/* Six: EV row as 2-column grid */
+#six .six-card .row label { display:flex; flex-direction:column; gap:.25rem; }
+#six .six-card .row label > input { width:100%; }
+#six .six-card .row .ev252 { margin-top:.1rem; align-self:flex-start; }
+#six .typesline { border-top:1px dashed rgba(255,255,255,.1); padding-top:.3rem; }
 </style></head>
 <body>
 <header class="topbar">
@@ -165,16 +171,16 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
 <strong>自分 #1</strong>
 <label style="display:flex;align-items:center;gap:.3rem;"><input class="six_sel" type="checkbox"/> 選出</label>
 </div>
-<div class="row" style="display:grid;grid-template-columns:repeat(6,1fr);gap:.35rem;margin:.3rem 0;">
+<div class="row" style="display:grid;grid-template-columns:repeat(2,minmax(200px,1fr));gap:.35rem;margin:.3rem 0; align-items:end;">
 <label>HP EV<input class="hp" max="252" min="0" step="4" type="number" value="0"/><button class="ev252" style="margin-left:.25rem;padding:.15rem .35rem;border-radius:6px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">252</button></label>
 <label>攻EV<input class="atk" max="252" min="0" step="4" type="number" value="0"/><button class="ev252" style="margin-left:.25rem;padding:.15rem .35rem;border-radius:6px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">252</button></label>
 <label>防EV<input class="def" max="252" min="0" step="4" type="number" value="0"/><button class="ev252" style="margin-left:.25rem;padding:.15rem .35rem;border-radius:6px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">252</button></label>
 <label>特攻EV<input class="spa" max="252" min="0" step="4" type="number" value="0"/><button class="ev252" style="margin-left:.25rem;padding:.15rem .35rem;border-radius:6px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">252</button></label>
 <label>特防EV<input class="spd" max="252" min="0" step="4" type="number" value="0"/><button class="ev252" style="margin-left:.25rem;padding:.15rem .35rem;border-radius:6px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">252</button></label>
 <label>ランク<input class="rank" max="6" min="-6" step="1" type="number" value="0"/></label>
-</div><div class="evchips small" style="margin:.35rem 0; display:flex; flex-wrap:wrap; gap:.35rem; opacity:.95;"><button class="evchip" data-ev="0" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">0</button><button class="evchip" data-ev="84" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">84</button><button class="evchip" data-ev="124" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">124</button><button class="evchip" data-ev="164" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">164</button><button class="evchip" data-ev="204" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">204</button><button class="evchip" data-ev="236" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">236</button><button class="evchip" data-ev="252" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">252</button></div>
-<div class="row" style="display:grid;grid-template-columns:repeat(2,1fr);gap:.35rem;margin:.3rem 0;">
-<label>ポケモン<input class="name" list="dl_poke" placeholder="例: ピカチュウ"/><button class="name_search" style="margin-left:.35rem;padding:.25rem .55rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">検索</button></label>
+</div><div class="evchips-label small" style="margin-top:.35rem; opacity:.85;">EVプリセット:</div><div class="evchips small" style="margin:.35rem 0 .5rem; display:flex; flex-wrap:wrap; gap:.35rem; opacity:.95; width:100%; clear:both;"><button class="evchip" data-ev="0" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">0</button><button class="evchip" data-ev="84" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">84</button><button class="evchip" data-ev="124" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">124</button><button class="evchip" data-ev="164" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">164</button><button class="evchip" data-ev="204" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">204</button><button class="evchip" data-ev="236" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">236</button><button class="evchip" data-ev="252" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">252</button></div>
+<div class="row" style="display:grid;grid-template-columns:repeat(2,minmax(200px,1fr));gap:.35rem;margin:.3rem 0; align-items:end;">
+<label>ポケモン<input class="name" inputmode="search" list="dl_poke" placeholder="例: ピカチュウ" type="text"/><button class="name_search" style="margin-left:.35rem;padding:.25rem .55rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">検索</button></label>
 </div>
 <div class="moves" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem;">
 <input class="m1n" list="dl_move" placeholder="技1 名"/><input class="m1p" placeholder="威力" type="number"/><select class="m1t"></select><select class="m1c"><option>物理</option><option>特殊</option></select>
@@ -188,16 +194,16 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
 <strong>自分 #2</strong>
 <label style="display:flex;align-items:center;gap:.3rem;"><input class="six_sel" type="checkbox"/> 選出</label>
 </div>
-<div class="row" style="display:grid;grid-template-columns:repeat(6,1fr);gap:.35rem;margin:.3rem 0;">
+<div class="row" style="display:grid;grid-template-columns:repeat(2,minmax(200px,1fr));gap:.35rem;margin:.3rem 0; align-items:end;">
 <label>HP EV<input class="hp" max="252" min="0" step="4" type="number" value="0"/><button class="ev252" style="margin-left:.25rem;padding:.15rem .35rem;border-radius:6px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">252</button></label>
 <label>攻EV<input class="atk" max="252" min="0" step="4" type="number" value="0"/><button class="ev252" style="margin-left:.25rem;padding:.15rem .35rem;border-radius:6px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">252</button></label>
 <label>防EV<input class="def" max="252" min="0" step="4" type="number" value="0"/><button class="ev252" style="margin-left:.25rem;padding:.15rem .35rem;border-radius:6px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">252</button></label>
 <label>特攻EV<input class="spa" max="252" min="0" step="4" type="number" value="0"/><button class="ev252" style="margin-left:.25rem;padding:.15rem .35rem;border-radius:6px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">252</button></label>
 <label>特防EV<input class="spd" max="252" min="0" step="4" type="number" value="0"/><button class="ev252" style="margin-left:.25rem;padding:.15rem .35rem;border-radius:6px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">252</button></label>
 <label>ランク<input class="rank" max="6" min="-6" step="1" type="number" value="0"/></label>
-</div><div class="evchips small" style="margin:.35rem 0; display:flex; flex-wrap:wrap; gap:.35rem; opacity:.95;"><button class="evchip" data-ev="0" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">0</button><button class="evchip" data-ev="84" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">84</button><button class="evchip" data-ev="124" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">124</button><button class="evchip" data-ev="164" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">164</button><button class="evchip" data-ev="204" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">204</button><button class="evchip" data-ev="236" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">236</button><button class="evchip" data-ev="252" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">252</button></div>
-<div class="row" style="display:grid;grid-template-columns:repeat(2,1fr);gap:.35rem;margin:.3rem 0;">
-<label>ポケモン<input class="name" list="dl_poke" placeholder="例: ピカチュウ"/><button class="name_search" style="margin-left:.35rem;padding:.25rem .55rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">検索</button></label>
+</div><div class="evchips-label small" style="margin-top:.35rem; opacity:.85;">EVプリセット:</div><div class="evchips small" style="margin:.35rem 0 .5rem; display:flex; flex-wrap:wrap; gap:.35rem; opacity:.95; width:100%; clear:both;"><button class="evchip" data-ev="0" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">0</button><button class="evchip" data-ev="84" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">84</button><button class="evchip" data-ev="124" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">124</button><button class="evchip" data-ev="164" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">164</button><button class="evchip" data-ev="204" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">204</button><button class="evchip" data-ev="236" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">236</button><button class="evchip" data-ev="252" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">252</button></div>
+<div class="row" style="display:grid;grid-template-columns:repeat(2,minmax(200px,1fr));gap:.35rem;margin:.3rem 0; align-items:end;">
+<label>ポケモン<input class="name" inputmode="search" list="dl_poke" placeholder="例: ピカチュウ" type="text"/><button class="name_search" style="margin-left:.35rem;padding:.25rem .55rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">検索</button></label>
 </div>
 <div class="moves" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem;">
 <input class="m1n" list="dl_move" placeholder="技1 名"/><input class="m1p" placeholder="威力" type="number"/><select class="m1t"></select><select class="m1c"><option>物理</option><option>特殊</option></select>
@@ -211,16 +217,16 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
 <strong>自分 #3</strong>
 <label style="display:flex;align-items:center;gap:.3rem;"><input class="six_sel" type="checkbox"/> 選出</label>
 </div>
-<div class="row" style="display:grid;grid-template-columns:repeat(6,1fr);gap:.35rem;margin:.3rem 0;">
+<div class="row" style="display:grid;grid-template-columns:repeat(2,minmax(200px,1fr));gap:.35rem;margin:.3rem 0; align-items:end;">
 <label>HP EV<input class="hp" max="252" min="0" step="4" type="number" value="0"/><button class="ev252" style="margin-left:.25rem;padding:.15rem .35rem;border-radius:6px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">252</button></label>
 <label>攻EV<input class="atk" max="252" min="0" step="4" type="number" value="0"/><button class="ev252" style="margin-left:.25rem;padding:.15rem .35rem;border-radius:6px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">252</button></label>
 <label>防EV<input class="def" max="252" min="0" step="4" type="number" value="0"/><button class="ev252" style="margin-left:.25rem;padding:.15rem .35rem;border-radius:6px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">252</button></label>
 <label>特攻EV<input class="spa" max="252" min="0" step="4" type="number" value="0"/><button class="ev252" style="margin-left:.25rem;padding:.15rem .35rem;border-radius:6px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">252</button></label>
 <label>特防EV<input class="spd" max="252" min="0" step="4" type="number" value="0"/><button class="ev252" style="margin-left:.25rem;padding:.15rem .35rem;border-radius:6px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">252</button></label>
 <label>ランク<input class="rank" max="6" min="-6" step="1" type="number" value="0"/></label>
-</div><div class="evchips small" style="margin:.35rem 0; display:flex; flex-wrap:wrap; gap:.35rem; opacity:.95;"><button class="evchip" data-ev="0" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">0</button><button class="evchip" data-ev="84" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">84</button><button class="evchip" data-ev="124" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">124</button><button class="evchip" data-ev="164" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">164</button><button class="evchip" data-ev="204" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">204</button><button class="evchip" data-ev="236" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">236</button><button class="evchip" data-ev="252" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">252</button></div>
-<div class="row" style="display:grid;grid-template-columns:repeat(2,1fr);gap:.35rem;margin:.3rem 0;">
-<label>ポケモン<input class="name" list="dl_poke" placeholder="例: ピカチュウ"/><button class="name_search" style="margin-left:.35rem;padding:.25rem .55rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">検索</button></label>
+</div><div class="evchips-label small" style="margin-top:.35rem; opacity:.85;">EVプリセット:</div><div class="evchips small" style="margin:.35rem 0 .5rem; display:flex; flex-wrap:wrap; gap:.35rem; opacity:.95; width:100%; clear:both;"><button class="evchip" data-ev="0" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">0</button><button class="evchip" data-ev="84" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">84</button><button class="evchip" data-ev="124" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">124</button><button class="evchip" data-ev="164" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">164</button><button class="evchip" data-ev="204" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">204</button><button class="evchip" data-ev="236" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">236</button><button class="evchip" data-ev="252" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">252</button></div>
+<div class="row" style="display:grid;grid-template-columns:repeat(2,minmax(200px,1fr));gap:.35rem;margin:.3rem 0; align-items:end;">
+<label>ポケモン<input class="name" inputmode="search" list="dl_poke" placeholder="例: ピカチュウ" type="text"/><button class="name_search" style="margin-left:.35rem;padding:.25rem .55rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">検索</button></label>
 </div>
 <div class="moves" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem;">
 <input class="m1n" list="dl_move" placeholder="技1 名"/><input class="m1p" placeholder="威力" type="number"/><select class="m1t"></select><select class="m1c"><option>物理</option><option>特殊</option></select>
@@ -234,16 +240,16 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
 <strong>自分 #4</strong>
 <label style="display:flex;align-items:center;gap:.3rem;"><input class="six_sel" type="checkbox"/> 選出</label>
 </div>
-<div class="row" style="display:grid;grid-template-columns:repeat(6,1fr);gap:.35rem;margin:.3rem 0;">
+<div class="row" style="display:grid;grid-template-columns:repeat(2,minmax(200px,1fr));gap:.35rem;margin:.3rem 0; align-items:end;">
 <label>HP EV<input class="hp" max="252" min="0" step="4" type="number" value="0"/><button class="ev252" style="margin-left:.25rem;padding:.15rem .35rem;border-radius:6px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">252</button></label>
 <label>攻EV<input class="atk" max="252" min="0" step="4" type="number" value="0"/><button class="ev252" style="margin-left:.25rem;padding:.15rem .35rem;border-radius:6px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">252</button></label>
 <label>防EV<input class="def" max="252" min="0" step="4" type="number" value="0"/><button class="ev252" style="margin-left:.25rem;padding:.15rem .35rem;border-radius:6px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">252</button></label>
 <label>特攻EV<input class="spa" max="252" min="0" step="4" type="number" value="0"/><button class="ev252" style="margin-left:.25rem;padding:.15rem .35rem;border-radius:6px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">252</button></label>
 <label>特防EV<input class="spd" max="252" min="0" step="4" type="number" value="0"/><button class="ev252" style="margin-left:.25rem;padding:.15rem .35rem;border-radius:6px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">252</button></label>
 <label>ランク<input class="rank" max="6" min="-6" step="1" type="number" value="0"/></label>
-</div><div class="evchips small" style="margin:.35rem 0; display:flex; flex-wrap:wrap; gap:.35rem; opacity:.95;"><button class="evchip" data-ev="0" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">0</button><button class="evchip" data-ev="84" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">84</button><button class="evchip" data-ev="124" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">124</button><button class="evchip" data-ev="164" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">164</button><button class="evchip" data-ev="204" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">204</button><button class="evchip" data-ev="236" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">236</button><button class="evchip" data-ev="252" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">252</button></div>
-<div class="row" style="display:grid;grid-template-columns:repeat(2,1fr);gap:.35rem;margin:.3rem 0;">
-<label>ポケモン<input class="name" list="dl_poke" placeholder="例: ピカチュウ"/><button class="name_search" style="margin-left:.35rem;padding:.25rem .55rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">検索</button></label>
+</div><div class="evchips-label small" style="margin-top:.35rem; opacity:.85;">EVプリセット:</div><div class="evchips small" style="margin:.35rem 0 .5rem; display:flex; flex-wrap:wrap; gap:.35rem; opacity:.95; width:100%; clear:both;"><button class="evchip" data-ev="0" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">0</button><button class="evchip" data-ev="84" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">84</button><button class="evchip" data-ev="124" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">124</button><button class="evchip" data-ev="164" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">164</button><button class="evchip" data-ev="204" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">204</button><button class="evchip" data-ev="236" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">236</button><button class="evchip" data-ev="252" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">252</button></div>
+<div class="row" style="display:grid;grid-template-columns:repeat(2,minmax(200px,1fr));gap:.35rem;margin:.3rem 0; align-items:end;">
+<label>ポケモン<input class="name" inputmode="search" list="dl_poke" placeholder="例: ピカチュウ" type="text"/><button class="name_search" style="margin-left:.35rem;padding:.25rem .55rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">検索</button></label>
 </div>
 <div class="moves" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem;">
 <input class="m1n" list="dl_move" placeholder="技1 名"/><input class="m1p" placeholder="威力" type="number"/><select class="m1t"></select><select class="m1c"><option>物理</option><option>特殊</option></select>
@@ -257,16 +263,16 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
 <strong>自分 #5</strong>
 <label style="display:flex;align-items:center;gap:.3rem;"><input class="six_sel" type="checkbox"/> 選出</label>
 </div>
-<div class="row" style="display:grid;grid-template-columns:repeat(6,1fr);gap:.35rem;margin:.3rem 0;">
+<div class="row" style="display:grid;grid-template-columns:repeat(2,minmax(200px,1fr));gap:.35rem;margin:.3rem 0; align-items:end;">
 <label>HP EV<input class="hp" max="252" min="0" step="4" type="number" value="0"/><button class="ev252" style="margin-left:.25rem;padding:.15rem .35rem;border-radius:6px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">252</button></label>
 <label>攻EV<input class="atk" max="252" min="0" step="4" type="number" value="0"/><button class="ev252" style="margin-left:.25rem;padding:.15rem .35rem;border-radius:6px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">252</button></label>
 <label>防EV<input class="def" max="252" min="0" step="4" type="number" value="0"/><button class="ev252" style="margin-left:.25rem;padding:.15rem .35rem;border-radius:6px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">252</button></label>
 <label>特攻EV<input class="spa" max="252" min="0" step="4" type="number" value="0"/><button class="ev252" style="margin-left:.25rem;padding:.15rem .35rem;border-radius:6px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">252</button></label>
 <label>特防EV<input class="spd" max="252" min="0" step="4" type="number" value="0"/><button class="ev252" style="margin-left:.25rem;padding:.15rem .35rem;border-radius:6px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">252</button></label>
 <label>ランク<input class="rank" max="6" min="-6" step="1" type="number" value="0"/></label>
-</div><div class="evchips small" style="margin:.35rem 0; display:flex; flex-wrap:wrap; gap:.35rem; opacity:.95;"><button class="evchip" data-ev="0" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">0</button><button class="evchip" data-ev="84" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">84</button><button class="evchip" data-ev="124" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">124</button><button class="evchip" data-ev="164" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">164</button><button class="evchip" data-ev="204" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">204</button><button class="evchip" data-ev="236" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">236</button><button class="evchip" data-ev="252" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">252</button></div>
-<div class="row" style="display:grid;grid-template-columns:repeat(2,1fr);gap:.35rem;margin:.3rem 0;">
-<label>ポケモン<input class="name" list="dl_poke" placeholder="例: ピカチュウ"/><button class="name_search" style="margin-left:.35rem;padding:.25rem .55rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">検索</button></label>
+</div><div class="evchips-label small" style="margin-top:.35rem; opacity:.85;">EVプリセット:</div><div class="evchips small" style="margin:.35rem 0 .5rem; display:flex; flex-wrap:wrap; gap:.35rem; opacity:.95; width:100%; clear:both;"><button class="evchip" data-ev="0" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">0</button><button class="evchip" data-ev="84" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">84</button><button class="evchip" data-ev="124" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">124</button><button class="evchip" data-ev="164" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">164</button><button class="evchip" data-ev="204" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">204</button><button class="evchip" data-ev="236" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">236</button><button class="evchip" data-ev="252" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">252</button></div>
+<div class="row" style="display:grid;grid-template-columns:repeat(2,minmax(200px,1fr));gap:.35rem;margin:.3rem 0; align-items:end;">
+<label>ポケモン<input class="name" inputmode="search" list="dl_poke" placeholder="例: ピカチュウ" type="text"/><button class="name_search" style="margin-left:.35rem;padding:.25rem .55rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">検索</button></label>
 </div>
 <div class="moves" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem;">
 <input class="m1n" list="dl_move" placeholder="技1 名"/><input class="m1p" placeholder="威力" type="number"/><select class="m1t"></select><select class="m1c"><option>物理</option><option>特殊</option></select>
@@ -280,16 +286,16 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
 <strong>自分 #6</strong>
 <label style="display:flex;align-items:center;gap:.3rem;"><input class="six_sel" type="checkbox"/> 選出</label>
 </div>
-<div class="row" style="display:grid;grid-template-columns:repeat(6,1fr);gap:.35rem;margin:.3rem 0;">
+<div class="row" style="display:grid;grid-template-columns:repeat(2,minmax(200px,1fr));gap:.35rem;margin:.3rem 0; align-items:end;">
 <label>HP EV<input class="hp" max="252" min="0" step="4" type="number" value="0"/><button class="ev252" style="margin-left:.25rem;padding:.15rem .35rem;border-radius:6px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">252</button></label>
 <label>攻EV<input class="atk" max="252" min="0" step="4" type="number" value="0"/><button class="ev252" style="margin-left:.25rem;padding:.15rem .35rem;border-radius:6px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">252</button></label>
 <label>防EV<input class="def" max="252" min="0" step="4" type="number" value="0"/><button class="ev252" style="margin-left:.25rem;padding:.15rem .35rem;border-radius:6px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">252</button></label>
 <label>特攻EV<input class="spa" max="252" min="0" step="4" type="number" value="0"/><button class="ev252" style="margin-left:.25rem;padding:.15rem .35rem;border-radius:6px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">252</button></label>
 <label>特防EV<input class="spd" max="252" min="0" step="4" type="number" value="0"/><button class="ev252" style="margin-left:.25rem;padding:.15rem .35rem;border-radius:6px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">252</button></label>
 <label>ランク<input class="rank" max="6" min="-6" step="1" type="number" value="0"/></label>
-</div><div class="evchips small" style="margin:.35rem 0; display:flex; flex-wrap:wrap; gap:.35rem; opacity:.95;"><button class="evchip" data-ev="0" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">0</button><button class="evchip" data-ev="84" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">84</button><button class="evchip" data-ev="124" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">124</button><button class="evchip" data-ev="164" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">164</button><button class="evchip" data-ev="204" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">204</button><button class="evchip" data-ev="236" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">236</button><button class="evchip" data-ev="252" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">252</button></div>
-<div class="row" style="display:grid;grid-template-columns:repeat(2,1fr);gap:.35rem;margin:.3rem 0;">
-<label>ポケモン<input class="name" list="dl_poke" placeholder="例: ピカチュウ"/><button class="name_search" style="margin-left:.35rem;padding:.25rem .55rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">検索</button></label>
+</div><div class="evchips-label small" style="margin-top:.35rem; opacity:.85;">EVプリセット:</div><div class="evchips small" style="margin:.35rem 0 .5rem; display:flex; flex-wrap:wrap; gap:.35rem; opacity:.95; width:100%; clear:both;"><button class="evchip" data-ev="0" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">0</button><button class="evchip" data-ev="84" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">84</button><button class="evchip" data-ev="124" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">124</button><button class="evchip" data-ev="164" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">164</button><button class="evchip" data-ev="204" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">204</button><button class="evchip" data-ev="236" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">236</button><button class="evchip" data-ev="252" style="padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">252</button></div>
+<div class="row" style="display:grid;grid-template-columns:repeat(2,minmax(200px,1fr));gap:.35rem;margin:.3rem 0; align-items:end;">
+<label>ポケモン<input class="name" inputmode="search" list="dl_poke" placeholder="例: ピカチュウ" type="text"/><button class="name_search" style="margin-left:.35rem;padding:.25rem .55rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">検索</button></label>
 </div>
 <div class="moves" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem;">
 <input class="m1n" list="dl_move" placeholder="技1 名"/><input class="m1p" placeholder="威力" type="number"/><select class="m1t"></select><select class="m1c"><option>物理</option><option>特殊</option></select>
@@ -309,54 +315,54 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
 <label style="display:flex;align-items:center;gap:.3rem;"><input class="six_sel" type="checkbox"/> 選出</label>
 </div>
 <div class="row" style="display:grid;grid-template-columns:repeat(2,1fr);gap:.35rem;margin:.3rem 0;">
-<label>ポケモン<input class="name" list="dl_poke" placeholder="例: ピカチュウ"/><button class="name_search" style="margin-left:.35rem;padding:.25rem .55rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">検索</button></label>
+<label>ポケモン<input class="name" inputmode="search" list="dl_poke" placeholder="例: ピカチュウ" type="text"/><button class="name_search" style="margin-left:.35rem;padding:.25rem .55rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">検索</button></label>
 </div>
-<div class="notice small" style="opacity:.8;">相手側はポケモン名のみ（他情報は不明扱い）</div></div>
+<div class="notice small" style="opacity:.8;">相手側はポケモン名のみ（他情報は不明扱い）</div><div class="typesline small" style="margin-top:.35rem; opacity:.85;">タイプ: —</div><div class="opp-presets small" style="margin:.35rem 0 .25rem; display:flex; flex-wrap:wrap; gap:.35rem;"><button class="opp-preset" data-preset="C252S252" style="padding:.2rem .55rem; border-radius:999px; border:1px solid rgba(255,255,255,.25); background:#243255; color:#fff; cursor:pointer;">C252S252</button><button class="opp-preset" data-preset="A252S252" style="padding:.2rem .55rem; border-radius:999px; border:1px solid rgba(255,255,255,.25); background:#243255; color:#fff; cursor:pointer;">A252S252</button><button class="opp-preset" data-preset="H252B252" style="padding:.2rem .55rem; border-radius:999px; border:1px solid rgba(255,255,255,.25); background:#243255; color:#fff; cursor:pointer;">H252B252</button><button class="opp-preset" data-preset="H252D252" style="padding:.2rem .55rem; border-radius:999px; border:1px solid rgba(255,255,255,.25); background:#243255; color:#fff; cursor:pointer;">H252D252</button></div></div>
 <div class="six-card" data-ix="1" data-side="opp" id="sixcard_opp_1" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:.5rem;">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.35rem;">
 <strong>相手 #2</strong>
 <label style="display:flex;align-items:center;gap:.3rem;"><input class="six_sel" type="checkbox"/> 選出</label>
 </div>
 <div class="row" style="display:grid;grid-template-columns:repeat(2,1fr);gap:.35rem;margin:.3rem 0;">
-<label>ポケモン<input class="name" list="dl_poke" placeholder="例: ピカチュウ"/><button class="name_search" style="margin-left:.35rem;padding:.25rem .55rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">検索</button></label>
+<label>ポケモン<input class="name" inputmode="search" list="dl_poke" placeholder="例: ピカチュウ" type="text"/><button class="name_search" style="margin-left:.35rem;padding:.25rem .55rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">検索</button></label>
 </div>
-<div class="notice small" style="opacity:.8;">相手側はポケモン名のみ（他情報は不明扱い）</div></div>
+<div class="notice small" style="opacity:.8;">相手側はポケモン名のみ（他情報は不明扱い）</div><div class="typesline small" style="margin-top:.35rem; opacity:.85;">タイプ: —</div><div class="opp-presets small" style="margin:.35rem 0 .25rem; display:flex; flex-wrap:wrap; gap:.35rem;"><button class="opp-preset" data-preset="C252S252" style="padding:.2rem .55rem; border-radius:999px; border:1px solid rgba(255,255,255,.25); background:#243255; color:#fff; cursor:pointer;">C252S252</button><button class="opp-preset" data-preset="A252S252" style="padding:.2rem .55rem; border-radius:999px; border:1px solid rgba(255,255,255,.25); background:#243255; color:#fff; cursor:pointer;">A252S252</button><button class="opp-preset" data-preset="H252B252" style="padding:.2rem .55rem; border-radius:999px; border:1px solid rgba(255,255,255,.25); background:#243255; color:#fff; cursor:pointer;">H252B252</button><button class="opp-preset" data-preset="H252D252" style="padding:.2rem .55rem; border-radius:999px; border:1px solid rgba(255,255,255,.25); background:#243255; color:#fff; cursor:pointer;">H252D252</button></div></div>
 <div class="six-card" data-ix="2" data-side="opp" id="sixcard_opp_2" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:.5rem;">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.35rem;">
 <strong>相手 #3</strong>
 <label style="display:flex;align-items:center;gap:.3rem;"><input class="six_sel" type="checkbox"/> 選出</label>
 </div>
 <div class="row" style="display:grid;grid-template-columns:repeat(2,1fr);gap:.35rem;margin:.3rem 0;">
-<label>ポケモン<input class="name" list="dl_poke" placeholder="例: ピカチュウ"/><button class="name_search" style="margin-left:.35rem;padding:.25rem .55rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">検索</button></label>
+<label>ポケモン<input class="name" inputmode="search" list="dl_poke" placeholder="例: ピカチュウ" type="text"/><button class="name_search" style="margin-left:.35rem;padding:.25rem .55rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">検索</button></label>
 </div>
-<div class="notice small" style="opacity:.8;">相手側はポケモン名のみ（他情報は不明扱い）</div></div>
+<div class="notice small" style="opacity:.8;">相手側はポケモン名のみ（他情報は不明扱い）</div><div class="typesline small" style="margin-top:.35rem; opacity:.85;">タイプ: —</div><div class="opp-presets small" style="margin:.35rem 0 .25rem; display:flex; flex-wrap:wrap; gap:.35rem;"><button class="opp-preset" data-preset="C252S252" style="padding:.2rem .55rem; border-radius:999px; border:1px solid rgba(255,255,255,.25); background:#243255; color:#fff; cursor:pointer;">C252S252</button><button class="opp-preset" data-preset="A252S252" style="padding:.2rem .55rem; border-radius:999px; border:1px solid rgba(255,255,255,.25); background:#243255; color:#fff; cursor:pointer;">A252S252</button><button class="opp-preset" data-preset="H252B252" style="padding:.2rem .55rem; border-radius:999px; border:1px solid rgba(255,255,255,.25); background:#243255; color:#fff; cursor:pointer;">H252B252</button><button class="opp-preset" data-preset="H252D252" style="padding:.2rem .55rem; border-radius:999px; border:1px solid rgba(255,255,255,.25); background:#243255; color:#fff; cursor:pointer;">H252D252</button></div></div>
 <div class="six-card" data-ix="3" data-side="opp" id="sixcard_opp_3" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:.5rem;">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.35rem;">
 <strong>相手 #4</strong>
 <label style="display:flex;align-items:center;gap:.3rem;"><input class="six_sel" type="checkbox"/> 選出</label>
 </div>
 <div class="row" style="display:grid;grid-template-columns:repeat(2,1fr);gap:.35rem;margin:.3rem 0;">
-<label>ポケモン<input class="name" list="dl_poke" placeholder="例: ピカチュウ"/><button class="name_search" style="margin-left:.35rem;padding:.25rem .55rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">検索</button></label>
+<label>ポケモン<input class="name" inputmode="search" list="dl_poke" placeholder="例: ピカチュウ" type="text"/><button class="name_search" style="margin-left:.35rem;padding:.25rem .55rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">検索</button></label>
 </div>
-<div class="notice small" style="opacity:.8;">相手側はポケモン名のみ（他情報は不明扱い）</div></div>
+<div class="notice small" style="opacity:.8;">相手側はポケモン名のみ（他情報は不明扱い）</div><div class="typesline small" style="margin-top:.35rem; opacity:.85;">タイプ: —</div><div class="opp-presets small" style="margin:.35rem 0 .25rem; display:flex; flex-wrap:wrap; gap:.35rem;"><button class="opp-preset" data-preset="C252S252" style="padding:.2rem .55rem; border-radius:999px; border:1px solid rgba(255,255,255,.25); background:#243255; color:#fff; cursor:pointer;">C252S252</button><button class="opp-preset" data-preset="A252S252" style="padding:.2rem .55rem; border-radius:999px; border:1px solid rgba(255,255,255,.25); background:#243255; color:#fff; cursor:pointer;">A252S252</button><button class="opp-preset" data-preset="H252B252" style="padding:.2rem .55rem; border-radius:999px; border:1px solid rgba(255,255,255,.25); background:#243255; color:#fff; cursor:pointer;">H252B252</button><button class="opp-preset" data-preset="H252D252" style="padding:.2rem .55rem; border-radius:999px; border:1px solid rgba(255,255,255,.25); background:#243255; color:#fff; cursor:pointer;">H252D252</button></div></div>
 <div class="six-card" data-ix="4" data-side="opp" id="sixcard_opp_4" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:.5rem;">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.35rem;">
 <strong>相手 #5</strong>
 <label style="display:flex;align-items:center;gap:.3rem;"><input class="six_sel" type="checkbox"/> 選出</label>
 </div>
 <div class="row" style="display:grid;grid-template-columns:repeat(2,1fr);gap:.35rem;margin:.3rem 0;">
-<label>ポケモン<input class="name" list="dl_poke" placeholder="例: ピカチュウ"/><button class="name_search" style="margin-left:.35rem;padding:.25rem .55rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">検索</button></label>
+<label>ポケモン<input class="name" inputmode="search" list="dl_poke" placeholder="例: ピカチュウ" type="text"/><button class="name_search" style="margin-left:.35rem;padding:.25rem .55rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">検索</button></label>
 </div>
-<div class="notice small" style="opacity:.8;">相手側はポケモン名のみ（他情報は不明扱い）</div></div>
+<div class="notice small" style="opacity:.8;">相手側はポケモン名のみ（他情報は不明扱い）</div><div class="typesline small" style="margin-top:.35rem; opacity:.85;">タイプ: —</div><div class="opp-presets small" style="margin:.35rem 0 .25rem; display:flex; flex-wrap:wrap; gap:.35rem;"><button class="opp-preset" data-preset="C252S252" style="padding:.2rem .55rem; border-radius:999px; border:1px solid rgba(255,255,255,.25); background:#243255; color:#fff; cursor:pointer;">C252S252</button><button class="opp-preset" data-preset="A252S252" style="padding:.2rem .55rem; border-radius:999px; border:1px solid rgba(255,255,255,.25); background:#243255; color:#fff; cursor:pointer;">A252S252</button><button class="opp-preset" data-preset="H252B252" style="padding:.2rem .55rem; border-radius:999px; border:1px solid rgba(255,255,255,.25); background:#243255; color:#fff; cursor:pointer;">H252B252</button><button class="opp-preset" data-preset="H252D252" style="padding:.2rem .55rem; border-radius:999px; border:1px solid rgba(255,255,255,.25); background:#243255; color:#fff; cursor:pointer;">H252D252</button></div></div>
 <div class="six-card" data-ix="5" data-side="opp" id="sixcard_opp_5" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:.5rem;">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.35rem;">
 <strong>相手 #6</strong>
 <label style="display:flex;align-items:center;gap:.3rem;"><input class="six_sel" type="checkbox"/> 選出</label>
 </div>
 <div class="row" style="display:grid;grid-template-columns:repeat(2,1fr);gap:.35rem;margin:.3rem 0;">
-<label>ポケモン<input class="name" list="dl_poke" placeholder="例: ピカチュウ"/><button class="name_search" style="margin-left:.35rem;padding:.25rem .55rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">検索</button></label>
+<label>ポケモン<input class="name" inputmode="search" list="dl_poke" placeholder="例: ピカチュウ" type="text"/><button class="name_search" style="margin-left:.35rem;padding:.25rem .55rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">検索</button></label>
 </div>
-<div class="notice small" style="opacity:.8;">相手側はポケモン名のみ（他情報は不明扱い）</div></div>
+<div class="notice small" style="opacity:.8;">相手側はポケモン名のみ（他情報は不明扱い）</div><div class="typesline small" style="margin-top:.35rem; opacity:.85;">タイプ: —</div><div class="opp-presets small" style="margin:.35rem 0 .25rem; display:flex; flex-wrap:wrap; gap:.35rem;"><button class="opp-preset" data-preset="C252S252" style="padding:.2rem .55rem; border-radius:999px; border:1px solid rgba(255,255,255,.25); background:#243255; color:#fff; cursor:pointer;">C252S252</button><button class="opp-preset" data-preset="A252S252" style="padding:.2rem .55rem; border-radius:999px; border:1px solid rgba(255,255,255,.25); background:#243255; color:#fff; cursor:pointer;">A252S252</button><button class="opp-preset" data-preset="H252B252" style="padding:.2rem .55rem; border-radius:999px; border:1px solid rgba(255,255,255,.25); background:#243255; color:#fff; cursor:pointer;">H252B252</button><button class="opp-preset" data-preset="H252D252" style="padding:.2rem .55rem; border-radius:999px; border:1px solid rgba(255,255,255,.25); background:#243255; color:#fff; cursor:pointer;">H252D252</button></div></div>
 </div>
 </div>
 </div>
@@ -401,8 +407,26 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
 
       // Helpers
       function q(sel,root){ return (root||document).querySelector(sel); }
-      function qa(sel,root){ return Array.prototype.slice.call((root||document).querySelectorAll(sel)); }
-      function clamp4(n){ n = parseInt(n||'0',10)||0; n=Math.max(0,Math.min(252,n)); return n - (n%4); }
+  function qa(sel,root){ return Array.prototype.slice.call((root||document).querySelectorAll(sel)); }
+  function findSpeciesByName(name){
+    if(!name) return null;
+    var arr = (window.POKE && window.POKE.length)? window.POKE : (typeof POKE_INLINE!=='undefined'? POKE_INLINE : []);
+    for(var i=0;i<arr.length;i++){
+      var nm = arr[i]['名前'] || arr[i].name || '';
+      if(nm===name) return arr[i];
+    }
+    return null;
+  }
+  function getTypesText(name){
+    var sp = findSpeciesByName(name); if(!sp) return '—';
+    var t1 = sp['タイプ1'] || sp.type1 || ''; var t2 = sp['タイプ2'] || sp.type2 || '';
+    return (t1 || '') + (t2? '/' + t2 : '');
+  }
+  function updateTypesLine(card){
+    var name = q('.name',card)?.value.trim() || '';
+    var line = q('.typesline',card); if(line){ var txt = getTypesText(name); line.textContent = 'タイプ: ' + (txt || '—'); }
+  }
+  function clamp4(n){ n = parseInt(n||'0',10)||0; n=Math.max(0,Math.min(252,n)); return n - (n%4); }
 
       function readCard(card){
         var side = card.dataset.side;
@@ -548,41 +572,24 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
       if(wrap){
         wrap.addEventListener('change', function(e){ if(e.target.classList.contains('six_sel')) onSelChange(e.target); }, true);
         wrap.addEventListener('click', function(e){
-          if(e.target.classList.contains('name_search')){
+          var tgt = e.target;
+          $1
+          if(tgt.classList.contains('opp-preset')){
             e.preventDefault();
-            var modal = document.getElementById('six_modal'); if(!modal) return;
-            var list  = document.getElementById('six_modal_list');
-            var search= document.getElementById('six_modal_search');
-            var targetInput = e.target.previousElementSibling;
-            function show(){ modal.style.display='flex'; if(search){ search.value=''; renderList(''); search.focus(); } }
-            function hide(){ modal.style.display='none'; }
-            function getSpecies(){
-              if(window.POKE && window.POKE.length) return window.POKE;
-              if(typeof POKE_INLINE!=='undefined') return POKE_INLINE;
-              return [];
-            }
-            function renderList(q){
-              if(!list) return;
-              var arr = getSpecies();
-              var out = [];
-              q = (q||'').trim();
-              for(var i=0;i<arr.length;i++){
-                var n = arr[i]['名前'] || arr[i].name || '';
-                if(!q || n.indexOf(q)>=0) out.push(n);
-              }
-              out = out.slice(0, 400);
-              list.innerHTML = out.map(function(nm){ return '<button class="pick" style="display:block;width:100%;text-align:left;padding:.35rem .5rem;border:1px solid rgba(255,255,255,.12);background:#1a2748;color:#fff;border-radius:8px;margin-bottom:6px;">'+nm+'</button>'; }).join('');
-            }
-            if(search) search.oninput = function(){ renderList(this.value); };
-            if(list) list.onclick = function(ev){
-              if(ev.target.classList.contains('pick')){
-                if(targetInput){ targetInput.value = ev.target.textContent.trim(); targetInput.dispatchEvent(new Event('input',{bubbles:true})); targetInput.dispatchEvent(new Event('change',{bubbles:true})); }
-                hide();
-              }
-            };
-            var closeBtn = document.getElementById('six_modal_close'); if(closeBtn) closeBtn.onclick = hide;
-            modal.onclick = function(ev){ if(ev.target===modal) hide(); };
-            show();
+            var card = tgt.closest('.six-card'); if(!card) return;
+            var p = tgt.getAttribute('data-preset')||'';
+            // reset EVs
+            card.dataset.evHp = card.dataset.evDef = card.dataset.evSpd = '0';
+            if(p==='C252S252'){ card.dataset.evSpA='252'; card.dataset.evSpe='252'; }
+            else if(p==='A252S252'){ card.dataset.evAtk='252'; card.dataset.evSpe='252'; }
+            else if(p==='H252B252'){ card.dataset.evHp='252'; card.dataset.evDef='252'; }
+            else if(p==='H252D252'){ card.dataset.evHp='252'; card.dataset.evSpd='252'; }
+            // visual feedback
+            card.querySelectorAll('.opp-preset').forEach(function(b){ b.style.background='#243255'; });
+            tgt.style.background = '#3a4f7a';
+          }
+          if(tgt.classList.contains('name_search')){
+            // types updating handled on selection; also hook below
           }
         });
       }
@@ -592,7 +599,14 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
       var btnJson = document.getElementById('six_export_json'); if(btnJson) btnJson.addEventListener('click', function(){ var txt=JSON.stringify(LOG,null,2); navigator.clipboard.writeText(txt).then(function(){ addLog('ログJSONをコピーしました'); }); });
 
       attachEVButtons();
-    }catch(err){ console.error('6x6 init error:', err); }
+      // Update types when name changes
+      qa('#six .six-card .name').forEach(function(inp){
+        inp.addEventListener('change', function(){ var card=this.closest('.six-card'); if(card) updateTypesLine(card); }, true);
+        inp.addEventListener('input', function(){ var card=this.closest('.six-card'); if(card) updateTypesLine(card); }, true);
+      });
+      // initial populate types
+      qa('#six .six-card').forEach(updateTypesLine);
+      }catch(err){ console.error('6x6 init error:', err); }
   }
   if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', init); } else { init(); }
 })();</script>
