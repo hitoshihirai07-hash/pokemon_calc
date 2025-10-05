@@ -571,21 +571,68 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
       var wrap = document.getElementById('six_wrap');
       if(wrap){
         wrap.addEventListener('change', function(e){ if(e.target.classList.contains('six_sel')) onSelChange(e.target); }, true);
-        wrap.addEventListener('click', function(e){
-          var tgt = e.target;
-          $1
-          if(tgt.classList.contains('opp-preset')){
-            e.preventDefault();
-            var card = tgt.closest('.six-card'); if(!card) return;
-            var p = tgt.getAttribute('data-preset')||'';
-            // reset EVs
-            card.dataset.evHp = card.dataset.evDef = card.dataset.evSpd = '0';
-            if(p==='C252S252'){ card.dataset.evSpA='252'; card.dataset.evSpe='252'; }
-            else if(p==='A252S252'){ card.dataset.evAtk='252'; card.dataset.evSpe='252'; }
-            else if(p==='H252B252'){ card.dataset.evHp='252'; card.dataset.evDef='252'; }
-            else if(p==='H252D252'){ card.dataset.evHp='252'; card.dataset.evSpd='252'; }
-            // visual feedback
-            card.querySelectorAll('.opp-preset').forEach(function(b){ b.style.background='#243255'; });
+        
+wrap.addEventListener('click', function(e){
+  var tgt = e.target;
+
+  // --- name search modal ---
+  if(tgt.classList.contains('name_search')){
+    e.preventDefault();
+    var modal = document.getElementById('six_modal'); if(!modal) return;
+    var list  = document.getElementById('six_modal_list');
+    var search= document.getElementById('six_modal_search');
+    var targetInput = tgt.previousElementSibling;
+    function show(){ modal.style.display='flex'; if(search){ search.value=''; renderList(''); search.focus(); } }
+    function hide(){ modal.style.display='none'; }
+    function getSpecies(){ if(window.POKE && window.POKE.length) return window.POKE; if(typeof POKE_INLINE!=='undefined') return POKE_INLINE; return []; }
+    function renderList(q){
+      if(!list) return;
+      var arr = getSpecies();
+      var out = [];
+      q = (q||'').trim();
+      for(var i=0;i<arr.length;i++){
+        var n = arr[i]['名前'] || arr[i].name || '';
+        if(!q || n.indexOf(q)>=0) out.push(n);
+      }
+      out = out.slice(0, 400);
+      list.innerHTML = out.map(function(nm){ return '<button class="pick" style="display:block;width:100%;text-align:left;padding:.35rem .5rem;border:1px solid rgba(255,255,255,.12);background:#1a2748;color:#fff;border-radius:8px;margin-bottom:6px;">'+nm+'</button>'; }).join('');
+    }
+    if(search) search.oninput = function(){ renderList(this.value); };
+    if(list) list.onclick = function(ev){
+      if(ev.target.classList.contains('pick')){
+        if(targetInput){
+          targetInput.value = ev.target.textContent.trim();
+          targetInput.dispatchEvent(new Event('input',{bubbles:true}));
+          targetInput.dispatchEvent(new Event('change',{bubbles:true}));
+          var card = targetInput.closest('.six-card'); if(card && typeof updateTypesLine==='function') updateTypesLine(card);
+        }
+        hide();
+      }
+    };
+    var closeBtn = document.getElementById('six_modal_close'); if(closeBtn) closeBtn.onclick = hide;
+    modal.onclick = function(ev){ if(ev.target===modal) hide(); };
+    show();
+    return;
+  }
+
+  // --- opponent EV presets ---
+  if(tgt.classList.contains('opp-preset')){
+    e.preventDefault();
+    var card = tgt.closest('.six-card'); if(!card) return;
+    var p = tgt.getAttribute('data-preset')||'';
+    // Reset
+    card.dataset.evHp = card.dataset.evDef = card.dataset.evSpd = '0';
+    // Apply
+    if(p==='C252S252'){ card.dataset.evSpA='252'; card.dataset.evSpe='252'; }
+    else if(p==='A252S252'){ card.dataset.evAtk='252'; card.dataset.evSpe='252'; }
+    else if(p==='H252B252'){ card.dataset.evHp='252'; card.dataset.evDef='252'; }
+    else if(p==='H252D252'){ card.dataset.evHp='252'; card.dataset.evSpd='252'; }
+    // Visual state
+    card.querySelectorAll('.opp-preset').forEach(function(b){ b.style.background='#243255'; });
+    tgt.style.background = '#3a4f7a';
+    return;
+  }
+});
             tgt.style.background = '#3a4f7a';
           }
           if(tgt.classList.contains('name_search')){
