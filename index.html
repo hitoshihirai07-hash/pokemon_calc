@@ -162,7 +162,29 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
 </div>
 </fieldset>
 </div>
-<input id="v13_def1_t1" type="hidden"/><input id="v13_def1_t2" type="hidden"/><input id="v13_def2_t1" type="hidden"/><input id="v13_def2_t2" type="hidden"/><input id="v13_def3_t1" type="hidden"/><input id="v13_def3_t2" type="hidden"/></section><section aria-labelledby="tab-six" id="six" role="tabpanel" style=" display:none">
+<input id="v13_def1_t1" type="hidden"/><input id="v13_def1_t2" type="hidden"/><input id="v13_def2_t1" type="hidden"/><input id="v13_def2_t2" type="hidden"/><input id="v13_def3_t1" type="hidden"/><input id="v13_def3_t2" type="hidden"/></section><section id="party" style="display:none; padding:10px;">
+<h2 style="margin-bottom:.5rem;">パーティー</h2>
+<div id="party_toolbar" style="display:flex; gap:.5rem; align-items:center; flex-wrap:wrap; margin-bottom:.5rem;">
+<input id="party_name" placeholder="パーティー名" style="background:#1f2947;color:#fff;border:1px solid rgba(122,162,255,.55);border-radius:8px;padding:.35rem .6rem;"/>
+<button class="btn" id="party_save" style="padding:.35rem .7rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">保存</button>
+<button class="btn" id="party_new" style="padding:.35rem .7rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">新規</button>
+<span class="small" style="opacity:.8">※ 保存はブラウザ（localStorage）に行われます</span>
+</div>
+<div id="party_grid" style="display:grid; grid-template-columns: repeat(3, minmax(280px, 1fr)); gap:.6rem;"></div>
+<div style="margin-top:.8rem;">
+<h3 style="margin:.2rem 0;">保存済みパーティー</h3>
+<div id="party_list" style="display:flex; flex-direction:column; gap:.4rem;"></div>
+</div>
+</section><section aria-labelledby="tab-six" id="six" role="tabpanel" style=" display:none"><div id="six_party_loader" style="display:flex; gap:.5rem; align-items:center; flex-wrap:wrap; margin:.25rem 0 .6rem;">
+<select id="six_party_select" style="background:#1f2947;color:#fff;border:1px solid rgba(122,162,255,.55);border-radius:8px;padding:.35rem .6rem; min-width:220px;">
+<option value="">— パーティーを選択 —</option>
+</select>
+<button class="btn" id="six_party_apply" style="padding:.35rem .7rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">自分側へ読み込み</button>
+<label class="small" style="display:flex;align-items:center;gap:.35rem;opacity:.9;">
+<input checked="" id="six_move_autofill" type="checkbox"/>
+    技名から威力/タイプ/分類を自動反映
+  </label>
+</div>
 <div class="six-wrap" id="six_wrap" style="margin-top:.8rem;">
 <div class="six-topbar" style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;position:sticky;top:8px;background:rgba(25,32,56,.85);padding:.5rem .75rem;border:1px solid rgba(255,255,255,.15);border-radius:10px;">
 <strong>6対6プランナー</strong>
@@ -1217,5 +1239,284 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
   });
 })();
 </script>
-</body>
+<script>
+(function(){
+  function showSection(id){
+    var sec = document.getElementById(id);
+    if(!sec) return;
+    // hide all managed sections first
+    ['six','party'].forEach(function(sid){
+      var el = document.getElementById(sid);
+      if(el) el.style.display = (sid===id) ? '' : 'none';
+    });
+  }
+  function findTab(el){
+    while(el && !(el.classList && el.classList.contains('tab'))) el = el.parentElement;
+    return el;
+  }
+  document.addEventListener('click', function(e){
+    var t = findTab(e.target); if(!t) return;
+    var target = t.dataset ? t.dataset.tabTarget : null;
+    if(target === '#six') showSection('six');
+    else if(target === '#party') showSection('party');
+    else if(target) {
+      // other tabs -> hide managed sections
+      ['six','party'].forEach(function(sid){ var el=document.getElementById(sid); if(el) el.style.display='none'; });
+    }
+  }, true);
+  document.addEventListener('DOMContentLoaded', function(){
+    // keep hidden unless explicitly selected
+    var active = document.querySelector('.tab[aria-selected="true"], .tab.active');
+    if(active && active.dataset && active.dataset.tabTarget){
+      if(active.dataset.tabTarget==='#six') showSection('six');
+      else if(active.dataset.tabTarget==='#party') showSection('party');
+      else { ['six','party'].forEach(function(sid){ var el=document.getElementById(sid); if(el) el.style.display='none'; }); }
+    }else{
+      ['six','party'].forEach(function(sid){ var el=document.getElementById(sid); if(el) el.style.display='none'; });
+    }
+  });
+})();</script><script>
+(function(){
+  function q(sel,root){ return (root||document).querySelector(sel); }
+  function qa(sel,root){ return Array.prototype.slice.call((root||document).querySelectorAll(sel)); }
+  function ensureLists(){ if(window.ensurePoke){ try{ ensurePoke(); }catch(e){} } }
+
+  function getMovesArray(){
+    // Ensure MOVES are available (via ensurePoke or inline)
+    if(window.MOVES && window.MOVES.length) return window.MOVES;
+    if(typeof MOVES_INLINE!=='undefined') return MOVES_INLINE;
+    return [];
+  }
+  function moveLookup(name){
+    if(!name) return null;
+    var arr = getMovesArray();
+    for(var i=0;i<arr.length;i++){
+      var m = arr[i];
+      var n = m['技名'] || m['技'] || m['わざ'] || m['名前'] || m['name'] || m['Name'] || '';
+      if(n===name){
+        var power = m['威力'] || m['power'] || m['Power'] || 0;
+        var type  = m['タイプ'] || m['type'] || m['Type'] || '';
+        var cat   = m['分類'] || m['category'] || m['Category'] || '';
+        // normalize
+        power = parseInt(power||'0',10)||0;
+        if(cat==='Physical') cat='物理';
+        if(cat==='Special')  cat='特殊';
+        return {name:n, power:power, type:type, cat:cat||'物理'};
+      }
+    }
+    return null;
+  }
+
+  // ---- Party UI ----
+  var grid = document.getElementById('party_grid');
+  var list = document.getElementById('party_list');
+  var nameInput = document.getElementById('party_name');
+  if(grid){
+    function slotTemplate(ix){
+      return '<div class="party-card" data-ix="'+ix+'" style="border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:.6rem;background:#141c33;">'
+        + '<div style="display:flex;gap:.4rem;align-items:center;margin-bottom:.35rem;"><strong>#'+(ix+1)+'</strong>'
+        + '<input class="p_name" placeholder="ポケモン名" style="flex:1;background:#1f2947;color:#fff;border:1px solid rgba(122,162,255,.55);border-radius:8px;padding:.3rem .5rem;"/>'
+        + '<button class="p_search" style="padding:.2rem .5rem;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:#243255;color:#fff;cursor:pointer;">検索</button>'
+        + '</div>'
+        + '<div class="small" style="opacity:.85;margin-bottom:.3rem;">持ち物 <input class="p_item" style="width:45%;background:#1f2947;color:#fff;border:1px solid rgba(122,162,255,.55);border-radius:8px;padding:.2rem .4rem;"/>　特性 <input class="p_ability" style="width:35%;background:#1f2947;color:#fff;border:1px solid rgba(122,162,255,.55);border-radius:8px;padding:.2rem .4rem;"/></div>'
+        + '<div class="small" style="opacity:.85;margin-bottom:.35rem;">性格 <input class="p_nature" style="width:35%;background:#1f2947;color:#fff;border:1px solid rgba(122,162,255,.55);border-radius:8px;padding:.2rem .4rem;"/></div>'
+        + '<div class="small" style="display:grid;grid-template-columns:repeat(6,1fr);gap:.3rem;margin-bottom:.35rem;">'
+        + '<label>H<input class="p_ev_hp" type="number" min="0" max="252" step="4" value="0"/></label>'
+        + '<label>A<input class="p_ev_atk" type="number" min="0" max="252" step="4" value="0"/></label>'
+        + '<label>B<input class="p_ev_def" type="number" min="0" max="252" step="4" value="0"/></label>'
+        + '<label>C<input class="p_ev_spa" type="number" min="0" max="252" step="4" value="0"/></label>'
+        + '<label>D<input class="p_ev_spd" type="number" min="0" max="252" step="4" value="0"/></label>'
+        + '<label>S<input class="p_ev_spe" type="number" min="0" max="252" step="4" value="0"/></label>'
+        + '</div>'
+        + '<div class="small" style="display:grid;grid-template-columns:repeat(2,1fr);gap:.3rem;">'
+        + '<input class="p_m1" placeholder="技1 名称"/><input class="p_m2" placeholder="技2 名称"/>'
+        + '<input class="p_m3" placeholder="技3 名称"/><input class="p_m4" placeholder="技4 名称"/>'
+        + '</div>'
+        + '</div>';
+    }
+    grid.innerHTML = Array.from({length:6}).map((_,i)=>slotTemplate(i)).join('');
+  }
+
+  function readPartyFromUI(){
+    var slots = qa('.party-card', grid);
+    return slots.map(function(card){
+      function gv(sel){ var el=card.querySelector(sel); return el? (el.value||'').trim() : ''; }
+      function gi(sel){ var el=card.querySelector(sel); return el? (parseInt(el.value||'0',10)||0) : 0; }
+      return {
+        name: gv('.p_name'),
+        item: gv('.p_item'),
+        ability: gv('.p_ability'),
+        nature: gv('.p_nature'),
+        ev: {hp:gi('.p_ev_hp'), atk:gi('.p_ev_atk'), def:gi('.p_ev_def'), spa:gi('.p_ev_spa'), spd:gi('.p_ev_spd'), spe:gi('.p_ev_spe')},
+        moves: [gv('.p_m1'), gv('.p_m2'), gv('.p_m3'), gv('.p_m4')]
+      };
+    });
+  }
+  function writePartyToUI(p){
+    var slots = qa('.party-card', grid);
+    for(var i=0;i<slots.length;i++){
+      var card = slots[i], d = p[i] || {};
+      function sv(sel, v){ var el=card.querySelector(sel); if(el) el.value = (v==null? '' : v); }
+      sv('.p_name', d.name||'');
+      sv('.p_item', d.item||'');
+      sv('.p_ability', d.ability||'');
+      sv('.p_nature', d.nature||'');
+      var ev = d.ev||{};
+      sv('.p_ev_hp', ev.hp||0); sv('.p_ev_atk', ev.atk||0); sv('.p_ev_def', ev.def||0);
+      sv('.p_ev_spa', ev.spa||0); sv('.p_ev_spd', ev.spd||0); sv('.p_ev_spe', ev.spe||0);
+      var mv = d.moves||[];
+      sv('.p_m1', mv[0]||''); sv('.p_m2', mv[1]||''); sv('.p_m3', mv[2]||''); sv('.p_m4', mv[3]||'');
+    }
+  }
+
+  // localStorage CRUD
+  var KEY='pcalc_parties';
+  function loadAll(){ try{ return JSON.parse(localStorage.getItem(KEY)||'[]'); }catch(e){ return []; } }
+  function saveAll(arr){ localStorage.setItem(KEY, JSON.stringify(arr)); }
+  function upsertParty(name, data){
+    var all = loadAll();
+    var idx = all.findIndex(function(p){ return p.name===name; });
+    var rec = {name:name, updatedAt: Date.now(), data:data};
+    if(idx>=0) all[idx]=rec; else all.push(rec);
+    saveAll(all); return rec;
+  }
+  function removeParty(name){
+    var all = loadAll().filter(function(p){ return p.name!==name; });
+    saveAll(all);
+  }
+
+  function renderPartyList(){
+    var all = loadAll().sort(function(a,b){ return b.updatedAt - a.updatedAt; });
+    var html = '';
+    for(var i=0;i<all.length;i++){
+      var p = all[i];
+      var t = new Date(p.updatedAt).toLocaleString();
+      html += '<div class="plist" data-name="'+p.name+'" style="display:flex;gap:.5rem;align-items:center;justify-content:space-between;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:.35rem .5rem;">'
+            + '<div><strong>'+p.name+'</strong> <span class="small" style="opacity:.75">更新: '+t+'</span></div>'
+            + '<div style="display:flex;gap:.4rem;">'
+            + '<button class="p_load btn" style="padding:.25rem .6rem;">読み込み</button>'
+            + '<button class="p_apply btn" style="padding:.25rem .6rem;">6対6へ適用</button>'
+            + '<button class="p_del btn" style="padding:.25rem .6rem;">削除</button>'
+            + '</div></div>';
+    }
+    if(list) list.innerHTML = html || '<div class="small" style="opacity:.75">保存データはありません。</div>';
+    // also refresh select on six
+    var sel = document.getElementById('six_party_select');
+    if(sel){
+      var opt = '<option value="">— パーティーを選択 —</option>';
+      for(var j=0;j<all.length;j++){ opt += '<option value="'+all[j].name+'">'+all[j].name+'</option>'; }
+      sel.innerHTML = opt;
+    }
+  }
+
+  if(document.getElementById('party_save')){
+    document.getElementById('party_save').addEventListener('click', function(){
+      ensureLists();
+      var nm = (nameInput.value||'').trim();
+      if(!nm){ alert('パーティー名を入力してください'); return; }
+      var data = readPartyFromUI();
+      upsertParty(nm, data);
+      renderPartyList();
+    });
+  }
+  if(document.getElementById('party_new')){
+    document.getElementById('party_new').addEventListener('click', function(){
+      nameInput.value='';
+      writePartyToUI([{},{},{},{},{},{}]);
+    });
+  }
+
+  if(list){
+    list.addEventListener('click', function(e){
+      var t = e.target, row = t.closest('.plist'); if(!row) return;
+      var nm = row.getAttribute('data-name');
+      var all = loadAll();
+      var rec = all.find(function(p){ return p.name===nm; });
+      if(t.classList.contains('p_load')){
+        if(rec){ nameInput.value = rec.name; writePartyToUI(rec.data||[{},{},{},{},{},{}]); }
+      }else if(t.classList.contains('p_del')){
+        if(confirm('削除しますか？')){ removeParty(nm); renderPartyList(); }
+      }else if(t.classList.contains('p_apply')){
+        if(rec){ applyPartyToSix(rec); }
+      }
+    });
+  }
+
+  function applyPartyToSix(rec){
+    ensureLists();
+    var data = rec.data||[];
+    var cards = qa('#six_my .six-card');
+    for(var i=0;i<cards.length;i++){
+      var d = data[i] || {};
+      var card = cards[i];
+      function sv(sel, v){ var el=card.querySelector(sel); if(el){ el.value = (v==null? '' : v); el.dispatchEvent(new Event('input',{bubbles:true})); el.dispatchEvent(new Event('change',{bubbles:true})); } }
+      // name
+      sv('.name', d.name||'');
+      // EV (no Spe in six UI)
+      var ev = d.ev||{};
+      sv('.hp', ev.hp||0); sv('.atk', ev.atk||0); sv('.def', ev.def||0);
+      sv('.spa', ev.spa||0); sv('.spd', ev.spd||0);
+      // moves
+      var mv = d.moves||[];
+      for(var k=1;k<=4;k++){
+        var nm = mv[k-1] || '';
+        sv('.m'+k+'n', nm);
+        if(nm){
+          var info = moveLookup(nm);
+          if(info){
+            sv('.m'+k+'p', info.power);
+            var t = card.querySelector('.m'+k+'t'); if(t){ t.value = info.type||t.value; t.dispatchEvent(new Event('change',{bubbles:true})); }
+            var c = card.querySelector('.m'+k+'c'); if(c){ c.value = info.cat||c.value; c.dispatchEvent(new Event('change',{bubbles:true})); }
+          }
+        }
+      }
+    }
+  }
+
+  // Loader in #six
+  var sixApply = document.getElementById('six_party_apply');
+  if(sixApply){
+    sixApply.addEventListener('click', function(){
+      var sel = document.getElementById('six_party_select');
+      var nm = sel ? sel.value : '';
+      if(!nm) return;
+      var all = loadAll();
+      var rec = all.find(function(p){ return p.name===nm; });
+      if(rec){ applyPartyToSix(rec); }
+    });
+  }
+
+  // Moves auto-fill when typing in #six (if toggle ON)
+  var autoToggle = document.getElementById('six_move_autofill');
+  if(autoToggle){
+    document.addEventListener('input', function(e){
+      if(!autoToggle.checked) return;
+      var el = e.target;
+      if(!(el && el.classList && el.classList.contains('name'))) return;
+    }, true);
+    document.addEventListener('change', function(e){
+      if(!autoToggle.checked) return;
+      var el = e.target;
+      if(!(el && el.classList)) return;
+      // moves on my side
+      var m = el.closest('#six_my');
+      if(m){
+        for(var i=1;i<=4;i++){
+          if(el.classList.contains('m'+i+'n')){
+            var card = el.closest('.six-card'); if(!card) return;
+            var info = moveLookup((el.value||'').trim());
+            if(info){
+              var p = card.querySelector('.m'+i+'p'); if(p) p.value = info.power;
+              var t = card.querySelector('.m'+i+'t'); if(t) t.value = info.type||t.value;
+              var c = card.querySelector('.m'+i+'c'); if(c) c.value = info.cat||c.value;
+            }
+          }
+        }
+      }
+    }, true);
+  }
+
+  // initial render
+  renderPartyList();
+})();</script></body>
 </html>
