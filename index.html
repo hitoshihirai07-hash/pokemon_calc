@@ -24,17 +24,11 @@ label[for="v13_def3_t1"], label[for="v13_def3_t2"] {
   display: none !important;
 }
 </style><style>
-#share_bar{
-  display:flex; gap:.5rem; align-items:center; flex-wrap:wrap; margin:.5rem 0 1rem;
-}
-#share_copy_btn, #tera_toggle_box{
-  cursor:pointer; user-select:none;
-  border:1px solid #ccc; border-radius:6px; padding:.35rem .6rem; font-size:.95rem;
-  background:#fafafa;
-}
-#tera_toggle_box span{ margin-left:.35rem; }
-#tera_type_select{ padding:.3rem .4rem; border-radius:6px; border:1px solid #ccc; }
-#copy_toast{ position:fixed; right:12px; bottom:12px; background:#222; color:#fff; padding:.5rem .7rem; border-radius:6px; opacity:.92; display:none; z-index:9999; }
+#share_bar{ display:flex; gap:.5rem; align-items:center; flex-wrap:wrap; margin:.5rem 0 1rem; }
+#share_copy_btn, #tera_toggle_box{ cursor:pointer; user-select:none; border:1px solid #bbb; border-radius:6px; padding:.35rem .6rem; font-size:.95rem; background:#f8f8f8; }
+#tera_type_select{ padding:.3rem .4rem; border-radius:6px; border:1px solid #bbb; }
+#copy_toast{ position:fixed; right:12px; bottom:12px; background:#222; color:#fff; padding:.5rem .7rem; border-radius:6px; opacity:.95; display:none; z-index:9999; }
+#tera_status_badge{ display:inline-block; padding:.25rem .5rem; border-radius:999px; border:1px solid #444; background:#ffecc7; font-weight:600; }
 </style></head>
 <body>
 <header class="topbar">
@@ -56,7 +50,7 @@ label[for="v13_def3_t1"], label[for="v13_def3_t2"] {
 </div>
 </header>
 <main>
-<section class="panel active" id="calc" role="tabpanel"><div id="share_bar"><button id="share_copy_btn">共有URLをコピー</button><label id="tera_toggle_box"><input id="tera_on" type="checkbox"/><span>テラスタル適用</span></label><select id="tera_type_select"><option value="">（未選択）</option><option value="ノーマル">ノーマル</option><option value="ほのお">ほのお</option><option value="みず">みず</option><option value="でんき">でんき</option><option value="くさ">くさ</option><option value="こおり">こおり</option><option value="かくとう">かくとう</option><option value="どく">どく</option><option value="じめん">じめん</option><option value="ひこう">ひこう</option><option value="エスパー">エスパー</option><option value="むし">むし</option><option value="いわ">いわ</option><option value="ゴースト">ゴースト</option><option value="ドラゴン">ドラゴン</option><option value="あく">あく</option><option value="はがね">はがね</option><option value="フェアリー">フェアリー</option></select></div>
+<section class="panel active" id="calc" role="tabpanel"><div id="share_bar"><button id="share_copy_btn">共有URLをコピー</button><label id="tera_toggle_box"><input id="tera_on" type="checkbox"/><span>テラスタル適用</span></label><select id="tera_type_select"><option value="">（未選択）</option><option value="ノーマル">ノーマル</option><option value="ほのお">ほのお</option><option value="みず">みず</option><option value="でんき">でんき</option><option value="くさ">くさ</option><option value="こおり">こおり</option><option value="かくとう">かくとう</option><option value="どく">どく</option><option value="じめん">じめん</option><option value="ひこう">ひこう</option><option value="エスパー">エスパー</option><option value="むし">むし</option><option value="いわ">いわ</option><option value="ゴースト">ゴースト</option><option value="ドラゴン">ドラゴン</option><option value="あく">あく</option><option value="はがね">はがね</option><option value="フェアリー">フェアリー</option></select><span id="tera_status_badge">テラOFF</span></div>
 <h2>ダメージ計算</h2>
 <div class="grid grid-2">
 <fieldset>
@@ -213,146 +207,175 @@ label[for="v13_def3_t1"], label[for="v13_def3_t2"] {
     obs.observe(n, {childList:true, subtree:true, characterData:true});
   });
 })();
-</script><div id="build_version">SHARE+TERA 20251005-1241</div><div id="copy_toast">コピーしました</div><script>
+</script><div id="build_version">SHARE+TERA v2 20251005-1247</div><div id="copy_toast">コピーしました</div><script>
 (function(){
-  // Permalink: serialize inputs/selects/textarea with IDs into base64 JSON under location.hash "#s="
-  function collectState(){
-    const data = {};
-    const elems = document.querySelectorAll('input[id], select[id], textarea[id]');
-    elems.forEach(el=>{
-      if(el.type === 'password') return;
-      // skip hidden technical fields except those we care about (atk_t1/2 etc.)
-      if(el.type === 'hidden' && !/^atk_t[12]|^def_t[12]|^v13_def[123]_t[12]/.test(el.id)) return;
-      // only store if has a value
-      let val = (el.type==='checkbox') ? (el.checked?1:0) : el.value;
-      if(val !== "" && val !== null && val !== undefined){
-        data[el.id] = val;
-      }
-    });
-    return data;
-  }
-  function applyState(data){
-    if(!data) return;
-    Object.keys(data).forEach(id=>{
-      const el = document.getElementById(id);
-      if(!el) return;
-      if(el.type==='checkbox') el.checked = !!Number(data[id]);
-      else el.value = data[id];
-      el.dispatchEvent(new Event('input', {bubbles:true}));
-      el.dispatchEvent(new Event('change', {bubbles:true}));
-    });
-    // Apply tera effects after base state
-    syncTera();
+  // --- Helpers ---
+  function debounce(fn, ms){
+    let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn.apply(this,args), ms); };
   }
   function encodeState(obj){
-    try{
-      const s = JSON.stringify(obj);
-      return btoa(unescape(encodeURIComponent(s)));
-    }catch(e){ return ""; }
+    try{ return btoa(unescape(encodeURIComponent(JSON.stringify(obj)))); }catch(e){ return ""; }
   }
   function decodeState(s){
-    try{
-      const json = decodeURIComponent(escape(atob(s)));
-      return JSON.parse(json);
-    }catch(e){ return null; }
-  }
-  function updateURLHash(){
-    const st = collectState();
-    const enc = encodeState(st);
-    if(enc){
-      const url = location.origin + location.pathname + "#s=" + enc;
-      history.replaceState(null,"",url);
-      return url;
-    }
-    return location.href;
-  }
-  function copyURL(u){
-    try{
-      navigator.clipboard.writeText(u).then(()=>showToast());
-    }catch(e){
-      const ta = document.createElement('textarea'); ta.value = u; document.body.appendChild(ta);
-      ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
-      showToast();
-    }
+    try{ return JSON.parse(decodeURIComponent(escape(atob(s)))); }catch(e){ return null; }
   }
   function showToast(){
     const t = document.getElementById('copy_toast'); if(!t) return;
     t.style.display='block'; setTimeout(()=>{ t.style.display='none'; }, 1200);
   }
+  function setVal(el, v){
+    if(!el) return;
+    const typ=(el.type||"").toLowerCase();
+    if(typ==='checkbox') el.checked = !!Number(v);
+    else if(typ==='radio') el.checked = (el.value==v);
+    else el.value = v;
+    el.dispatchEvent(new Event('input', {bubbles:true}));
+    el.dispatchEvent(new Event('change', {bubbles:true}));
+  }
+  function getEl(id){ return document.getElementById(id); }
+  const calcRoot = document.getElementById('calc') || document.body;
 
-  // Tera logic
+  // --- Collect & Apply (broadened scope) ---
+  function collectState(){
+    const data = {};
+    // All inputs/selects/textareas within calc (including hidden)
+    const elems = calcRoot.querySelectorAll('input, select, textarea');
+    const seenRadioNames = new Set();
+    elems.forEach(el=>{
+      // skip inputs without id/name entirely
+      if(!el.id && !el.name) return;
+      const typ=(el.type||"").toLowerCase();
+      if(typ==='radio'){
+        if(!el.name || seenRadioNames.has(el.name)) return;
+        const checked = calcRoot.querySelector(`input[type="radio"][name="${CSS.escape(el.name)}"]:checked`);
+        data["name:"+el.name] = checked ? checked.value : "__none__";
+        seenRadioNames.add(el.name);
+      }else if(typ==='checkbox'){
+        const key = el.id ? "id:"+el.id : "name:"+el.name;
+        data[key] = el.checked ? 1 : 0;
+      }else{
+        const key = el.id ? "id:"+el.id : "name:"+el.name;
+        const val = el.value;
+        if(val !== undefined) data[key] = val;
+      }
+    });
+    // Also persist our Tera UI (outside calc root)
+    const teraOn = getEl('tera_on'); if(teraOn) data["id:tera_on"] = teraOn.checked ? 1 : 0;
+    const teraSel = getEl('tera_type_select'); if(teraSel) data["id:tera_type_select"] = teraSel.value || "";
+    return data;
+  }
+
+  function applyState(data){
+    if(!data) return;
+    Object.keys(data).forEach(k=>{
+      const v = data[k];
+      if(k.startsWith("id:")){
+        const el = getEl(k.slice(3)); if(el) setVal(el, v);
+      }else if(k.startsWith("name:")){
+        const name = k.slice(5);
+        const radios = calcRoot.querySelectorAll(`input[type="radio"][name="${CSS.escape(name)}"]`);
+        if(radios.length){
+          radios.forEach(r=>{ r.checked = (r.value==v); });
+          if(radios[0]){
+            radios[0].dispatchEvent(new Event('input',{bubbles:true}));
+            radios[0].dispatchEvent(new Event('change',{bubbles:true}));
+          }
+        }else{
+          const el = calcRoot.querySelector(`[name="${CSS.escape(name)}"]`);
+          if(el) setVal(el, v);
+        }
+      }
+    });
+    syncTera(); // ensure tera effect is consistent after restore
+  }
+
+  function updateURLHash(){
+    const st = collectState();
+    const enc = encodeState(st);
+    if(enc){
+      const url = location.origin + location.pathname + "#s=" + enc;
+      history.replaceState(null, "", url);
+      return url;
+    }
+    return location.href;
+  }
+
+  function copyURL(u){
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(u).then(showToast).catch(function(){
+        const ta = document.createElement('textarea'); ta.value = u; document.body.appendChild(ta);
+        ta.select(); document.execCommand('copy'); document.body.removeChild(ta); showToast();
+      });
+    }else{
+      const ta = document.createElement('textarea'); ta.value = u; document.body.appendChild(ta);
+      ta.select(); document.execCommand('copy'); document.body.removeChild(ta); showToast();
+    }
+  }
+
+  // --- Tera logic with visible status ---
   const TYPES = ['ノーマル','ほのお','みず','でんき','くさ','こおり','かくとう','どく','じめん','ひこう','エスパー','むし','いわ','ゴースト','ドラゴン','あく','はがね','フェアリー','Normal','Fire','Water','Electric','Grass','Ice','Fighting','Poison','Ground','Flying','Psychic','Bug','Rock','Ghost','Dragon','Dark','Steel','Fairy'];
   const isType = (t)=> TYPES.indexOf(String(t||'').trim())>=0;
-
-  function setVal(id, v){ const el=document.getElementById(id); if(el){ el.value=v||''; el.dispatchEvent(new Event('input',{bubbles:true})); el.dispatchEvent(new Event('change',{bubbles:true})); } }
-  function getVal(id){ const el=document.getElementById(id); return el?el.value:''; }
-
-  function syncTera(){
-    const on = document.getElementById('tera_on')?.checked;
-    const tsel = document.getElementById('tera_type_select');
-    const ttype = tsel ? tsel.value : '';
-
+  function setById(id, v){ const el=getEl(id); if(el) setVal(el, v); }
+  function getById(id){ const el=getEl(id); return el?(el.type==='checkbox'?(el.checked?1:0):el.value):""; }
+  function updateTeraBadge(on, ttype){
+    const badge = getEl('tera_status_badge'); if(!badge) return;
     if(on && isType(ttype)){
-      // save original atk types once
+      badge.style.display = 'inline-block';
+      badge.textContent = 'テラ適用中: ' + ttype;
+    }else{
+      badge.style.display = 'inline-block';
+      badge.textContent = 'テラOFF';
+    }
+  }
+  function syncTera(){
+    const on = !!getById('tera_on');
+    const ttype = getById('tera_type_select');
+    if(on && isType(ttype)){
       const root = document.body;
       if(!root.dataset.savedAtkTypes){
-        root.dataset.savedAtkTypes = JSON.stringify({t1:getVal('atk_t1'), t2:getVal('atk_t2')});
+        root.dataset.savedAtkTypes = JSON.stringify({t1:getById('atk_t1'), t2:getById('atk_t2')});
       }
-      // override effective atk types to tera type only
-      setVal('atk_t1', ttype);
-      setVal('atk_t2', '');
-      // if move is Tera Blast, force its type to tera type
-      const mvname = getVal('atk_move_name').trim();
+      setById('atk_t1', ttype);
+      setById('atk_t2', '');
+      const mvname = String(getById('atk_move_name')).trim();
       if(/テラバースト|Tera\s*Blast/i.test(mvname)){
-        setVal('v13_move_type', ttype);
+        setById('v13_move_type', ttype);
       }
     }else{
-      // restore original atk types if saved
       const root = document.body;
       if(root.dataset.savedAtkTypes){
-        try{
-          const o = JSON.parse(root.dataset.savedAtkTypes);
-          setVal('atk_t1', o.t1||'');
-          setVal('atk_t2', o.t2||'');
-        }catch(e){}
+        try{ const o = JSON.parse(root.dataset.savedAtkTypes); setById('atk_t1', o.t1||''); setById('atk_t2', o.t2||''); }catch(e){}
         delete root.dataset.savedAtkTypes;
       }
-      // if Tera Blast, set move type back to Normal/ノーマル if it was set by us
-      const mvname = getVal('atk_move_name').trim();
+      const mvname = String(getById('atk_move_name')).trim();
       if(/テラバースト|Tera\s*Blast/i.test(mvname)){
-        // choose locale based on existing UI (prefer ノーマル if present in list)
-        setVal('v13_move_type', 'ノーマル');
+        setById('v13_move_type', 'ノーマル');
       }
     }
+    updateTeraBadge(on, ttype);
   }
 
-  // Wire up UI
-  document.getElementById('share_copy_btn')?.addEventListener('click', ()=>{
-    const url = updateURLHash();
-    copyURL(url);
-  });
-  document.getElementById('tera_on')?.addEventListener('change', ()=>{
-    syncTera(); updateURLHash();
-  });
-  document.getElementById('tera_type_select')?.addEventListener('change', ()=>{
-    syncTera(); updateURLHash();
-  });
-  // Also watch move name changes for Tera Blast handling
-  document.getElementById('atk_move_name')?.addEventListener('input', ()=>{
-    syncTera(); updateURLHash();
-  });
+  // Wire up
+  const copyBtn = document.getElementById('share_copy_btn');
+  if(copyBtn) copyBtn.addEventListener('click', ()=>{ copyURL(updateURLHash()); });
 
-  // Restore from hash on load
+  const teraOn = getEl('tera_on'), teraSel = getEl('tera_type_select');
+  teraOn && teraOn.addEventListener('change', ()=>{ syncTera(); updateURLHash(); });
+  teraSel && teraSel.addEventListener('change', ()=>{ syncTera(); updateURLHash(); });
+  const mv = getEl('atk_move_name');
+  mv && mv.addEventListener('input', ()=>{ syncTera(); updateURLHash(); });
+
+  // Global debounced auto-update for any change inside #calc
+  const deb = debounce(()=>{ updateURLHash(); }, 200);
+  calcRoot.addEventListener('input', deb, true);
+  calcRoot.addEventListener('change', deb, true);
+
+  // Restore from hash
   function tryRestoreFromHash(){
-    const h = location.hash||'';
-    const m = h.match(/[#&]s=([^&]+)/);
-    if(m && m[1]){
-      const st = decodeState(m[1]);
-      applyState(st);
-    }
+    const h = location.hash||''; const m = h.match(/[#&]s=([^&]+)/);
+    if(m && m[1]){ const st = decodeState(m[1]); applyState(st); } else { syncTera(); updateURLHash(); }
   }
-  document.addEventListener('DOMContentLoaded', ()=>{
-    tryRestoreFromHash();
-  });
-})();</script></body>
+  document.addEventListener('DOMContentLoaded', tryRestoreFromHash);
+})();
+</script></body>
 </html>
