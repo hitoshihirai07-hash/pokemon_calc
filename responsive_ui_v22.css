@@ -1,0 +1,64 @@
+
+/* responsive_ui_v22.css */
+:root{
+  --pc-font: 14.5px;
+  --sp-font: 15.5px;
+  --gap-pc: 10px;
+  --gap-sp: 8px;
+}
+body{ font-size: var(--pc-font); }
+.tabbar, .tabs, .nav, .menu{
+  overflow-x: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+}
+.tabbar .tab, .tabs .tab{ display: inline-block; margin-right: 6px; }
+.six-card, .party-card{ transition: transform .08s ease, box-shadow .08s ease; }
+.six-card:active, .party-card:active{ transform: translateY(1px); }
+
+@media (max-width: 900px){
+  body:not(.force-pc){ font-size: var(--sp-font); }
+  body:not(.force-pc) #six,
+  body:not(.force-pc) #party{ padding: 8px 8px 68px; }
+  body:not(.force-pc) #six_my,
+  body:not(.force-pc) #six_opp{ display: grid !important; grid-template-columns: 1fr !important; gap: var(--gap-sp) !important; }
+  body:not(.force-pc) .six-card{ width: 100% !important; margin: 0 !important; }
+  body:not(.force-pc) #party #party_grid{ display: grid !important; grid-template-columns: 1fr !important; gap: var(--gap-sp) !important; }
+  body:not(.force-pc) input[type="text"],
+  body:not(.force-pc) input[type="number"],
+  body:not(.force-pc) select{ width: 100% !important; min-height: 40px; }
+  body:not(.force-pc) .btn{ min-height: 40px; padding: .45rem .7rem !important; }
+  body:not(.force-pc) .ev-box, 
+  body:not(.force-pc) .ev-grid,
+  body:not(.force-pc) .party-card .small[style*="grid-template-columns:repeat(6"]{ display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 6px !important; }
+  body:not(.force-pc) .moves{ margin-top: 6px; }
+  body:not(.force-pc) .tabrow, 
+  body:not(.force-pc) .tabbar, 
+  body:not(.force-pc) .tabs{ overflow-x: auto; white-space: nowrap; }
+}
+body.force-sp{ font-size: var(--sp-font); }
+body.force-sp #six, body.force-sp #party{ padding-bottom: 68px; }
+body.force-sp #six_my, body.force-sp #six_opp{ display: grid !important; grid-template-columns: 1fr !important; gap: var(--gap-sp) !important; }
+body.force-sp #party #party_grid{ display: grid !important; grid-template-columns: 1fr !important; gap: var(--gap-sp) !important; }
+body.force-sp input[type="text"], body.force-sp input[type="number"], body.force-sp select{ width: 100% !important; min-height: 40px; }
+body.force-sp .btn{ min-height: 40px; padding: .45rem .7rem !important; }
+
+#sticky_actions{
+  position: fixed; left: 0; right: 0; bottom: 0;
+  background: rgba(16,25,51,.96);
+  border-top: 1px solid rgba(255,255,255,.1);
+  padding: 8px 10px;
+  display: none;
+  gap: 8px;
+  z-index: 9999;
+}
+#sticky_actions .btn{ flex: 1 1 auto; }
+@media (max-width: 900px){ body:not(.force-pc) #sticky_actions{ display: flex; } }
+body.force-sp #sticky_actions{ display: flex; }
+
+#view_toggle{
+  position: fixed; right: 10px; top: 10px; z-index: 10000;
+  background: #20325f; color: #fff;
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 10px; padding: .35rem .6rem; cursor: pointer;
+}
