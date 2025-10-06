@@ -111,14 +111,14 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
 .badge, .version, .app-version { display:none !important; }
 #app_version, #share_tera_footer { display:none !important; }
 </style><style>
-/* BDC v27: hide legend/version remnants in 6x6 planner */
-#six .legend, #six .legend-row, #six .planner-legend, #six .planner-version,
-#six .six-version, #six .ver, #six .badge, #six small { display:none !important; }
-</style><style>
 /* BDC v28: aggressive hide of leftover badges */
 #app_version, #six .six-version, #six .planner-version, .app-version, .version-badge {
   display:none !important;
 }
+</style><style>
+/* BDC v29: restore visibility for #six and small tags */
+#six { display:block !important; visibility:visible !important; opacity:1 !important; }
+#six small { display:inline !important; }
 </style></head>
 <script src="./party_autocomplete_hotfix_v19.js"></script>
 <script src="./custom_autocomplete_v21.js"></script>
@@ -127,7 +127,6 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
 <script src="./mobile_tabs_v23.js"></script>
 <body><div id="brand_badge_bdc" style="position:fixed; left:10px; top:10px; z-index:1000; font-weight:600; font-size:12px; color:#9fb8ff; opacity:.85;">Battle Damage Calc (BDC)</div>
 <header class="topbar">
-
 <nav class="tabs" role="tablist">
 <button aria-controls="calc" class="tab active" data-tab-target="#calc" role="tab">ダメージ計算</button>
 <button aria-controls="v13" class="tab" data-tab-target="#v13" role="tab">1対3</button>
@@ -1828,29 +1827,44 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 });</script><div id="legal_disclaimer_bdc" style="position:fixed; right:8px; bottom:8px; max-width:520px; background:rgba(16,25,51,.92); color:#c9d6ff; border:1px solid rgba(255,255,255,.12); padding:.45rem .6rem; border-radius:10px; font-size:12px; z-index:9999;">本ツールは非公式のファンメイドです。任天堂・株式会社ポケモン・Niantic 等いずれの権利者とも一切関係ありません。 記載の固有名は各社の商標または登録商標です。学術・検証・個人利用を目的として公開しています。公式ロゴ・画像等は使用しません。<button id="legal_disclaimer_close" style="margin-left:.5rem; padding:.1rem .4rem; border-radius:6px; border:1px solid rgba(255,255,255,.25); background:#243255; color:#fff; cursor:pointer; font-size:12px;">閉じる</button></div><script>document.getElementById('legal_disclaimer_close')?.addEventListener('click',()=>{document.getElementById('legal_disclaimer_bdc')?.remove();});</script><script>
 (function(){
-  function hideBadges(root){
-    var nodes = root ? (root.querySelectorAll('*')) : document.querySelectorAll('*');
-    nodes.forEach(function(el){
-      var txt = (el.innerText||'').trim();
-      if(!txt) return;
-      if (/^\s*計算機\s*$/m.test(txt)) { el.style.display='none'; }
-      if (/(?:^|\s)6×6\s*v\d{8}-\d{3,4}/i.test(txt) || /6×6\s*v/i.test(txt)) { el.style.display='none'; }
-      if (/SHARE\+TERA/i.test(txt)) { el.style.display='none'; }
-    });
-  }
-  if (document.readyState==='loading') {
-    document.addEventListener('DOMContentLoaded', function(){ hideBadges(); });
-  } else { hideBadges(); }
-  // Observe late insertions
-  var mo = new MutationObserver(function(muts){
-    muts.forEach(function(m){
-      if(m.addedNodes){
-        m.addedNodes.forEach(function(n){
-          if(n.nodeType===1){ hideBadges(n); }
-        });
+  function removeBadges(){
+    // Remove only leaf-like elements showing unwanted labels
+    var patterns = [
+      /6×6\s*v\d{8}-\d{3,4}/i,
+      /\b6×6\s*v\b/i,
+      /SHARE\+TERA/i
+    ];
+    var scope = document.getElementById('six');
+    if(scope){
+      var targets = scope.querySelectorAll('small, span, button, div');
+      targets.forEach(function(el){
+        var txt = (el.textContent||'').trim();
+        for(var i=0;i<patterns.length;i++){
+          if(patterns[i].test(txt)){
+            el.remove();
+            break;
+          }
+        }
+      });
+    }
+    // Header side: remove tiny "計算機" badges only (not large containers)
+    var tiny = document.querySelectorAll('small, span, button');
+    tiny.forEach(function(el){
+      var t=(el.textContent||'').trim();
+      if(/^\s*計算機(\s*v?\d+)?\s*$/i.test(t)){
+        el.remove();
       }
     });
-  });
-  mo.observe(document.documentElement, {childList:true, subtree:true});
+    // Ensure six is visible (in case previous inline style was set)
+    var six = document.getElementById('six');
+    if(six && six.style && six.style.display==='none'){ six.style.display=''; }
+  }
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded', removeBadges);
+  } else {
+    removeBadges();
+  }
+  // Also run once more after a tick in case other scripts inject late
+  setTimeout(removeBadges, 300);
 })();</script></body>
 </html>
