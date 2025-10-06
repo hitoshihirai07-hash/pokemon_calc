@@ -1826,68 +1826,8 @@ document.addEventListener('DOMContentLoaded', function(){
       if(!el.getAttribute('list')) el.setAttribute('list','dl_moves');
     });
   }
-});</script><div id="legal_disclaimer_bdc" style="position:fixed; right:8px; bottom:8px; max-width:520px; background:rgba(16,25,51,.92); color:#c9d6ff; border:1px solid rgba(255,255,255,.12); padding:.45rem .6rem; border-radius:10px; font-size:12px; z-index:9999;">本ツールは非公式のファンメイドです。任天堂・株式会社ポケモン・Niantic 等いずれの権利者とも一切関係ありません。 記載の固有名は各社の商標または登録商標です。学術・検証・個人利用を目的として公開しています。公式ロゴ・画像等は使用しません。<button id="legal_disclaimer_close" style="margin-left:.5rem; padding:.1rem .4rem; border-radius:6px; border:1px solid rgba(255,255,255,.25); background:#243255; color:#fff; cursor:pointer; font-size:12px;">閉じる</button></div><script>document.getElementById('legal_disclaimer_close')?.addEventListener('click',()=>{document.getElementById('legal_disclaimer_bdc')?.remove();});</script><!-- BDC v43 start -->
-<style>
-/* BDC v43 inline */
-.bdc-mtype-chip{background:#3b5cc9;color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:10px;padding:2px 6px;font-size:12px;display:inline-block;min-width:38px;text-align:center;vertical-align:middle;}
-.bdc-mpow-hint{margin-left:6px;opacity:.85;font-size:12px;color:#d8e1ff;}
-#bdc_err_box{position:fixed;left:8px;bottom:8px;max-width:62vw;background:rgba(26,34,60,.96);color:#ffe;z-index:100000;border:1px solid rgba(255,255,255,.25);border-radius:10px;padding:.4rem .6rem;font-size:12px;line-height:1.35;display:none;}
-#bdc_err_box button{margin-left:.5rem;background:#33406f;color:#fff;border:1px solid rgba(255,255,255,.25);border-radius:6px;padding:.1rem .4rem;cursor:pointer;}
-#six .bdc_six_diag{margin-left:.5rem;font-size:12px;opacity:.9}
-#bdc_moves_loader{margin-left:.5rem;display:inline-flex;gap:.5rem;align-items:center}
-#bdc_moves_loader .btn{border:1px solid rgba(255,255,255,.3);border-radius:8px;padding:.25rem .6rem;background:#2c3a64;color:#fff;cursor:pointer;font-size:12px;}
-#bdc_moves_loader .cnt{opacity:.9}
-#bdc_preview{position:fixed;right:10px;bottom:10px;max-width:46vw;background:rgba(24,36,64,.96);color:#fff;border:1px solid rgba(255,255,255,.25);border-radius:10px;padding:.5rem .7rem;font-size:12px;display:none;z-index:100001}
-#bdc_preview pre{max-height:30vh;overflow:auto;margin:.3rem 0 0}
-#bdc_preview .close{margin-left:.5rem;background:#33406f;color:#fff;border:1px solid rgba(255,255,255,.25);border-radius:6px;padding:.1rem .4rem;cursor:pointer;}
-</style>
-<script type="application/json" id="bdc_moves_cache">[]</script>
-<script>
-/*! BDC v43 inline */
-(function(){
-  (function(){
-    if(window.__BDC_ERR_GUARD__) return; window.__BDC_ERR_GUARD__=true;
-    var box; function ensure(){ if(box) return box; box=document.createElement('div'); box.id='bdc_err_box';
-      var btn=document.createElement('button'); btn.textContent='閉'; btn.onclick=function(){ box.style.display='none'; };
-      box.appendChild(btn); document.addEventListener('DOMContentLoaded', function(){ document.body.appendChild(box); }); return box; }
-    function show(msg){ var b=ensure(); var p=document.createElement('div'); p.textContent=msg; b.insertBefore(p,b.firstChild); b.style.display='block'; }
-    window.addEventListener('error', function(e){ show('[JS] '+(e.message||'')+' @'+(e.filename||'')+':'+(e.lineno||'')); }, true);
-    window.addEventListener('unhandledrejection', function(e){ var m=(e.reason && (e.reason.message||e.reason)) || '(no message)'; show('[Promise] '+m); });
-  })();
-  function q(s,r){return (r||document).querySelector(s);} function qa(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));}
-  function after(el,node){ if(el&&el.parentNode){ el.parentNode.insertBefore(node,el.nextSibling); } } function key(s){return (s||'').trim();}
-  var MOVES=[], MAP=new Map();
-  function rebuildMap(rows){ MOVES=rows||[]; MAP.clear(); (rows||[]).forEach(function(r){ if(r&&r.name){ MAP.set(key(r.name),{type:r.type||'',category:r.category||'',power:Number(r.power||0)||0}); } });
-    document.dispatchEvent(new CustomEvent('bdc:moves:ready',{detail:{size:MAP.size}})); updateDiag(); rebindAll(); }
-  (function(){ var tag=document.getElementById('bdc_moves_cache'); try{ rebuildMap(JSON.parse(tag?(tag.textContent||'[]'):'[]')); }catch(e){ rebuildMap([]);} })();
-  function ensureChip(inp){ var chip=inp.nextElementSibling; if(!(chip&&chip.classList&&chip.classList.contains('bdc-mtype-chip'))){ chip=document.createElement('span'); chip.className='bdc-mtype-chip'; chip.textContent='—'; after(inp,chip);} return chip; }
-  function ensureHint(inp){ var chip=ensureChip(inp),hint=chip.nextElementSibling; if(!(hint&&hint.classList&&hint.classList.contains('bdc-mpow-hint'))){ hint=document.createElement('span'); hint.className='bdc-mpow-hint'; chip.parentNode.insertBefore(hint,chip.nextSibling);} return hint; }
-  function writeHiddenForCalculators(inp,info){ var p=inp.parentElement; if(!p) return;
-    var h=p.querySelector('input[type="hidden"][name*="type" i]')||p.querySelector('input[type="hidden"].mtype'); if(h){ h.value=info.type||''; h.dispatchEvent(new Event('change',{bubbles:true}));}
-    var pw=p.querySelector('input[type="hidden"][name*="power" i]')||p.querySelector('input[type="hidden"].mpower'); if(pw){ pw.value=String(info.power||0); pw.dispatchEvent(new Event('change',{bubbles:true}));}
-    var c=p.querySelector('input[type="hidden"][name*="category" i]')||p.querySelector('input[type="hidden"].mcat'); if(c){ c.value=info.category||''; c.dispatchEvent(new Event('change',{bubbles:true}));} }
-  function update(inp){ var info=MAP.get(key(inp.value)); var chip=ensureChip(inp); var hint=ensureHint(inp);
-    if(info){ chip.textContent=info.type||'?'; chip.title=(info.type||'?')+' / '+(info.category||'?')+' / 威力 '+(info.power||0);
-      hint.textContent=(info.category?(info.category==='変化'?'変化':'('+info.category+')'):'')+(info.power?' '+info.power:(info.category==='変化'?' 0':''));
-      inp.dispatchEvent(new CustomEvent('bdc:move:resolved',{bubbles:true,detail:info})); writeHiddenForCalculators(inp,info);
-    }else{ chip.textContent='—'; chip.title='未登録の技名'; hint.textContent=''; } }
-  function rebindAll(){ var sel='input.m1n, input.m2n, input.m3n, input.m4n, input[name*="move" i], input[name*="技"]';
-    qa(sel).forEach(function(inp){ if(!inp.__bdc_bound){ inp.addEventListener('input',function(){ update(inp); }); inp.addEventListener('change',function(){ update(inp); }); inp.__bdc_bound=true; } update(inp); }); }
-  function updateDiag(){ var six=q('#six'); if(!six) return; var bar=six.querySelector('.toolbar')||six.querySelector('.tabbar')||six.firstElementChild||six; if(!bar) return;
-    var diag=q('#bdc_moves_loader'); if(!diag){ diag=document.createElement('span'); diag.id='bdc_moves_loader'; diag.innerHTML='<button type="button" class="btn">moves読込</button><span class="cnt"></span>'; bar.appendChild(diag);
-      var btn=diag.querySelector('button'); btn.addEventListener('click',function(){ var input=document.createElement('input'); input.type='file'; input.accept='.csv,.tsv,.txt';
-        input.addEventListener('change',function(){ var f=this.files&&this.files[0]; if(!f) return; var reader=new FileReader(); reader.onload=function(ev){ var rows=parseLooseCSV(ev.target.result||''); rebuildMap(rows); showPreview(rows); }; reader.readAsText(f,'utf-8'); input.remove(); }); input.click(); }); }
-    var cnt=diag.querySelector('.cnt'); if(cnt) cnt.textContent='[診断: moves '+MAP.size+'件 (inline/手動可)]'; }
-  function parseLooseCSV(txt){ var isTab=(txt.indexOf('\t')>-1)&&(txt.split('\t').length>txt.split(',').length); var delim=isTab?'\t':',';
-    var lines=txt.split(/\r?\n/).filter(function(x){return x.trim()!=='';}); if(!lines.length) return []; var head=lines[0].split(delim).map(function(h){return h.trim().toLowerCase().replace(/\ufeff/g,'');});
-    function idx(){ var a=[].slice.call(arguments); for(var i=0;i<a.length;i++){ var k=a[i].toLowerCase(); var p=head.indexOf(k); if(p>=0) return p; } return -1; }
-    var iN=idx('name','move','技名'), iT=idx('type','タイプ','type_label'), iC=idx('category','分類'), iP=idx('power','威力'); var out=[];
-    for(var i=1;i<lines.length;i++){ var cols=lines[i].split(delim); var nm=(cols[iN]||'').trim(); if(!nm) continue; var tp=(cols[iT]||'').trim(), ct=(cols[iC]||'').trim(), pw=(cols[iP]||'0').trim();
-      out.push({name:nm,type:tp,category:ct,power:Number(pw)||0}); } return out; }
-  function showPreview(rows){ var box=q('#bdc_preview'); if(!box){ box=document.createElement('div'); box.id='bdc_preview'; box.innerHTML='<div><strong>moves読込 結果</strong><button class="close">閉</button></div><pre></pre>'; document.body.appendChild(box); box.querySelector('.close').onclick=function(){ box.style.display='none'; }; }
-    var pre=box.querySelector('pre'); var head='name,type,category,power\n'; var sample=rows.slice(0,8).map(function(r){return [r.name,r.type,r.category,r.power].join(',');}).join('\n'); pre.textContent=head+sample+(rows.length>8?'\n... ('+rows.length+'件)':''); box.style.display='block'; }
-  function init(){ rebindAll(); updateDiag(); } if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', init); } else { init(); }
-})();</script>
-<!-- BDC v43 end -->
+});</script><div id="legal_disclaimer_bdc" style="position:fixed; right:8px; bottom:8px; max-width:520px; background:rgba(16,25,51,.92); color:#c9d6ff; border:1px solid rgba(255,255,255,.12); padding:.45rem .6rem; border-radius:10px; font-size:12px; z-index:9999;">本ツールは非公式のファンメイドです。任天堂・株式会社ポケモン・Niantic 等いずれの権利者とも一切関係ありません。 記載の固有名は各社の商標または登録商標です。学術・検証・個人利用を目的として公開しています。公式ロゴ・画像等は使用しません。<button id="legal_disclaimer_close" style="margin-left:.5rem; padding:.1rem .4rem; border-radius:6px; border:1px solid rgba(255,255,255,.25); background:#243255; color:#fff; cursor:pointer; font-size:12px;">閉じる</button></div><script>document.getElementById('legal_disclaimer_close')?.addEventListener('click',()=>{document.getElementById('legal_disclaimer_bdc')?.remove();});</script>
+<link rel="stylesheet" href="./bdc_styles.css">
+<script src="./bdc_bridge.js"></script>
 </body>
 </html>
