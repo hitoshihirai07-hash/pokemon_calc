@@ -1,0 +1,14 @@
+
+/* bdc_moves_bind_v37.css */
+.bdc-mtype-chip{
+  background: #3b5cc9;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 10px;
+  padding: 2px 6px;
+  font-size: 12px;
+  display: inline-block;
+  min-width: 38px;
+  text-align: center;
+  vertical-align: middle;
+}
