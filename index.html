@@ -110,6 +110,10 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
 /* BDC v26: hide internal editor badges */
 .badge, .version, .app-version { display:none !important; }
 #app_version, #share_tera_footer { display:none !important; }
+</style><style>
+/* BDC v27: hide legend/version remnants in 6x6 planner */
+#six .legend, #six .legend-row, #six .planner-legend, #six .planner-version,
+#six .six-version, #six .ver, #six .badge, #six small { display:none !important; }
 </style></head>
 <script src="./party_autocomplete_hotfix_v19.js"></script>
 <script src="./custom_autocomplete_v21.js"></script>
@@ -219,10 +223,10 @@ label.inline{ display:inline-flex; align-items:center; gap:.4rem; }
 <div class="six-topbar" style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;position:sticky;top:8px;background:rgba(25,32,56,.85);padding:.5rem .75rem;border:1px solid rgba(255,255,255,.15);border-radius:10px;">
 <strong>6対6プランナー</strong>
 <button class="btn" id="six_calc_all" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:8px;padding:.35rem .7rem;cursor:pointer;">一括計算</button>
-<span class="small" style="opacity:.8;">凡例:</span>
-<span class="badge b-good" style="display:inline-block;padding:.1rem .35rem;border-radius:6px;font-weight:700;background:#ff7a7a;color:#180000;">高</span>
-<span class="badge b-mid" style="display:inline-block;padding:.1rem .35rem;border-radius:6px;font-weight:700;background:#ffe07a;color:#302000;">中</span>
-<span class="badge b-bad" style="display:inline-block;padding:.1rem .35rem;border-radius:6px;font-weight:700;background:#7ab8ff;color:#001428;">低</span>
+
+
+
+
 <span class="small" id="six_build" style="margin-left:auto;opacity:.85;">6×6 v20251005-1330</span>
 </div>
 <div class="six-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;align-items:start;">
