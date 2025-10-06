@@ -1,0 +1,6 @@
+
+/* six_diag_fab_v33.css */
+#bdc_fab{ outline:none; }
+@media (max-width: 900px){
+  #bdc_fab{ right:12px; bottom:12px; width:56px; height:56px; font-size:18px; }
+}
