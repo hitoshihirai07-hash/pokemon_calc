@@ -1827,30 +1827,31 @@ document.addEventListener('DOMContentLoaded', function(){
     });
   }
 });</script><div id="legal_disclaimer_bdc" style="position:fixed; right:8px; bottom:8px; max-width:520px; background:rgba(16,25,51,.92); color:#c9d6ff; border:1px solid rgba(255,255,255,.12); padding:.45rem .6rem; border-radius:10px; font-size:12px; z-index:9999;">本ツールは非公式のファンメイドです。任天堂・株式会社ポケモン・Niantic 等いずれの権利者とも一切関係ありません。 記載の固有名は各社の商標または登録商標です。学術・検証・個人利用を目的として公開しています。公式ロゴ・画像等は使用しません。<button id="legal_disclaimer_close" style="margin-left:.5rem; padding:.1rem .4rem; border-radius:6px; border:1px solid rgba(255,255,255,.25); background:#243255; color:#fff; cursor:pointer; font-size:12px;">閉じる</button></div><script>document.getElementById('legal_disclaimer_close')?.addEventListener('click',()=>{document.getElementById('legal_disclaimer_bdc')?.remove();});</script>
-<!-- BDC v40 start -->
+<!-- BDC v41 start -->
 <style>
-/* BDC v40 inline */
+/* BDC v41 inline */
 .bdc-mtype-chip{background:#3b5cc9;color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:10px;padding:2px 6px;font-size:12px;display:inline-block;min-width:38px;text-align:center;vertical-align:middle;}
-.bdc-mpow-hint{margin-left:6px;opacity:.8;font-size:12px;color:#d8e1ff;}
+.bdc-mpow-hint{margin-left:6px;opacity:.85;font-size:12px;color:#d8e1ff;}
 #bdc_err_box{position:fixed;left:8px;bottom:8px;max-width:62vw;background:rgba(26,34,60,.96);color:#ffe;z-index:100000;border:1px solid rgba(255,255,255,.25);border-radius:10px;padding:.4rem .6rem;font-size:12px;line-height:1.35;display:none;}
 #bdc_err_box button{margin-left:.5rem;background:#33406f;color:#fff;border:1px solid rgba(255,255,255,.25);border-radius:6px;padding:.1rem .4rem;cursor:pointer;}
 #six .bdc_six_diag{margin-left:.5rem;font-size:12px;opacity:.9}
 </style>
 <script type="application/json" id="bdc_moves_cache">[]</script>
 <script>
-/*! BDC v40 inline */
+/*! BDC v41 inline */
 (function(){
-  // ---- error guard (prevents white screen) ----
+  // ---- error guard ----
   (function(){
     if(window.__BDC_ERR_GUARD__) return; window.__BDC_ERR_GUARD__=true;
     var box; function ensure(){
       if(box) return box; box=document.createElement('div'); box.id='bdc_err_box';
-      var close=document.createElement('button'); close.textContent='閉'; close.addEventListener('click',function(){ box.style.display='none'; });
-      box.appendChild(close); document.addEventListener('DOMContentLoaded', function(){ document.body.appendChild(box); }); return box;
+      var btn=document.createElement('button'); btn.textContent='閉'; btn.onclick=function(){ box.style.display='none'; };
+      box.appendChild(btn); document.addEventListener('DOMContentLoaded', function(){ document.body.appendChild(box); });
+      return box;
     }
     function show(msg){ var b=ensure(); var p=document.createElement('div'); p.textContent=msg; b.insertBefore(p,b.firstChild); b.style.display='block'; }
-    window.addEventListener('error',function(e){ show('[JS] '+(e.message||'')+' @'+(e.filename||'')+':'+(e.lineno||'')); },true);
-    window.addEventListener('unhandledrejection',function(e){ var m=(e.reason && (e.reason.message||e.reason)) || '(no message)'; show('[Promise] '+m); });
+    window.addEventListener('error', function(e){ show('[JS] '+(e.message||'')+' @'+(e.filename||'')+':'+(e.lineno||'')); }, true);
+    window.addEventListener('unhandledrejection', function(e){ var m=(e.reason && (e.reason.message||e.reason)) || '(no message)'; show('[Promise] '+m); });
   })();
 
   function q(sel,root){ return (root||document).querySelector(sel); }
@@ -1858,20 +1859,18 @@ document.addEventListener('DOMContentLoaded', function(){
   function after(el, node){ if(el && el.parentNode){ el.parentNode.insertBefore(node, el.nextSibling); } }
   function key(s){ return (s||'').trim(); }
 
-  // ---- load moves from inline cache ----
+  // inline moves cache
   var MOVES=[], MAP=new Map();
   (function(){
     var tag=document.getElementById('bdc_moves_cache');
-    if(tag){ try{ MOVES=JSON.parse(tag.textContent || '[]'); }catch(e){ MOVES=[]; } }
+    if(tag){ try{ MOVES=JSON.parse(tag.textContent||'[]'); }catch(e){ MOVES=[]; } }
     MOVES.forEach(function(r){ if(r && r.name){ MAP.set(key(r.name), {type:r.type||'',category:r.category||'',power:Number(r.power||0)||0}); } });
   })();
 
   function ensureChip(input){
     var chip=input.nextElementSibling;
     if(!(chip && chip.classList && chip.classList.contains('bdc-mtype-chip'))){
-      chip=document.createElement('span');
-      chip.className='bdc-mtype-chip'; chip.textContent='—';
-      after(input,chip);
+      chip=document.createElement('span'); chip.className='bdc-mtype-chip'; chip.textContent='—'; after(input, chip);
     }
     return chip;
   }
@@ -1883,9 +1882,7 @@ document.addEventListener('DOMContentLoaded', function(){
     return hint;
   }
   function writeHiddenForCalculators(input, info){
-    // try to find a sibling hidden input that calculators might be reading
-    var p=input.parentElement;
-    if(!p) return;
+    var p=input.parentElement; if(!p) return;
     var hidden=p.querySelector('input[type="hidden"][name*="type" i]') || p.querySelector('input[type="hidden"].mtype');
     if(hidden){ hidden.value=info.type||''; hidden.dispatchEvent(new Event('change',{bubbles:true})); }
     var pow=p.querySelector('input[type="hidden"][name*="power" i]') || p.querySelector('input[type="hidden"].mpower');
@@ -1894,13 +1891,13 @@ document.addEventListener('DOMContentLoaded', function(){
     if(cat){ cat.value=info.category||''; cat.dispatchEvent(new Event('change',{bubbles:true})); }
   }
   function update(input){
-    var info = MAP.get(key(input.value));
-    var chip = ensureChip(input);
-    var hint = ensureHint(input);
+    var info=MAP.get(key(input.value));
+    var chip=ensureChip(input);
+    var hint=ensureHint(input);
     if(info){
-      chip.textContent = info.type || '?';
-      chip.title = (info.type||'?') + ' / ' + (info.category||'?') + ' / 威力 ' + (info.power||0);
-      hint.textContent = (info.category? (info.category==='変化'?'変化':'('+info.category+')') : '') + (info.power? ' ' + info.power : (info.category==='変化'?' 0':''));
+      chip.textContent=info.type||'?';
+      chip.title=(info.type||'?')+' / '+(info.category||'?')+' / 威力 '+(info.power||0);
+      hint.textContent=(info.category? (info.category==='変化'?'変化':'('+info.category+')') : '')+(info.power? ' '+info.power : (info.category==='変化'?' 0':''));
       input.dispatchEvent(new CustomEvent('bdc:move:resolved',{bubbles:true,detail:info}));
       writeHiddenForCalculators(input, info);
     }else{
@@ -1911,18 +1908,14 @@ document.addEventListener('DOMContentLoaded', function(){
     var sel='input.m1n, input.m2n, input.m3n, input.m4n, input[name*="move" i], input[name*="技"]';
     qa(sel).forEach(function(inp){ inp.addEventListener('input',function(){ update(inp); }); inp.addEventListener('change',function(){ update(inp); }); update(inp); });
   }
-
   function sixDiag(){
-    var six=q('#six'); if(!six) return;
-    var bar = six.querySelector('.toolbar') || six.querySelector('.tabbar') || six.firstElementChild || six;
-    if(!bar) return;
-    var s=document.createElement('span'); s.className='bdc_six_diag'; s.textContent='[診断: moves '+MAP.size+'件]';
-    bar.appendChild(s);
+    var six=q('#six'); if(!six) return; var bar=six.querySelector('.toolbar')||six.querySelector('.tabbar')||six.firstElementChild||six;
+    if(!bar) return; var s=document.createElement('span'); s.className='bdc_six_diag';
+    s.textContent='[診断: moves '+MAP.size+'件 (inline)]'; bar.appendChild(s);
   }
-
   function init(){ bindAll(); sixDiag(); }
   if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', init); } else { init(); }
 })();</script>
-<!-- BDC v40 end -->
+<!-- BDC v41 end -->
 </body>
 </html>
