@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Battle Damage Calc(BDC) - ステータス＆技</title>
+  <link rel="stylesheet" href="./stats.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="title">Battle Damage Calc(BDC)</div>
+    <div class="header-actions"><button class="tab link" id="openSave" type="button">保存 / 読込</button></div>
+  </header>
+
+  <main class="wrap">
+    <section class="card">
+      <!-- 上：ポケモン選択 -->
+      <div class="row grid3">
+        <label>ポケモン
+          <input id="speciesInput" type="text" list="pkmList" placeholder="">
+          <datalist id="pkmList"></datalist>
+        </label>
+        <div class="typeRow">
+          <span class="type" id="type1"></span>
+          <span class="type" id="type2"></span>
+        </div>
+        <div class="evRemainWrap">
+          <span id="evRemain" class="muted"></span>
+        </div>
+      </div>
+
+      <!-- すぐ下：レベル(50/100固定) + 性格 -->
+      <div class="row grid2">
+        <label>レベル
+          <select id="level">
+            <option value="50" selected>50</option>
+            <option value="100">100</option>
+          </select>
+        </label>
+        <label>性格
+          <select id="nature">
+            <option value="">補正なし</option>
+            <option value="いじっぱり" data-up="atk" data-down="spa">いじっぱり（A↑C↓）</option>
+            <option value="ようき" data-up="spe" data-down="spa">ようき（S↑C↓）</option>
+            <option value="ひかえめ" data-up="spa" data-down="atk">ひかえめ（C↑A↓）</option>
+            <option value="おくびょう" data-up="spe" data-down="atk">おくびょう（S↑A↓）</option>
+            <option value="ずぶとい" data-up="def" data-down="atk">ずぶとい（B↑A↓）</option>
+            <option value="しんちょう" data-up="spd" data-down="spa">しんちょう（D↑C↓）</option>
+            <option value="のんき" data-up="def" data-down="spe">のんき（B↑S↓）</option>
+            <option value="なまいき" data-up="spd" data-down="spe">なまいき（D↑S↓）</option>
+            <option value="ゆうかん" data-up="atk" data-down="spe">ゆうかん（A↑S↓）</option>
+            <option value="れいせい" data-up="spa" data-down="spe">れいせい（C↑S↓）</option>
+            <option value="まじめ" data-up="" data-down="">まじめ（補正なし）</option>
+          </select>
+        </label>
+      </div>
+
+      <!-- ステータス表 -->
+      <div class="tableWrap" role="table" aria-label="ステータス表">
+        <div class="thead" role="rowgroup">
+          <div class="tr" role="row">
+            <div class="th colStat" role="columnheader">能力</div>
+            <div class="th" role="columnheader">種族値</div>
+            <div class="th" role="columnheader">個体値 <span class="muted">（31/0）</span></div>
+            <div class="th" role="columnheader">努力値 <span class="muted">（252/0）</span></div>
+            <div class="th" role="columnheader">実数値</div>
+          </div>
+        </div>
+        <div class="tbody" role="rowgroup" id="tbody"></div>
+      </div>
+
+      <!-- 技4-->
+      <div class="moves">
+        <h2>技</h2>
+        <div class="grid2">
+          <label>技1<input id="move1" type="text" list="movesList" autocomplete="on"></label>
+          <label>技2<input id="move2" type="text" list="movesList" autocomplete="on"></label>
+          <label>技3<input id="move3" type="text" list="movesList" autocomplete="on"></label>
+          <label>技4<input id="move4" type="text" list="movesList" autocomplete="on"></label>
+        </div>
+        <datalist id="movesList"></datalist>
+      </div>
+    
+      <!-- 保存/読込（インライン） -->
+      <section id="savePanel" class="panel hidden">
+        <div class="panel-head">
+          <strong>保存 / 読込</strong>
+          <button id="closeSave" class="iconBtn" aria-label="閉じる">×</button>
+        </div>
+        <div class="panel-body">
+          <div class="row">
+            <input id="saveName" type="text" placeholder="" />
+            <button id="btnSave">保存</button>
+          </div>
+          <div class="row">
+            <label style="flex:1;">保存一覧
+              <select id="saveList" size="10" style="width:100%;"></select>
+            </label>
+          </div>
+          <div class="row">
+            <button id="btnLoad">読込</button>
+            <button id="btnDelete">削除</button>
+          </div>
+          <hr/>
+          <div class="row">
+            <button id="btnExport">JSONエクスポート</button>
+            <input id="fileImport" type="file" accept=".json,application/json" />
+            <button id="btnImport">JSONインポート</button>
+          </div>
+        </div>
+      </section>
+
+    </section>
+  </main>
+
+  <!-- 先に stats.js で window.loadPokemonMaster を定義 -->
+  <script type="module" src="./stats.js"></script>
+  <!-- ▼ ご指定のトグルスクリプトを同階層から読み込む（これが必須） -->
+  <script src="./triple-checkbox-toggle-with-count.js"></script>
+</body>
+</html>
