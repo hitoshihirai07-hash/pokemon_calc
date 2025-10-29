@@ -363,3 +363,190 @@ document.addEventListener('DOMContentLoaded', ()=>{
 // ensure current state sync
 document.addEventListener('DOMContentLoaded', ()=>{ setTimeout(hookSync, 0); });
 
+
+
+function setupTabs(){
+  const tabS=document.getElementById('tabStats');
+  const tabC=document.getElementById('tabCalc');
+  const panS=document.getElementById('panelStats');
+  const panC=document.getElementById('panelCalc');
+  if(!tabS||!tabC||!panS||!panC) return;
+  const showStats=()=>{ tabS.classList.add('active'); tabC.classList.remove('active'); panS.classList.remove('hidden'); panC.classList.add('hidden'); panS.style.display='block'; panC.style.display='none'; };
+  const showCalc =()=>{ tabC.classList.add('active'); tabS.classList.remove('active'); panC.classList.remove('hidden'); panS.classList.add('hidden'); panC.style.display='block'; panS.style.display='none'; try{ updateDamageFromUI(); }catch(e){} };
+  tabS.addEventListener('click', showStats);
+  tabC.addEventListener('click', showCalc);
+  showStats();
+}
+function stageMul(s){ s=parseInt(s,10)||0; return s>=0 ? (2+s)/2 : 2/(2-s); }
+function calcBaseDamage(L,P,A,D){ const t1=Math.floor((2*L)/5)+2; const t2=Math.floor(t1*P*A/Math.max(1,D)); return Math.floor(t2/50)+2; }
+
+// Mini real stat calculator
+function miniClamp(v, lo, hi){ v=parseInt(v,10); if(isNaN(v)) v=0; return Math.max(lo, Math.min(hi, v)); }
+function miniLevel(){ var r=document.querySelector('input[name="dmgLevel"]:checked'); return r? parseInt(r.value,10):50; }
+function miniRealHP(base, ev, L){ base=miniClamp(base,1,255); ev=miniClamp(ev,0,252); L=miniClamp(L,1,100); if(base===1) return 1; var pre=Math.floor(((2*base+31+Math.floor(ev/4))*L)/100); return pre + L + 10; }
+function miniRealOther(base, ev, L, mult){ base=miniClamp(base,1,255); ev=miniClamp(ev,0,252); L=miniClamp(L,1,100); mult=parseFloat(mult)||1; var pre=Math.floor(((2*base+31+Math.floor(ev/4))*L)/100)+5; return Math.floor(pre*mult); }
+function miniCalcAll(){
+  var L=miniLevel();
+  [['hp',1],['atk',0],['def',0],['spa',0],['spd',0],['spe',0]].forEach(function(pair){
+    var k=pair[0];
+    var base=document.getElementById('mini_base_'+k)?.value||0;
+    var ev=document.getElementById('mini_ev_'+k)?.value||0;
+    var mult=(k==='hp')?1:(document.getElementById('mini_nat_'+k)?.value||1);
+    var real=(k==='hp')? miniRealHP(base,ev,L): miniRealOther(base,ev,L,mult);
+    var out=document.getElementById('mini_real_'+k); if(out) out.value=real||0;
+  });
+}
+function wireMiniStats(){
+  document.querySelectorAll('.evbtn').forEach(function(b){
+    b.addEventListener('click', function(){
+      var sel=b.getAttribute('data-mini-ev'); var tgt=document.querySelector(sel);
+      var val=parseInt(b.getAttribute('data-val'),10)||0;
+      if(tgt){ tgt.value=val; miniCalcAll(); }
+    });
+  });
+  ['hp','atk','def','spa','spd','spe'].forEach(function(k){
+    ['mini_base_','mini_ev_','mini_nat_'].forEach(function(prefix){
+      var el=document.getElementById(prefix+k);
+      if(el){ el.addEventListener('input', miniCalcAll); el.addEventListener('change', miniCalcAll); }
+    });
+  });
+  document.querySelectorAll('input[name="dmgLevel"]').forEach(function(r){ r.addEventListener('change', miniCalcAll); });
+  miniCalcAll();
+}
+
+// Damage inputs
+function gatherDamageInputs(){
+  const isPhys = document.getElementById('catPhysical')?.checked ?? true;
+  const L  = parseInt((document.querySelector('input[name="dmgLevel"]:checked')||{value:50}).value,10);
+  const P  = parseInt(document.getElementById('dmgPower')?.value || 100, 10);
+  const A0 = parseInt(document.getElementById('dmgAtk')?.value   || 200, 10);
+  const D0 = parseInt(document.getElementById('dmgDef')?.value   || 150, 10);
+  const A = Math.floor(A0 * stageMul(document.getElementById('atkStage')?.value || 0));
+  const D = Math.floor(D0 * stageMul(document.getElementById('defStage')?.value || 0));
+  const stab = parseFloat(document.getElementById('stab')?.value || 1) || 1;
+  const eff  = parseFloat(document.getElementById('dmgEffect')?.value || 1) || 1;
+  const crit = parseFloat(document.getElementById('crit')?.value || 1) || 1;
+  let burn   = parseFloat(document.getElementById('burn')?.value || 1) || 1;
+  if (!isPhys) burn = 1;
+  const other= parseFloat(document.getElementById('otherMod')?.value || 1) || 1;
+  const hpInput = parseInt(document.getElementById('dmgHP')?.value || 0, 10);
+  const hits = parseInt((document.getElementById('hitCount')?.value||'1'),10)||1;
+  return {L, P, A, D, stab, eff, crit, burn, other, hpInput, isPhys, hits};
+}
+function calcDamageAllRolls(){
+  const i = gatherDamageInputs();
+  const base = calcBaseDamage(i.L, i.P, i.A, i.D);
+  const perRolls = [];
+  for (let r=85; r<=100; r++){
+    let mod = i.stab * i.eff * i.crit * i.other * (r/100);
+    if (i.isPhys) mod *= i.burn;
+    const dmg = Math.max(1, Math.floor(base * mod));
+    perRolls.push(dmg);
+  }
+  const perMin = Math.min(...perRolls);
+  const perMax = Math.max(...perRolls);
+  const perAvg = perRolls.reduce((a,b)=>a+b,0)/perRolls.length;
+  const hits = Math.max(1, Math.min(10, i.hits||1));
+  const totalMin = perMin * hits;
+  const totalMax = perMax * hits;
+  const hp = i.hpInput || null;
+  return {hp, base, perRolls, perMin, perMax, perAvg, hits, min: totalMin, max: totalMax, avg: perAvg*hits};
+}
+function updateDamageFromUI(){
+  const i = calcDamageAllRolls();
+  const sum = document.getElementById('dmgSummary');
+  if (sum){
+    const hp = i.hp||0;
+    const pctMinT = (hp? (Math.floor(i.min*1000/hp)/10)+'%' : '—');
+    const pctMaxT = (hp? (Math.floor(i.max*1000/hp)/10)+'%' : '—');
+    const ko = (function(){
+      if(!hp) return '';
+      const ceil=(a,b)=>Math.floor((a+b-1)/b);
+      const nBest=ceil(hp,i.max);
+      const nWorst=ceil(hp,i.min);
+      return (nBest===nWorst)? '｜KO: 確定'+nBest+'発' : '｜KO: 乱数'+nBest+'〜'+nWorst+'発';
+    })();
+    const perLine = (function(){
+      const p1 = (hp? (Math.floor(i.perMin*1000/hp)/10)+'%' : '—');
+      const p2 = (hp? (Math.floor(i.perMax*1000/hp)/10)+'%' : '—');
+      return '単発: 最小'+i.perMin+' ～ 最大'+i.perMax+'（'+p1+'～'+p2+'）';
+    })();
+    sum.innerHTML = '合計'+i.hits+'発: 最小'+i.min+' ～ 最大'+i.max+'（'+pctMinT+'～'+pctMaxT+'）' + (ko? ' '+ko:'') + '<br><span class=\"mono small\">'+perLine+'</span>';
+  }
+  const rolls = document.getElementById('dmgRolls');
+  if (rolls){
+    rolls.innerHTML = i.perRolls.map(function(x){
+      const pct = (i.hp && i.hp>0) ? '（'+(Math.floor(x*1000/i.hp)/10)+'%）' : '';
+      return '<div class=\"row\"><div>乱数</div><div>'+x+pct+'</div></div>';
+    }).join('');
+  }
+}
+function wireDamageCalcInputs(){
+  ['catPhysical','catSpecial','lvl50','lvl100','dmgPower','dmgAtk','dmgDef','dmgHP','atkStage','defStage','stab','dmgEffect','crit','burn','otherMod','hitCount']
+  .forEach(function(id){ var el=document.getElementById(id); if(el){ el.addEventListener('input', updateDamageFromUI); el.addEventListener('change', updateDamageFromUI);} });
+  updateDamageFromUI();
+}
+function copyAtoAtk(){
+  var v=parseInt(document.getElementById('mini_real_atk')?.value||'0',10)||0;
+  var el=document.getElementById('dmgAtk'); if(el){ el.value=v; el.dispatchEvent(new Event('input',{bubbles:true})); }
+}
+function copyDtoDef(){
+  var isSpecial=document.getElementById('catSpecial')?.checked;
+  var srcId=isSpecial?'mini_real_spd':'mini_real_def';
+  var v=parseInt(document.getElementById(srcId)?.value||'0',10)||0;
+  var el=document.getElementById('dmgDef'); if(el){ el.value=v; el.dispatchEvent(new Event('input',{bubbles:true})); }
+}
+document.addEventListener('DOMContentLoaded', function(){
+  try{ setupTabs(); }catch(e){}
+  try{ wireMiniStats(); }catch(e){}
+  try{ wireDamageCalcInputs(); }catch(e){}
+  var ca=document.getElementById('copyAtoAtk'); if(ca) ca.addEventListener('click', copyAtoAtk);
+  var cd=document.getElementById('copyDtoDef'); if(cd) cd.addEventListener('click', copyDtoDef);
+});
+
+
+
+// --------- Accumulator (加算) ---------
+var ACCU = [];
+function renderAccu(){
+  var list = document.getElementById('accuList');
+  var total= document.getElementById('accuTotal');
+  if(!list || !total) return;
+  if(ACCU.length===0){
+    list.innerHTML = '（なし）';
+    total.innerHTML = '—';
+    return;
+  }
+  var sumMin=0, sumMax=0;
+  var rows = ACCU.map(function(e,idx){
+    sumMin += e.min; sumMax += e.max;
+    return '<div class="accuRow"><span class="idx">#'+(idx+1)+'</span><span>'+e.label+'</span><span>'+e.min+'～'+e.max+'</span></div>';
+  }).join('');
+  list.innerHTML = rows;
+  var hp = parseInt(document.getElementById('dmgHP')?.value||'0',10)||0;
+  var pctMin = hp? (Math.floor(sumMin*1000/hp)/10)+'%' : '—';
+  var pctMax = hp? (Math.floor(sumMax*1000/hp)/10)+'%' : '—';
+  var ko = '';
+  if (hp){
+    var ceil=function(a,b){ return Math.floor((a+b-1)/b); };
+    var nBest=ceil(hp,sumMax), nWorst=ceil(hp,sumMin);
+    ko = (nBest===nWorst)? ' ｜KO: 確定'+nBest+'発' : ' ｜KO: 乱数'+nBest+'〜'+nWorst+'発';
+  }
+  total.innerHTML = '合計: 最小'+sumMin+' ～ 最大'+sumMax+'（'+pctMin+'～'+pctMax+'）'+ko;
+}
+function accuAddCurrent(){
+  var i = calcDamageAllRolls();
+  var pow = document.getElementById('dmgPower')?.value || '?';
+  var lab = '威力'+pow+' × '+i.hits+'発';
+  ACCU.push({label: lab, min: i.min, max: i.max});
+  renderAccu();
+}
+function accuUndo(){ if(ACCU.length>0){ ACCU.pop(); renderAccu(); } }
+function accuClear(){ ACCU = []; renderAccu(); }
+document.addEventListener('DOMContentLoaded', function(){
+  var add=document.getElementById('accuAdd'); if(add) add.addEventListener('click', accuAddCurrent);
+  var und=document.getElementById('accuUndo'); if(und) und.addEventListener('click', accuUndo);
+  var clr=document.getElementById('accuClear'); if(clr) clr.addEventListener('click', accuClear);
+  var hp=document.getElementById('dmgHP'); if(hp){ hp.addEventListener('input', renderAccu); hp.addEventListener('change', renderAccu); }
+});
+
