@@ -1,7 +1,6 @@
-
-/*! BDC Timer Injector v1 (ES5, no try/await/arrow) */
+/*! BDC Timer Injector v2 (ES5, 上部先頭に挿入) */
 (function(){
-  // ====== 注入先（上から順に探索） ======
+  // ====== 注入候補（見つかった最初の要素の“先頭”に差し込む） ======
   var TARGETS = [
     '.funcTabs', '#funcTabs',
     'header', '.header',
@@ -81,15 +80,14 @@
       + '.bdcTimerLabel{opacity:.8;font-size:12px}'
       + '#bdcTimerMinutes{width:64px}'
       + '#bdcTimerDisplay{min-width:64px;display:inline-block;text-align:center}'
-      + '.bdcTimerBtn{padding:3px 8px;border:1px solid #334;'
-      + 'background:transparent;color:inherit;border-radius:8px;cursor:pointer}';
+      + '.bdcTimerBtn{padding:3px 8px;border:1px solid #334;background:transparent;color:inherit;border-radius:8px;cursor:pointer}';
     var st = document.createElement('style');
     st.id = 'bdcTimerStyles';
     st.appendChild(document.createTextNode(css));
     (document.head||document.documentElement).appendChild(st);
   }
 
-  // ====== UI 注入（見出しバーの右側） ======
+  // ====== UI 注入（候補コンテナの“先頭”に追加） ======
   function injectUI(host){
     if(!host) return;
     if(byId('bdcTimerDisplay')) return; // 二重生成防止
@@ -138,7 +136,8 @@
     wrap.appendChild(bP);
     wrap.appendChild(bR);
 
-    host.appendChild(wrap);
+    // ★ 上部に出す：先頭へ差し込む（append ではなく insertBefore）
+    host.insertBefore(wrap, host.firstChild || null);
 
     // イベント
     minutes.addEventListener('change', onMinutes);
@@ -162,7 +161,7 @@
       if (host){
         clearInterval(iv);
         injectStyles();
-        injectUI(host);
+        injectUI(host);   // ← 先頭に入れる
       } else {
         tries++;
         if(tries>=maxTries) clearInterval(iv);
